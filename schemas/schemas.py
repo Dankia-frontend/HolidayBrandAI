@@ -3,8 +3,6 @@ from fastapi import FastAPI, Query, Body, HTTPException
 from typing import Any
 
 class AvailabilityRequest(BaseModel):
-    username: str
-    password: str
     period_from: str
     period_to: str
     adults: int
