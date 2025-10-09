@@ -3,7 +3,7 @@ from fastapi import FastAPI, Query, Body, HTTPException
 from pydantic import BaseModel
 from schemas.schemas import BookingRequest, AvailabilityRequest, CheckBooking
 import requests
-from config import NEWBOOK_API_BASE, headers,REGION,API_KEY
+from config import NEWBOOK_API_BASE,REGION,API_KEY
 import base64
 from utils.ghl_api import create_opportunity
 
