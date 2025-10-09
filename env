@@ -1,0 +1,9 @@
+
+NEWBOOK_API_BASE=https://api.newbook.cloud/rest
+NEWBOOK_API_TOKEN=ParkPA:X14UrJa8J5UUpPNv
+API_KEY = instances_5d5a3e706c853fed32092cdb0ad27b4c
+REGION=AU
+
+GHL_API_KEY=your_ghl_api_key
+GHL_LOCATION_ID=your_location_id
+GHL_API_BASE=https://services.leadconnectorhq.com
