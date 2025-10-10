@@ -42,9 +42,10 @@
 import datetime
 import requests
 import base64
-from config import REGION, API_KEY, NEWBOOK_API_BASE, USERNAME, PASSWORD
+from config import REGION, API_KEY, NEWBOOK_API_BASE
 
-
+USERNAME = "ParkPA"
+PASSWORD = "X14UrJa8J5UUpPNv"
 
 def create_opportunities_from_newbook():
     print("[TEST] Starting job to fetch completed bookings...")

@@ -3,7 +3,7 @@ from fastapi import FastAPI, Query, Body, HTTPException
 from pydantic import BaseModel
 from schemas.schemas import BookingRequest, AvailabilityRequest, CheckBooking
 import requests
-from config import NEWBOOK_API_BASE,REGION,API_KEY,USERNAME,PASSWORD
+from config import NEWBOOK_API_BASE,REGION,API_KEY
 import base64
 # from utils.ghl_api import create_opportunity
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -17,6 +17,8 @@ import time
 app = FastAPI()
 
 
+USERNAME = "ParkPA"
+PASSWORD = "X14UrJa8J5UUpPNv"
 user_pass = f"{USERNAME}:{PASSWORD}"
 encoded_credentials = base64.b64encode(user_pass.encode()).decode()
 
