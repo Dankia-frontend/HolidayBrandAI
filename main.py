@@ -28,20 +28,30 @@ headers = {
 }
 
 @app.post("/availability")
-def get_availability(data: AvailabilityRequest = Body(...)):
+def get_availability(
+    period_from: str = Query(..., description="Start date in YYYY-MM-DD format"),
+    period_to: str = Query(..., description="End date in YYYY-MM-DD format"),
+    adults: int = Query(..., description="Number of adults"),
+    daily_mode: str = Query(..., description="Daily mode value, e.g., 'yes' or 'no'"),
+    children: int = Query(..., description="Number of children")
+):
     try:
-        # merge constants with user-supplied data
+        # merge constants with query parameters
         payload = {
             "region": REGION,
             "api_key": API_KEY,
-            **data.dict(),   # unpack rest of fields from body
+            "period_from": period_from,
+            "period_to": period_to,
+            "adults": adults,
+            "children": children,
+            "daily_mode": daily_mode
         }
 
         response = requests.post(
             f"{NEWBOOK_API_BASE}/bookings_availability_pricing",
             headers=headers,
             json=payload,
-            verify=False,  # optional, for local testing only
+            verify=False,  # ⚠️ for local testing only
             timeout=15
         )
 
@@ -49,100 +59,125 @@ def get_availability(data: AvailabilityRequest = Body(...)):
         return response.json()
 
     except Exception as e:
-        
         raise HTTPException(status_code=500, detail=str(e))
-
 
 # 2. Confirm Booking [POST]
 @app.post("/confirm-booking")
-def confirm_booking(data: BookingRequest = Body(...)):
+def confirm_booking(
+    period_from: str = Query(..., description="Booking start date, e.g. 2025-10-10 00:00:00"),
+    period_to: str = Query(..., description="Booking end date, e.g. 2025-10-15 23:59:59"),
+    guest_firstname: str = Query(..., description="Guest first name"),
+    guest_lastname: str = Query(..., description="Guest last name"),
+    guest_email: str = Query(..., description="Guest email address"),
+    guest_phone: str = Query(..., description="Guest phone number"),
+    adults: int = Query(..., description="Number of adults"),
+    children: str = Query(..., description="Number of children"),
+    category_id: int = Query(..., description="Category ID of the room or package"),
+    daily_mode: str = Query(..., description="Daily booking mode (yes/no)"),
+    amount: int = Query(..., description="Total booking amount")
+):
     try:
-        payload = {
-            "region": REGION,
-            "api_key": API_KEY,
-            **data.dict(),   # unpack rest of fields from body
-        }
-        response = requests.post(
-            f"{NEWBOOK_API_BASE}/bookings_create",
-            headers=headers,
-            json=payload,
-            verify=False,  # optional, for local testing only
-            timeout=15
-        )
-        response.raise_for_status()
-        result = response.json()
-        # Remove api_key from response if present
-        result.pop("api_key", None)
-        return result
-    except Exception as e:
-        
-        raise HTTPException(status_code=500, detail=str(e))
-    
-    
-# 2. Check Booking [GET]
-@app.post("/check-booking")
-def confirm_booking(data: CheckBooking = Body(...)):
-    try:
-        name = data.name.strip()
-        email = data.email.strip()
-        booking_date = data.booking_date.strip() if data.booking_date else None
-
-        if not name or not email:
-            raise HTTPException(status_code=400, detail="Missing required fields: name, email")
-
-        # 🗓 Determine date range (period_from / period_to)
-        if booking_date:
-            try:
-                date_obj = datetime.datetime.strptime(booking_date, "%Y-%m-%d")
-                period_from = date_obj.strftime("%Y-%m-%d 00:00:00")
-                period_to = date_obj.strftime("%Y-%m-%d 23:59:59")
-            except ValueError:
-                # Invalid date → fallback to current week
-                today = datetime.datetime.now()
-                monday = today - datetime.timedelta(days=today.weekday())
-                sunday = monday + datetime.timedelta(days=6)
-                period_from = monday.strftime("%Y-%m-%d 00:00:00")
-                period_to = sunday.strftime("%Y-%m-%d 23:59:59")
-        else:
-            # No date → current month
-            today = datetime.datetime.now()
-            first_day = today.replace(day=1)
-            next_month = first_day + datetime.timedelta(days=32)
-            last_day = next_month.replace(day=1) - datetime.timedelta(days=1)
-            period_from = first_day.strftime("%Y-%m-%d 00:00:00")
-            period_to = last_day.strftime("%Y-%m-%d 23:59:59")
-
-        # 🧾 Build request payload
+        # --- Build payload ---
         payload = {
             "region": REGION,
             "api_key": API_KEY,
             "period_from": period_from,
             "period_to": period_to,
-            "list_type": "all"
+            "guest_firstname": guest_firstname,
+            "guest_lastname": guest_lastname,
+            "guest_email": guest_email,
+            "guest_phone": guest_phone,
+            "adults": adults,
+            "children": children,
+            "category_id": category_id,
+            "daily_mode": daily_mode,
+            "amount": amount
         }
 
-        print("\n📤 Payload being sent to Newbook API:")
+        print(f"[INFO] Sending payload to NewBook: {payload}")
+
+        # --- API Call to NewBook ---
+        response = requests.post(
+            f"{NEWBOOK_API_BASE}/bookings_create",
+            headers=headers,
+            json=payload,
+            verify=False,  # ⚠️ Use verify=True in production
+            timeout=15
+        )
+
+        response.raise_for_status()
+        result = response.json()
+
+        # Remove api_key from response (if present)
+        result.pop("api_key", None)
+
+        return result
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
+    
+# 3. Check Booking [GET]
+@app.post("/check-booking")
+def check_booking(
+    period_from: str = Query(..., description="Start date in YYYY-MM-DD format"),
+    period_to: str = Query(..., description="End date in YYYY-MM-DD format"),
+    guest_firstname: str = Query(...),
+    guest_lastname: str = Query(...),
+    guest_email: str = Query(...),
+    guest_phone: str = Query(...),
+    adults: int = Query(...),
+    children: str = Query(...),
+    category_id: int = Query(...),
+    daily_mode: str = Query(...),
+    amount: int = Query(...)
+):
+    try:
+        # 🧾 Format the period dates to include time
+        period_from_fmt = f"{period_from} 00:00:00"
+        period_to_fmt = f"{period_to} 23:59:59"
+
+        # 🧱 Build payload for Newbook API
+        payload = {
+            "region": REGION,
+            "api_key": API_KEY,
+            "period_from": period_from_fmt,
+            "period_to": period_to_fmt,
+            "guest_firstname": guest_firstname,
+            "guest_lastname": guest_lastname,
+            "guest_email": guest_email,
+            "guest_phone": guest_phone,
+            "adults": adults,
+            "children": children,
+            "category_id": category_id,
+            "daily_mode": daily_mode,
+            "amount": amount,
+        }
+
+        print("\n📤 Sending payload to Newbook API:")
         print(payload)
 
-        # 🔗 Send request to NewBook
+        headers = {"Content-Type": "application/json"}
+
+        # 🔗 Send request to Newbook API
         response = requests.post(
             f"{NEWBOOK_API_BASE}/bookings_list",
             headers=headers,
             json=payload,
-            verify=False,  # Disable SSL for local testing only
+            verify=False,  # ❗ For local only — enable SSL in production
             timeout=15
         )
 
         print("📥 Response Code:", response.status_code)
         print("📥 Response Body:", response.text)
 
+        # ✅ Raise error if not success
         response.raise_for_status()
         return response.json()
 
     except Exception as e:
-        
+        print("❌ Error:", str(e))
         raise HTTPException(status_code=500, detail=str(e))
-
 
 # def create_opportunities_from_newbook():
 #     print("[INFO] Starting GHL opportunity job...")
@@ -227,17 +262,17 @@ def confirm_booking(data: CheckBooking = Body(...)):
 # threading.Thread(target=start_scheduler, daemon=True).start()
 
 
-def start_scheduler():
-    scheduler = BackgroundScheduler()
-    scheduler.add_job(create_opportunities_from_newbook, "interval", minutes=5)
-    scheduler.start()
-    try:
-        while True:
-            time.sleep(2)
-    except (KeyboardInterrupt, SystemExit):
-        scheduler.shutdown()
+# def start_scheduler():
+#     scheduler = BackgroundScheduler()
+#     scheduler.add_job(create_opportunities_from_newbook, "interval", minutes=5)
+#     scheduler.start()
+#     try:
+#         while True:
+#             time.sleep(2)
+#     except (KeyboardInterrupt, SystemExit):
+#         scheduler.shutdown()
 
-threading.Thread(target=start_scheduler, daemon=True).start()
+# threading.Thread(target=start_scheduler, daemon=True).start()
 
 if __name__ == "__main__":
     import uvicorn
