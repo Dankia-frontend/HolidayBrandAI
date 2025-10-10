@@ -8,3 +8,6 @@ NEWBOOK_API_BASE = os.getenv("NEWBOOK_API_BASE")
 NEWBOOK_API_TOKEN = os.getenv("NEWBOOK_API_TOKEN")
 API_KEY = os.getenv("API_KEY")
 REGION = os.getenv("REGION")
+
+API_KEY = os.getenv("USERNAME")
+REGION = os.getenv("PASSWORD")

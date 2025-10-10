@@ -3,15 +3,20 @@ from fastapi import FastAPI, Query, Body, HTTPException
 from pydantic import BaseModel
 from schemas.schemas import BookingRequest, AvailabilityRequest, CheckBooking
 import requests
-from config import NEWBOOK_API_BASE,REGION,API_KEY
+from config import NEWBOOK_API_BASE,REGION,API_KEY,USERNAME,PASSWORD
 import base64
-from utils.ghl_api import create_opportunity
+# from utils.ghl_api import create_opportunity
+from apscheduler.schedulers.background import BackgroundScheduler
+import threading
+import requests
+# from utils.ghl_api import get_ghl_access_token, create_opportunity
+from utils.ghl_api import create_opportunities_from_newbook
+
+import time
 
 app = FastAPI()
 
 
-USERNAME = "ParkPA"
-PASSWORD = "X14UrJa8J5UUpPNv"
 user_pass = f"{USERNAME}:{PASSWORD}"
 encoded_credentials = base64.b64encode(user_pass.encode()).decode()
 
@@ -136,99 +141,101 @@ def confirm_booking(data: CheckBooking = Body(...)):
         
         raise HTTPException(status_code=500, detail=str(e))
 
-# def create_opportunity(contact_id, name, value):
-#     """
-#     Replace with your actual GHL opportunity creation logic.
-#     For now, returns success for testing.
-#     """
-#     print(f"Creating opportunity for {name} (${value})")
-#     return {"success": True}
 
-# @app.post("/sync-to-ghl")
-# def sync_to_ghl():
-#     """
-#     Sync completed NewBook bookings → GHL Opportunities.
-#     """
+# def create_opportunities_from_newbook():
+#     print("[INFO] Starting GHL opportunity job...")
+
 #     try:
-#         # 🗓️ Get last 7 days
-#         today = datetime.date.today()
-#         start_date = (today - datetime.timedelta(days=7)).strftime("%Y-%m-%d 00:00:00")
-#         end_date = today.strftime("%Y-%m-%d 23:59:59")
-
-#         # 📦 Prepare payload for NewBook
+#         # Step 1: Fetch completed bookings
 #         payload = {
 #             "region": REGION,
 #             "api_key": API_KEY,
-#             "period_from": start_date,
-#             "period_to": end_date,
-#             "list_type": "all",   # 'completed' can cause 412; use 'all' safely
-#             "include_guests": True
+#             "period_from": "2025-01-01 00:00:00",  # customize as needed
+#             "period_to": "2025-12-31 23:59:59"
 #         }
-
-#         # 🔗 Fetch bookings from NewBook
-#         response = requests.post(
-#             f"https://api.newbook.cloud/rest/bookings_list",
-#             headers=headers,
-#             json=payload,
-#             verify=False,
-#             timeout=15
-#         )
-
-#         print("📥 Response status:", response.status_code)
-#         print("📥 Response text:", response.text)
-
+#         response = requests.post(f"{NEWBOOK_API_BASE}/bookings_list", json=payload)
 #         response.raise_for_status()
-#         data = response.json()
-#         bookings = data.get("bookings", [])
-
-#         created, failed = [], []
-
-#         for booking in bookings:
-#             guest_id = booking.get("guest_id")
-#             if not guest_id:
-#                 print(f"⚠️ Skipping booking {booking.get('booking_id')} (no guest_id)")
-#                 continue
-
-#             # 🧾 Fetch guest details
-#             guest_url = f"{NEWBOOK_API_BASE}/guests/{guest_id}"
-#             guest_response = requests.get(
-#                 guest_url,
-#                 headers=headers,
-#                 verify=False,
-#                 timeout=15
-#             )
-
-#             if guest_response.status_code != 200:
-#                 failed.append({
-#                     "id": booking.get("booking_id"),
-#                     "error": f"Guest fetch failed: {guest_response.text}"
-#                 })
-#                 continue
-
-#             guest = guest_response.json()
-#             contact_id = guest.get("ghl_contact_id") or "replace_with_default_id"
-#             name = f"Booking {booking.get('booking_id')} - {guest.get('first_name', '')}"
-#             value = booking.get("total_price", 0)
-
-#             result = create_opportunity(contact_id, name, value)
-
-#             if result["success"]:
-#                 created.append(booking.get("booking_id"))
-#             else:
-#                 failed.append({
-#                     "id": booking.get("booking_id"),
-#                     "error": result.get("error", "Unknown error")
-#                 })
-
-#         return {
-#             "success": True,
-#             "created": created,
-#             "failed": failed,
-#             "count": len(bookings)
-#         }
+#         completed_bookings = response.json()
 
 #     except Exception as e:
-#         raise HTTPException(status_code=500, detail=str(e))
+#         print(f"[ERROR] Failed to fetch completed bookings: {e}")
+#         return
+
+#     if not completed_bookings:
+#         print("[INFO] No completed bookings found.")
+#         return
+
+#     # Step 2: Authenticate with GHL
+#     ghl_access_token = get_ghl_access_token()
+#     if not ghl_access_token:
+#         print("[ERROR] GHL authentication failed.")
+#         return
+
+#     results = []
+
+#     # Step 3: Create opportunities
+#     for booking in completed_bookings:
+#         try:
+#             opportunity_data = {
+#                 "pipelineId": "xxxx",              # Replace with your pipeline ID
+#                 "locationId": "xxxx",              # Replace with your location ID
+#                 "name": "NewBook Opportunity",
+#                 "pipelineStageId": "xxxx",         # Replace with pipeline stage ID
+#                 "status": "open",
+#                 "contactId": booking.get("contact_id", "xxxx"),  
+#                 "monetaryValue": booking.get("monetary_value", 220),
+#                 "assignedTo": "xxxx",              # Replace with assigned user ID
+#                 "customFields": [
+#                     {
+#                         "id": "xxxxx",             # Replace with custom field ID
+#                         "field_value": "xxxxxx"
+#                     }
+#                 ]
+#             }
+
+#             success = create_opportunity(opportunity_data, ghl_access_token)
+#             if success:
+#                 results.append(f"Opportunity created for booking ID: {booking.get('booking_id')}")
+#             else:
+#                 results.append(f"Failed to create opportunity for booking ID: {booking.get('booking_id')}")
+
+#         except Exception as e:
+#             results.append(f"Error for booking ID {booking.get('booking_id')}: {e}")
+
+#     for r in results:
+#         print(r)
+
+
+# # ------------------------
+# # Scheduler
+# # ------------------------
+# def start_scheduler():
+#     scheduler = BackgroundScheduler()
+#     scheduler.add_job(create_opportunities_from_newbook, "interval", minutes=5)
+#     scheduler.start()
+#     try:
+#         while True:
+#             time.sleep(2)
+#     except (KeyboardInterrupt, SystemExit):
+#         scheduler.shutdown()
+
+
+# # Run scheduler in background thread
+# import threading
+# threading.Thread(target=start_scheduler, daemon=True).start()
+
+
+def start_scheduler():
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(create_opportunities_from_newbook, "interval", minutes=5)
+    scheduler.start()
+    try:
+        while True:
+            time.sleep(2)
+    except (KeyboardInterrupt, SystemExit):
+        scheduler.shutdown()
+
+threading.Thread(target=start_scheduler, daemon=True).start()
 
 if __name__ == "__main__":
     import uvicorn
