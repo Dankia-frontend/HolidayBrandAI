@@ -11,10 +11,24 @@ import threading
 import requests
 # from utils.ghl_api import get_ghl_access_token, create_opportunity
 from utils.ghl_api import create_opportunities_from_newbook
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
 
 import time
 
 app = FastAPI()
+
+
+
+# Allow origins (add your frontend URL)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],       # <-- allow all origins
+    allow_credentials=True,
+    allow_methods=["*"],       # <-- allow all HTTP methods
+    allow_headers=["*"],       # <-- allow all headers
+)
 
 
 USERNAME = "ParkPA"
