@@ -36,7 +36,8 @@ def get_availability(
     children: int = Query(..., description="Number of children")
 ):
     try:
-        # merge constants with query parameters
+        headers = {"Content-Type": "application/json"}
+
         payload = {
             "region": REGION,
             "api_key": API_KEY,
@@ -47,20 +48,26 @@ def get_availability(
             "daily_mode": daily_mode
         }
 
+        print("\n📤 Payload being sent to NewBook API:")
+        print(payload)
+
         response = requests.post(
             f"{NEWBOOK_API_BASE}/bookings_availability_pricing",
             headers=headers,
             json=payload,
-            verify=False,  # ⚠️ for local testing only
+            verify=False,  # ⚠️ Only for local testing
             timeout=15
         )
+
+        print("📥 Response Code:", response.status_code)
+        print("📥 Response Body:", response.text)
 
         response.raise_for_status()
         return response.json()
 
     except Exception as e:
+        print("❌ Error:", str(e))
         raise HTTPException(status_code=500, detail=str(e))
-
 # 2. Confirm Booking [POST]
 @app.get("/confirm-booking")
 def confirm_booking(
