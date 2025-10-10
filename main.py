@@ -144,7 +144,7 @@ def check_booking(
         period_from_fmt = f"{period_from} 00:00:00"
         period_to_fmt = f"{period_to} 23:59:59"
 
-         headers = {"Content-Type": "application/json"}
+        headers = {"Content-Type": "application/json"}
         # 🧱 Build payload for Newbook API
         payload = {
             "region": REGION,
