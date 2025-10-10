@@ -22,7 +22,7 @@ PASSWORD = "X14UrJa8J5UUpPNv"
 user_pass = f"{USERNAME}:{PASSWORD}"
 encoded_credentials = base64.b64encode(user_pass.encode()).decode()
 
-headers = {
+header = {
     "Content-Type": "application/json",
     "Authorization": f"Basic {encoded_credentials}"
 }
@@ -53,7 +53,7 @@ def get_availability(
 
         response = requests.post(
             f"{NEWBOOK_API_BASE}/bookings_availability_pricing",
-            headers=headers,
+            headers=header,
             json=payload,
             verify=False,  # ⚠️ Only for local testing
             timeout=15
