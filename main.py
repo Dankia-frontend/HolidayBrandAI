@@ -140,67 +140,71 @@ def confirm_booking(
     
 # 3. Check Booking [GET]
 @app.get("/check-booking")
-def check_booking(
-    period_from: str = Query(..., description="Start date in YYYY-MM-DD format"),
-    period_to: str = Query(..., description="End date in YYYY-MM-DD format"),
-    guest_firstname: str = Query(...),
-    guest_lastname: str = Query(...),
-    guest_email: str = Query(...),
-    guest_phone: str = Query(...),
-    adults: int = Query(...),
-    children: str = Query(...),
-    category_id: int = Query(...),
-    daily_mode: str = Query(...),
-    amount: int = Query(...)
+def confirm_booking(
+    name: str = Query(..., description="Guest name"),
+    email: str = Query(..., description="Guest email"),
+    booking_date: str | None = Query(None, description="Optional booking date (YYYY-MM-DD)")
 ):
     try:
-        # 🧾 Format the period dates to include time
-        period_from_fmt = f"{period_from} 00:00:00"
-        period_to_fmt = f"{period_to} 23:59:59"
+        name = name.strip()
+        email = email.strip()
+        booking_date = booking_date.strip() if booking_date else None
+
+        if not name or not email:
+            raise HTTPException(status_code=400, detail="Missing required fields: name, email")
+
+        # 🗓 Determine date range (period_from / period_to)
+        if booking_date:
+            try:
+                date_obj = datetime.datetime.strptime(booking_date, "%Y-%m-%d")
+                period_from = date_obj.strftime("%Y-%m-%d 00:00:00")
+                period_to = date_obj.strftime("%Y-%m-%d 23:59:59")
+            except ValueError:
+                # Invalid date → fallback to current week
+                today = datetime.datetime.now()
+                monday = today - datetime.timedelta(days=today.weekday())
+                sunday = monday + datetime.timedelta(days=6)
+                period_from = monday.strftime("%Y-%m-%d 00:00:00")
+                period_to = sunday.strftime("%Y-%m-%d 23:59:59")
+        else:
+            # No date → current month
+            today = datetime.datetime.now()
+            first_day = today.replace(day=1)
+            next_month = first_day + datetime.timedelta(days=32)
+            last_day = next_month.replace(day=1) - datetime.timedelta(days=1)
+            period_from = first_day.strftime("%Y-%m-%d 00:00:00")
+            period_to = last_day.strftime("%Y-%m-%d 23:59:59")
 
         headers = {"Content-Type": "application/json"}
-        # 🧱 Build payload for Newbook API
+        # 🧾 Build request payload
         payload = {
             "region": REGION,
             "api_key": API_KEY,
-            "period_from": period_from_fmt,
-            "period_to": period_to_fmt,
-            "guest_firstname": guest_firstname,
-            "guest_lastname": guest_lastname,
-            "guest_email": guest_email,
-            "guest_phone": guest_phone,
-            "adults": adults,
-            "children": children,
-            "category_id": category_id,
-            "daily_mode": daily_mode,
-            "amount": amount,
+            "period_from": period_from,
+            "period_to": period_to,
+            "list_type": "all"
         }
 
-        print("\n📤 Sending payload to Newbook API:")
+        print("\n📤 Payload being sent to Newbook API:")
         print(payload)
 
-        headers = {"Content-Type": "application/json"}
-
-        # 🔗 Send request to Newbook API
+        # 🔗 Send request to NewBook
         response = requests.post(
             f"{NEWBOOK_API_BASE}/bookings_list",
             headers=header,
             json=payload,
-            verify=False,  # ❗ For local only — enable SSL in production
+            verify=False,  # Disable SSL for local testing only
             timeout=15
         )
 
         print("📥 Response Code:", response.status_code)
         print("📥 Response Body:", response.text)
 
-        # ✅ Raise error if not success
         response.raise_for_status()
         return response.json()
 
     except Exception as e:
-        print("❌ Error:", str(e))
         raise HTTPException(status_code=500, detail=str(e))
-
 # def create_opportunities_from_newbook():
 #     print("[INFO] Starting GHL opportunity job...")
 
