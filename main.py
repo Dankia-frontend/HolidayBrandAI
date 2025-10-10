@@ -32,7 +32,7 @@ def get_availability(
     period_from: str = Query(..., description="Start date in YYYY-MM-DD format"),
     period_to: str = Query(..., description="End date in YYYY-MM-DD format"),
     adults: int = Query(..., description="Number of adults"),
-    daily_mode: str = Query(..., description="Daily mode value, e.g., 'yes' or 'no'"),
+    daily_mode: str = Query(..., description="Daily mode value, e.g., 'true' or 'false'"),
     Children: int = Query(..., description="Number of children")
 ):
     try:
@@ -106,7 +106,7 @@ def confirm_booking(
         # --- API Call to NewBook ---
         response = requests.post(
             f"{NEWBOOK_API_BASE}/bookings_create",
-            headers=headers,
+            headers=header,
             json=payload,
             verify=False,  # ⚠️ Use verify=True in production
             timeout=15
@@ -170,7 +170,7 @@ def check_booking(
         # 🔗 Send request to Newbook API
         response = requests.post(
             f"{NEWBOOK_API_BASE}/bookings_list",
-            headers=headers,
+            headers=header,
             json=payload,
             verify=False,  # ❗ For local only — enable SSL in production
             timeout=15
