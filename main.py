@@ -69,7 +69,7 @@ def get_availability(
         print("❌ Error:", str(e))
         raise HTTPException(status_code=500, detail=str(e))
 # 2. Confirm Booking [POST]
-@app.get("/confirm-booking")
+@app.post("/confirm-booking")
 def confirm_booking(
     period_from: str = Query(..., description="Booking start date, e.g. 2025-10-10 00:00:00"),
     period_to: str = Query(..., description="Booking end date, e.g. 2025-10-15 23:59:59"),
@@ -143,7 +143,8 @@ def check_booking(
         # 🧾 Format the period dates to include time
         period_from_fmt = f"{period_from} 00:00:00"
         period_to_fmt = f"{period_to} 23:59:59"
-
+        
+         headers = {"Content-Type": "application/json"}
         # 🧱 Build payload for Newbook API
         payload = {
             "region": REGION,
