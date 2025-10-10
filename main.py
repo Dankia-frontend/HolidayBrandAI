@@ -33,7 +33,7 @@ def get_availability(
     period_to: str = Query(..., description="End date in YYYY-MM-DD format"),
     adults: int = Query(..., description="Number of adults"),
     daily_mode: str = Query(..., description="Daily mode value, e.g., 'yes' or 'no'"),
-    children: int = Query(..., description="Number of children")
+    Children: int = Query(..., description="Number of children")
 ):
     try:
         headers = {"Content-Type": "application/json"}
@@ -44,7 +44,7 @@ def get_availability(
             "period_from": period_from,
             "period_to": period_to,
             "adults": adults,
-            "children": children,
+            "children": Children,
             "daily_mode": daily_mode
         }
 
@@ -143,7 +143,7 @@ def check_booking(
         # 🧾 Format the period dates to include time
         period_from_fmt = f"{period_from} 00:00:00"
         period_to_fmt = f"{period_to} 23:59:59"
-        
+
          headers = {"Content-Type": "application/json"}
         # 🧱 Build payload for Newbook API
         payload = {
