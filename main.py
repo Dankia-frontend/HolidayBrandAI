@@ -27,7 +27,7 @@ headers = {
     "Authorization": f"Basic {encoded_credentials}"
 }
 
-@app.post("/availability")
+@app.get("/availability")
 def get_availability(
     period_from: str = Query(..., description="Start date in YYYY-MM-DD format"),
     period_to: str = Query(..., description="End date in YYYY-MM-DD format"),
@@ -62,7 +62,7 @@ def get_availability(
         raise HTTPException(status_code=500, detail=str(e))
 
 # 2. Confirm Booking [POST]
-@app.post("/confirm-booking")
+@app.get("/confirm-booking")
 def confirm_booking(
     period_from: str = Query(..., description="Booking start date, e.g. 2025-10-10 00:00:00"),
     period_to: str = Query(..., description="Booking end date, e.g. 2025-10-15 23:59:59"),
@@ -118,7 +118,7 @@ def confirm_booking(
     
     
 # 3. Check Booking [GET]
-@app.post("/check-booking")
+@app.get("/check-booking")
 def check_booking(
     period_from: str = Query(..., description="Start date in YYYY-MM-DD format"),
     period_to: str = Query(..., description="End date in YYYY-MM-DD format"),
