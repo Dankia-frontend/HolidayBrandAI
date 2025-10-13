@@ -7,10 +7,10 @@ import base64
 import datetime
 import requests
 
-from config import REGION, API_KEY, NEWBOOK_API_BASE, GHL_API_KEY, GHL_LOCATION_ID, GHL_PIPELINE_ID, GHL_STAGE_ID, GHL_CLIENT_ID, GHL_CLIENT_SECRET
+from config import REGION, API_KEY, NEWBOOK_API_BASE, GHL_API_KEY, GHL_LOCATION_ID, GHL_PIPELINE_ID, GHL_STAGE_ID, GHL_CLIENT_ID, GHL_CLIENT_SECRET, GHL_AUTHORIZATION_CODE, GHL_REDIRECT_URI
 
 USERNAME = "ParkPA"
-PASSWORD = "X14UrJa8J5UUpPNv"
+PASSWORD = "ZEVaWP4ZaVT@MDTb"
 GHL_API_VERSION = "2021-07-28"
 GHL_OPPORTUNITY_URL = "https://services.leadconnectorhq.com/opportunities/"
 CACHE_FILE = "bookings_cache.json"
@@ -104,21 +104,30 @@ def create_opportunities_from_newbook():
 
     print(f"[TEST] Total Bookings Fetched: {len(completed_bookings)}")
 
-# def get_ghl_token():
-#     response = requests.post(
-#         "https://services.leadconnectorhq.com/oauth/token",
-#         json={
-#             "client_id": GHL_CLIENT_ID,
-#             "client_secret": GHL_CLIENT_SECRET,
-#             "grant_type": "refresh_token",
-#             # "refresh_token": GHL_REFRESH_TOKEN,
-#         },
-#     )
-#     response.raise_for_status()
-#     data = response.json()
-#     return data["access_token"]
+def get_gohighlevel_access_token(GHL_CLIENT_ID, GHL_CLIENT_SECRET, GHL_AUTHORIZATION_CODE, GHL_REDIRECT_URI):
+    print("Fetching GoHighLevel Access Token...",GHL_CLIENT_ID, GHL_CLIENT_SECRET, GHL_AUTHORIZATION_CODE, GHL_REDIRECT_URI)
+    token_url = "https://services.leadconnectorhq.com/oauth/token"
+    data = {
+        "client_id": GHL_CLIENT_ID,
+        "client_secret": GHL_CLIENT_SECRET,
+        "grant_type": "authorization_code",
+        "code": GHL_AUTHORIZATION_CODE,
+        "redirect_uri": GHL_REDIRECT_URI
+    }
+    headers = {"Content-Type": "application/x-www-form-urlencoded"}
 
-# GHL_ACCESS_TOKEN = get_ghl_token()
+    response = requests.post(token_url, data=data, headers=headers)
+
+    if response.status_code != 200:
+        print("Error:", response.text)
+        return None
+
+    return response.json().get("access_token")
+
+
+access_token = get_gohighlevel_access_token(GHL_CLIENT_ID, GHL_CLIENT_SECRET, GHL_AUTHORIZATION_CODE, GHL_REDIRECT_URI)
+print("Access Token:", access_token)
+
 
 # ✅ Helper function to send data to GHL (example)
 def send_to_ghl(booking):
@@ -140,7 +149,7 @@ def send_to_ghl(booking):
         }
 
         headers = {
-            "Authorization": f"Bearer {GHL_ACCESS_TOKEN}",
+            "Authorization": f"Bearer {GHL_API_KEY}",
             "Content-Type": "application/json",
             "Accept": "application/json",
             "Version": "2021-07-28"

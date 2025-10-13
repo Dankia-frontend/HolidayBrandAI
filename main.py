@@ -32,7 +32,7 @@ app.add_middleware(
 
 
 USERNAME = "ParkPA"
-PASSWORD = "X14UrJa8J5UUpPNv"
+PASSWORD = "ZEVaWP4ZaVT@MDTb"
 user_pass = f"{USERNAME}:{PASSWORD}"
 encoded_credentials = base64.b64encode(user_pass.encode()).decode()
 
@@ -205,100 +205,19 @@ def confirm_booking(
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-# def create_opportunities_from_newbook():
-#     print("[INFO] Starting GHL opportunity job...")
-
-#     try:
-#         # Step 1: Fetch completed bookings
-#         payload = {
-#             "region": REGION,
-#             "api_key": API_KEY,
-#             "period_from": "2025-01-01 00:00:00",  # customize as needed
-#             "period_to": "2025-12-31 23:59:59"
-#         }
-#         response = requests.post(f"{NEWBOOK_API_BASE}/bookings_list", json=payload)
-#         response.raise_for_status()
-#         completed_bookings = response.json()
-
-#     except Exception as e:
-#         print(f"[ERROR] Failed to fetch completed bookings: {e}")
-#         return
-
-#     if not completed_bookings:
-#         print("[INFO] No completed bookings found.")
-#         return
-
-#     # Step 2: Authenticate with GHL
-#     ghl_access_token = get_ghl_access_token()
-#     if not ghl_access_token:
-#         print("[ERROR] GHL authentication failed.")
-#         return
-
-#     results = []
-
-#     # Step 3: Create opportunities
-#     for booking in completed_bookings:
-#         try:
-#             opportunity_data = {
-#                 "pipelineId": "xxxx",              # Replace with your pipeline ID
-#                 "locationId": "xxxx",              # Replace with your location ID
-#                 "name": "NewBook Opportunity",
-#                 "pipelineStageId": "xxxx",         # Replace with pipeline stage ID
-#                 "status": "open",
-#                 "contactId": booking.get("contact_id", "xxxx"),  
-#                 "monetaryValue": booking.get("monetary_value", 220),
-#                 "assignedTo": "xxxx",              # Replace with assigned user ID
-#                 "customFields": [
-#                     {
-#                         "id": "xxxxx",             # Replace with custom field ID
-#                         "field_value": "xxxxxx"
-#                     }
-#                 ]
-#             }
-
-#             success = create_opportunity(opportunity_data, ghl_access_token)
-#             if success:
-#                 results.append(f"Opportunity created for booking ID: {booking.get('booking_id')}")
-#             else:
-#                 results.append(f"Failed to create opportunity for booking ID: {booking.get('booking_id')}")
-
-#         except Exception as e:
-#             results.append(f"Error for booking ID {booking.get('booking_id')}: {e}")
-
-#     for r in results:
-#         print(r)
 
 
-# # ------------------------
-# # Scheduler
-# # ------------------------
-# def start_scheduler():
-#     scheduler = BackgroundScheduler()
-#     scheduler.add_job(create_opportunities_from_newbook, "interval", minutes=5)
-#     scheduler.start()
-#     try:
-#         while True:
-#             time.sleep(2)
-#     except (KeyboardInterrupt, SystemExit):
-#         scheduler.shutdown()
+def start_scheduler():
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(create_opportunities_from_newbook, "interval", minutes=5)
+    scheduler.start()
+    try:
+        while True:
+            time.sleep(2)
+    except (KeyboardInterrupt, SystemExit):
+        scheduler.shutdown()
 
-
-# # Run scheduler in background thread
-# import threading
-# threading.Thread(target=start_scheduler, daemon=True).start()
-
-
-# def start_scheduler():
-#     scheduler = BackgroundScheduler()
-#     scheduler.add_job(create_opportunities_from_newbook, "interval", minutes=5)
-#     scheduler.start()
-#     try:
-#         while True:
-#             time.sleep(2)
-#     except (KeyboardInterrupt, SystemExit):
-#         scheduler.shutdown()
-
-# threading.Thread(target=start_scheduler, daemon=True).start()
+threading.Thread(target=start_scheduler, daemon=True).start()
 
 if __name__ == "__main__":
     import uvicorn
