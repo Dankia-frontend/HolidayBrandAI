@@ -11,7 +11,7 @@ import threading
 import requests
 # from utils.ghl_api import get_ghl_access_token, create_opportunity
 from utils.ghl_api import create_opportunities_from_newbook
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
