@@ -215,32 +215,22 @@ LOG_FILE = "gohighlevel_callback_logs.json"
 async def gohighlevel_callback(request: Request):
     """
     This endpoint is called by GoHighLevel after the user authorizes your app.
-    It receives the ?code=... parameter and stores all info in a file.
+    It also runs safely even if no parameters are provided.
     """
-    # Extract parameters
-    code = request.query_params.get("code")
-    state = request.query_params.get("state")
     full_params = dict(request.query_params)
+    code = full_params.get("code")
+    state = full_params.get("state")
 
-    # # Handle missing code
-    # if not code:
-    #     log_entry = {
-    #         "timestamp": datetime.utcnow().isoformat(),
-    #         "error": "Missing authorization code",
-    #         "params": full_params
-    #     }
-    #     _append_to_log(log_entry)
-    #     return JSONResponse({"error": "Missing authorization code"}, status_code=400)
+    # Always build a response (no matter what)
+    response_data = {
+        "message": "Callback received successfully",
+        "code": code,
+        "state": state,
+        "timestamp": datetime.utcnow().isoformat(),
+        "info": "If 'code' is null, no authorization data was provided."
+    }
 
-    # # Build success response
-    # response_data = {
-    #     "message": "Authorization code received successfully",
-    #     "code": code,
-    #     "state": state,
-    #     "timestamp": datetime.utcnow().isoformat()
-    # }
-
-    # Log both request and response
+    # Log everything
     log_entry = {
         "timestamp": datetime.utcnow().isoformat(),
         "request_params": full_params,
@@ -252,20 +242,26 @@ async def gohighlevel_callback(request: Request):
 
 
 def _append_to_log(data):
-    """Helper to append JSON objects to a file safely."""
+    """Helper to safely append logs to file."""
     if not os.path.exists(LOG_FILE):
         with open(LOG_FILE, "w") as f:
             json.dump([data], f, indent=4)
     else:
-        with open(LOG_FILE, "r+") as f:
-            try:
-                logs = json.load(f)
-            except json.JSONDecodeError:
-                logs = []
-            logs.append(data)
-            f.seek(0)
-            json.dump(logs, f, indent=4)
-            f.truncate()
+        try:
+            with open(LOG_FILE, "r+", encoding="utf-8") as f:
+                try:
+                    logs = json.load(f)
+                    if not isinstance(logs, list):
+                        logs = []
+                except json.JSONDecodeError:
+                    logs = []
+                logs.append(data)
+                f.seek(0)
+                json.dump(logs, f, indent=4)
+                f.truncate()
+        except Exception as e:
+            print(f"Log write error: {e}")
+
 def start_scheduler():
     scheduler = BackgroundScheduler()
     scheduler.add_job(create_opportunities_from_newbook, "interval", minutes=5)
