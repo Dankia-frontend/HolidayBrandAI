@@ -210,6 +210,7 @@ def confirm_booking(
         raise HTTPException(status_code=500, detail=str(e))
 LOG_FILE = "gohighlevel_callback_logs.json"
 
+
 @app.get("/oauth/callback/gohighlevel")
 async def gohighlevel_callback(request: Request):
     """
