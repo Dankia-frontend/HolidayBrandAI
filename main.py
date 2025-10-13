@@ -232,13 +232,13 @@ async def gohighlevel_callback(request: Request):
     #     _append_to_log(log_entry)
     #     return JSONResponse({"error": "Missing authorization code"}, status_code=400)
 
-    # Build success response
-    response_data = {
-        "message": "Authorization code received successfully",
-        "code": code,
-        "state": state,
-        "timestamp": datetime.utcnow().isoformat()
-    }
+    # # Build success response
+    # response_data = {
+    #     "message": "Authorization code received successfully",
+    #     "code": code,
+    #     "state": state,
+    #     "timestamp": datetime.utcnow().isoformat()
+    # }
 
     # Log both request and response
     log_entry = {
