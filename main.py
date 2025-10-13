@@ -1,4 +1,5 @@
 import datetime
+from datetime import datetime
 from fastapi import FastAPI, Query, Body, HTTPException
 from pydantic import BaseModel
 from schemas.schemas import BookingRequest, AvailabilityRequest, CheckBooking
@@ -208,8 +209,8 @@ def confirm_booking(
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
 LOG_FILE = "gohighlevel_callback_logs.json"
-
 
 @app.get("/oauth/callback/gohighlevel")
 async def gohighlevel_callback(request: Request):
