@@ -1,6 +1,4 @@
-
-
-
+import mysql.connector
 import os
 import json
 import base64
@@ -104,66 +102,123 @@ def create_opportunities_from_newbook():
 
     print(f"[TEST] Total Bookings Fetched: {len(completed_bookings)}")
 
-def get_gohighlevel_access_token(GHL_CLIENT_ID, GHL_CLIENT_SECRET, GHL_AUTHORIZATION_CODE, GHL_REDIRECT_URI):
-    print("Fetching GoHighLevel Access Token...",GHL_CLIENT_ID, GHL_CLIENT_SECRET, GHL_AUTHORIZATION_CODE, GHL_REDIRECT_URI)
-    token_url = "https://services.leadconnectorhq.com/oauth/token"
-    data = {
-        "client_id": GHL_CLIENT_ID,
-        "client_secret": GHL_CLIENT_SECRET,
-        "grant_type": "authorization_code",
-        "code": GHL_AUTHORIZATION_CODE,
-        "redirect_uri": GHL_REDIRECT_URI
-    }
-    headers = {"Content-Type": "application/x-www-form-urlencoded"}
+# db_config = {
+#     "host": "localhost",
+#     "user": "root",            # your DB user
+#     "password": "your_password",
+#     "database": "ghl_tokens"   # your database name
+# }
 
-    response = requests.post(token_url, data=data, headers=headers)
+# # 🧱 --- DATABASE HELPERS ---
 
-    if response.status_code != 200:
-        print("Error:", response.text)
-        return None
-
-    return response.json().get("access_token")
+# def get_latest_token():
+#     """Fetch the latest stored token from DB"""
+#     conn = mysql.connector.connect(**db_config)
+#     cursor = conn.cursor(dictionary=True)
+#     cursor.execute("SELECT * FROM tokens ORDER BY id DESC LIMIT 1")
+#     row = cursor.fetchone()
+#     conn.close()
+#     return row
 
 
-access_token = get_gohighlevel_access_token(GHL_CLIENT_ID, GHL_CLIENT_SECRET, GHL_AUTHORIZATION_CODE, GHL_REDIRECT_URI)
-print("Access Token:", access_token)
+# def save_tokens(tokens):
+#     """Insert new tokens into DB"""
+#     conn = mysql.connector.connect(**db_config)
+#     cursor = conn.cursor()
+#     query = """
+#         INSERT INTO tokens (access_token, refresh_token, expires_in, created_at)
+#         VALUES (%s, %s, %s, NOW())
+#     """
+#     cursor.execute(query, (
+#         tokens.get("access_token"),
+#         tokens.get("refresh_token"),
+#         tokens.get("expires_in"),
+#     ))
+#     conn.commit()
+#     conn.close()
 
+
+# # 🔄 --- TOKEN LOGIC ---
+
+# def refresh_access_token(client_id, client_secret, refresh_token):
+#     """Refresh token using refresh_token"""
+#     token_url = "https://services.leadconnectorhq.com/oauth/token"
+#     data = {
+#         "client_id": client_id,
+#         "client_secret": client_secret,
+#         "grant_type": "refresh_token",
+#         "refresh_token": refresh_token
+#     }
+#     headers = {"Content-Type": "application/x-www-form-urlencoded"}
+#     response = requests.post(token_url, data=data, headers=headers)
+
+#     if response.status_code != 200:
+#         print("❌ Error refreshing token:", response.text)
+#         return None
+
+#     new_tokens = response.json()
+#     save_tokens(new_tokens)  # store new access + refresh tokens
+#     print("✅ Token refreshed successfully.")
+#     return new_tokens.get("access_token")
+
+
+# def get_valid_access_token(client_id, client_secret):
+#     """Main function to always return a valid token"""
+#     token_data = get_latest_token()
+
+#     if not token_data:
+#         print("⚠️ No token found in DB. You must run authorization first.")
+#         return None
+
+#     # Calculate token expiry
+#     created_at = token_data["created_at"]
+#     expires_in = token_data["expires_in"]
+#     expiry_time = created_at + timedelta(seconds=expires_in)
+
+#     if datetime.now() < expiry_time:
+#         # 🟢 Still valid
+#         print("✅ Access token still valid.")
+#         return token_data["access_token"]
+#     else:
+#         # 🔄 Expired — refresh it
+#         print("♻️ Access token expired. Refreshing...")
+#         return refresh_access_token(client_id, client_secret, token_data["refresh_token"])
 
 # ✅ Helper function to send data to GHL (example)
-def send_to_ghl(booking):
-    try:
-        ghl_payload = {
-            "name": 'NewBook Opportunity',
-            "status": booking.get("booking_status"),
-            "booking_id": booking.get("booking_id"),
-            "locationId": GHL_LOCATION_ID,
-            "pipelineId": GHL_PIPELINE_ID,
-            "stageId": GHL_STAGE_ID,
-            "monetaryValue": booking.get("booking_total", 0),
-            "customFields": [
-                {
-                    "id": '6dvNaf7VhkQ9snc5vnjJ',
-                    "field_value": '9039160788'
-                }
-            ]
-        }
+# def send_to_ghl(booking):
+#     try:
+#         ghl_payload = {
+#             "name": 'NewBook Opportunity',
+#             "status": booking.get("booking_status"),
+#             "booking_id": booking.get("booking_id"),
+#             "locationId": GHL_LOCATION_ID,
+#             "pipelineId": GHL_PIPELINE_ID,
+#             "stageId": GHL_STAGE_ID,
+#             "monetaryValue": booking.get("booking_total", 0),
+#             "customFields": [
+#                 {
+#                     "id": '6dvNaf7VhkQ9snc5vnjJ',
+#                     "field_value": '9039160788'
+#                 }
+#             ]
+#         }
 
-        headers = {
-            "Authorization": f"Bearer {GHL_API_KEY}",
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-            "Version": "2021-07-28"
-        }
-        # print(f"Api key {GHL_API_KEY}")
-        # print(f"GHL_OPPORTUNITY_URL key {GHL_OPPORTUNITY_URL}")
-        print(f"header {headers}")
-        print(f"[GHL] Sending booking {booking.get('booking_id')} to GHL...")
-        response = requests.post(GHL_OPPORTUNITY_URL, json=ghl_payload, headers=headers)
+#         headers = {
+#             "Authorization": f"Bearer {access_token}",
+#             "Content-Type": "application/json",
+#             "Accept": "application/json",
+#             "Version": "2021-07-28"
+#         }
+#         # print(f"Api key {GHL_API_KEY}")
+#         # print(f"GHL_OPPORTUNITY_URL key {GHL_OPPORTUNITY_URL}")
+#         print(f"header {headers}")
+#         print(f"[GHL] Sending booking {booking.get('booking_id')} to GHL...")
+#         response = requests.post(GHL_OPPORTUNITY_URL, json=ghl_payload, headers=headers)
 
-        if response.status_code >= 400:
-            print(f"[GHL ERROR] {response.status_code}: {response.text}")
-        else:
-            print(f"[GHL] Booking {booking.get('booking_id')} sent successfully ✅")
+#         if response.status_code >= 400:
+#             print(f"[GHL ERROR] {response.status_code}: {response.text}")
+#         else:
+#             print(f"[GHL] Booking {booking.get('booking_id')} sent successfully ✅")
 
-    except Exception as e:
-        print(f"[GHL ERROR] Failed to send booking {booking.get('booking_id')}: {e}")
+#     except Exception as e:
+#         print(f"[GHL ERROR] Failed to send booking {booking.get('booking_id')}: {e}")

@@ -13,6 +13,8 @@ import requests
 from utils.ghl_api import create_opportunities_from_newbook
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+
 
 
 import time
@@ -206,6 +208,33 @@ def confirm_booking(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.get("/oauth/callback/gohighlevel")
+async def gohighlevel_callback(request: Request):
+    """
+    This endpoint is called by GoHighLevel after the user authorizes your app.
+    It receives the ?code=... parameter.
+    """
+    code = request.query_params.get("code")
+    state = request.query_params.get("state")
+
+    if not code:
+        return JSONResponse(
+            {"error": "Missing authorization code"}, status_code=400
+        )
+
+    # (Optional) — log or process the code
+    print(f"✅ Received OAuth code: {code}")
+    if state:
+        print(f"State: {state}")
+
+    # In real use, you'd now exchange `code` for an access_token using:
+    # POST https://api.msgsndr.com/oauth/token
+
+    return JSONResponse({
+        "message": "Authorization code received successfully",
+        "code": code,
+        "state": state
+    })
 
 def start_scheduler():
     scheduler = BackgroundScheduler()
@@ -218,6 +247,8 @@ def start_scheduler():
         scheduler.shutdown()
 
 threading.Thread(target=start_scheduler, daemon=True).start()
+
+
 
 if __name__ == "__main__":
     import uvicorn
