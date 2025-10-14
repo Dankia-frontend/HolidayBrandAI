@@ -108,18 +108,19 @@ def create_opportunities_from_newbook():
     print(f"[TEST] Total Bookings Fetched: {len(completed_bookings)}")
 
 db_config = {
-    "host": DBHOST,
-    "user": DBUSERNAME,            # your DB user
-    "password": DBPASSWORD,
-    "database": DATABASENAME   # your database name
+    "host":DBHOST,
+    "user":DBUSERNAME,            # your DB user
+    "password":DBPASSWORD,
+    "database":DATABASENAME   # your database name
 }
-
+db_url = f"mysql://{db_config['user']}:{db_config['password']}@{db_config['host']}/{db_config['database']}"
 # # 🧱 --- DATABASE HELPERS ---
 
+print(db_url)
 
 
 def get_token_row():
-    conn = mysql.connector.connect(**db_config)
+    conn = mysql.connector.connect(**db_url)
     cursor = conn.cursor(dictionary=True)
     cursor.execute("SELECT * FROM tokens WHERE id = 1")
     row = cursor.fetchone()
@@ -128,7 +129,7 @@ def get_token_row():
 
 
 def update_tokens(tokens):
-    conn = mysql.connector.connect(**db_config)
+    conn = mysql.connector.connect(**db_url)
     cursor = conn.cursor()
     query = """
         UPDATE tokens
