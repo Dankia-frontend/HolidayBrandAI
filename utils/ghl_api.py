@@ -112,6 +112,7 @@ db_config = {
     "user":DBUSERNAME,            # your DB user
     "password":DBPASSWORD,
     "database":DATABASENAME,   # your database name
+    "port":3306
 }
 
 # # 🧱 --- DATABASE HELPERS ---
@@ -121,9 +122,11 @@ print(db_config)
 
 def get_token_row():
     conn = mysql.connector.connect(**db_config)
-    cursor = conn.cursor()
+    print("Database connection established.",conn)
+    cursor = conn.cursor(dictionary=True)
     cursor.execute("SELECT * FROM tokens WHERE id = 1")
     row = cursor.fetchone()
+    print("Fetched token row:", row)
     conn.close()
     return row
 
@@ -135,14 +138,14 @@ def update_tokens(tokens):
         UPDATE tokens
         SET access_token = %s,
             refresh_token = %s,
-            expires_in = %s,
+            expire_in = %s,
             created_at = NOW()
         WHERE id = 1
     """
     cursor.execute(query, (
         tokens.get("access_token"),
         tokens.get("refresh_token"),
-        tokens.get("expires_in")
+        tokens.get("expire_in")
     ))
     conn.commit()
     conn.close()
@@ -180,13 +183,15 @@ def refresh_access_token(client_id, client_secret, refresh_token):
 def get_valid_access_token(client_id, client_secret):
     token_data = get_token_row()
 
+
+
     if not token_data or not token_data["access_token"]:
         print("⚠️ No token found in DB. Run initial authorization first.")
         return None
 
     created_at = token_data["created_at"]
-    expires_in = token_data["expires_in"]
-    expiry_time = created_at + timedelta(seconds=expires_in)
+    expire_in = token_data["expire_in"]
+    expiry_time = created_at + timedelta(seconds=expire_in)
 
     if datetime.now() < expiry_time:
         print("✅ Access token still valid.")
