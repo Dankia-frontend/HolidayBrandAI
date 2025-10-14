@@ -1,0 +1,13 @@
+[
+    {
+        "timestamp": "2025-10-13T09:45:06.331135",
+        "request_params": {},
+        "response_data": {
+            "message": "Callback received successfully",
+            "code": null,
+            "state": null,
+            "timestamp": "2025-10-13T09:45:06.331126",
+            "info": "If 'code' is null, no authorization data was provided."
+        }
+    }
+]
