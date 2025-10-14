@@ -4,7 +4,7 @@ from fastapi import FastAPI, Query, Body, HTTPException
 from pydantic import BaseModel
 from schemas.schemas import BookingRequest, AvailabilityRequest, CheckBooking
 import requests
-from config import NEWBOOK_API_BASE,REGION,API_KEY
+from config import NEWBOOK_API_BASE,REGION,API_KEY,GHL_CLIENT_ID,GHL_CLIENT_SECRET,GHL_API_BASE,GHL_API_KEY,GHL_LOCATION_ID,GHL_REDIRECT_URI
 import base64
 # from utils.ghl_api import create_opportunity
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -209,80 +209,6 @@ def confirm_booking(
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-    
-LOG_FILE = "gohighlevel_callback_logs.json"
-
-@app.get("/oauth/callback/gohighlevel")
-async def gohighlevel_callback(request: Request):
-    """
-    GoHighLevel OAuth callback — safe to open directly (no crash even if no params)
-    """
-    try:
-        full_params = dict(request.query_params)
-        code = full_params.get("code")
-        state = full_params.get("state")
-
-        # Build universal response
-        response_data = {
-            "message": "Callback received successfully",
-            "code": code,
-            "state": state,
-            "timestamp": datetime.utcnow().isoformat(),
-            "info": "If 'code' is null, no authorization data was provided."
-        }
-
-        # Log to file (always safe)
-        log_entry = {
-            "timestamp": datetime.utcnow().isoformat(),
-            "request_params": full_params,
-            "response_data": response_data
-        }
-        _append_to_log(log_entry)
-
-        return JSONResponse(response_data)
-
-    except Exception as e:
-        error_message = f"Internal Error: {str(e)}"
-        print("⚠️ Exception in callback:", traceback.format_exc())
-
-        # Log the failure too
-        _append_to_log({
-            "timestamp": datetime.utcnow().isoformat(),
-            "error": error_message,
-            "traceback": traceback.format_exc()
-        })
-
-        return JSONResponse({"error": error_message}, status_code=500)
-
-
-def _append_to_log(data):
-    """Safe log writer — never crashes even with bad files."""
-    try:
-        # Ensure file exists
-        if not os.path.exists(LOG_FILE):
-            with open(LOG_FILE, "w", encoding="utf-8") as f:
-                json.dump([data], f, indent=4)
-            return
-
-        # Safely read and append
-        with open(LOG_FILE, "r+", encoding="utf-8") as f:
-            try:
-                logs = json.load(f)
-                if not isinstance(logs, list):
-                    logs = []
-            except (json.JSONDecodeError, ValueError):
-                logs = []
-
-            logs.append(data)
-            f.seek(0)
-            json.dump(logs, f, indent=4)
-            f.truncate()
-
-    except Exception as e:
-        print(f"⚠️ Failed to write log file: {e}")
-        # If even logging fails, write minimal text fallback
-        with open("gohighlevel_fallback.log", "a", encoding="utf-8") as f:
-            f.write(f"[{datetime.utcnow().isoformat()}] Log write error: {e}\n")
 
 def start_scheduler():
     scheduler = BackgroundScheduler()
