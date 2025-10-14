@@ -112,7 +112,6 @@ db_config = {
     "user":DBUSERNAME,            # your DB user
     "password":DBPASSWORD,
     "database":DATABASENAME,   # your database name
-    "port":  3306
 }
 
 # # 🧱 --- DATABASE HELPERS ---
@@ -122,7 +121,7 @@ print(db_config)
 
 def get_token_row():
     conn = mysql.connector.connect(**db_config)
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor()
     cursor.execute("SELECT * FROM tokens WHERE id = 1")
     row = cursor.fetchone()
     conn.close()
