@@ -1,4 +1,3 @@
-import datetime
 from datetime import datetime
 from fastapi import FastAPI, Query, Body, HTTPException
 from pydantic import BaseModel
@@ -160,19 +159,19 @@ def confirm_booking(
         # 🗓 Determine date range (period_from / period_to)
         if booking_date:
             try:
-                date_obj = datetime.datetime.strptime(booking_date, "%Y-%m-%d")
+                date_obj = datetime.strptime(booking_date, "%Y-%m-%d")
                 period_from = date_obj.strftime("%Y-%m-%d 00:00:00")
                 period_to = date_obj.strftime("%Y-%m-%d 23:59:59")
             except ValueError:
                 # Invalid date → fallback to current week
-                today = datetime.datetime.now()
+                today = datetime.now()
                 monday = today - datetime.timedelta(days=today.weekday())
                 sunday = monday + datetime.timedelta(days=6)
                 period_from = monday.strftime("%Y-%m-%d 00:00:00")
                 period_to = sunday.strftime("%Y-%m-%d 23:59:59")
         else:
             # No date → current month
-            today = datetime.datetime.now()
+            today = datetime.now()
             first_day = today.replace(day=1)
             next_month = first_day + datetime.timedelta(days=32)
             last_day = next_month.replace(day=1) - datetime.timedelta(days=1)
