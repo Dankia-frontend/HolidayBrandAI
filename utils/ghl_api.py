@@ -108,7 +108,7 @@ def create_opportunities_from_newbook():
     print(f"[TEST] Total Bookings Fetched: {len(completed_bookings)}")
 
 db_config = {
-    "host":DBHOST,
+    "host":'127.0.0.1',
     "user":DBUSERNAME,            # your DB user
     "password":DBPASSWORD,
     "database":DATABASENAME,   # your database name
