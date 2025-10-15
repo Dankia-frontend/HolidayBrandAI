@@ -39,9 +39,6 @@ def create_opportunities_from_newbook():
             "list_type": "all"
         }
 
-        print(f"[TEST] Sending request to: {NEWBOOK_API_BASE}/bookings_list")
-        print(f"[TEST] Payload: {payload}")
-
         response = requests.post(f"{NEWBOOK_API_BASE}/bookings_list", json=payload, headers=headers, verify=False)
         response.raise_for_status()
 
@@ -73,31 +70,50 @@ def create_opportunities_from_newbook():
 
     # --- Detect Changes ---
     added = [b for b_id, b in new_bookings.items() if b_id not in old_bookings]
-    updated = [
-        b
-        for b_id, b in new_bookings.items()
-        if b_id in old_bookings and b != old_bookings[b_id]
-    ]
+    updated = [b for b_id, b in new_bookings.items() if b_id in old_bookings and b != old_bookings[b_id]]
 
-    # --- Print & Send Only Changes to GHL ---
+    # --- Process Changes ---
     if not (added or updated):
         print("[TEST] No new or updated bookings detected — cache is up to date.")
     else:
-        if added:
-            print(f"[TEST] Added {len(added)} new bookings:")
-            for b in added:
-                print(f"  ➕ Booking ID: {b.get('booking_id')}")
-                access_token = get_valid_access_token(GHL_CLIENT_ID, GHL_CLIENT_SECRET)
-                send_to_ghl(b, access_token)
+        all_changes = added + updated
+        for b in all_changes:
+            booking_status = (b.get("booking_status") or "").lower()
 
+            # --- Skip cancelled or no-show ---
+            if booking_status in ["cancelled", "no_show", "no show"]:
+                print(f"[SKIP] Booking {b['booking_id']} is cancelled or no-show, skipping...")
+                continue
 
-        if updated:
-            print(f"[TEST] Updated {len(updated)} bookings:")
-            for b in updated:
-                print(f"  🔄 Booking ID: {b.get('booking_id')}")
-                access_token = get_valid_access_token(GHL_CLIENT_ID, GHL_CLIENT_SECRET)
-                send_to_ghl(b, access_token)
+            # --- Bucket classification ---
+            arrival_str = b.get("booking_arrival")
+            departure_str = b.get("booking_departure")
+            arrival = datetime.strptime(arrival_str, "%Y-%m-%d %H:%M:%S") if arrival_str else None
+            departure = datetime.strptime(departure_str, "%Y-%m-%d %H:%M:%S") if departure_str else None
 
+            today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+            tomorrow = today + timedelta(days=1)
+            day_after = today + timedelta(days=2)
+            seven_days = today + timedelta(days=7)
+
+            if arrival and tomorrow <= arrival <= seven_days:
+                bucket = "arriving_soon"
+            elif arrival and today <= arrival < tomorrow:
+                bucket = "arriving_today"
+            elif booking_status == "arrived" and departure and departure >= tomorrow:
+                bucket = "staying_now"
+            elif booking_status == "arrived" and departure and today <= departure < day_after:
+                bucket = "checking_out"
+            elif booking_status == "departed":
+                bucket = "checked_out"
+            else:
+                bucket = "other"
+
+            print(f"[BUCKET] Booking {b['booking_id']} -> {bucket}")
+
+            # --- Send booking to GHL ---
+            access_token = get_valid_access_token(GHL_CLIENT_ID, GHL_CLIENT_SECRET)
+            send_to_ghl(b, access_token)
 
         # --- Update Cache ---
         with open(CACHE_FILE, "w") as f:
@@ -106,6 +122,7 @@ def create_opportunities_from_newbook():
         print("[TEST] Cache updated with latest data.")
 
     print(f"[TEST] Total Bookings Fetched: {len(completed_bookings)}")
+
 
 db_config = {
     "host":DBHOST,
@@ -117,16 +134,13 @@ db_config = {
 
 # # 🧱 --- DATABASE HELPERS ---
 
-print(db_config)
 
 
 def get_token_row():
     conn = mysql.connector.connect(**db_config)
-    print("Database connection established.",conn)
     cursor = conn.cursor(dictionary=True)
     cursor.execute("SELECT * FROM tokens WHERE id = 1")
     row = cursor.fetchone()
-    print("Fetched token row:", row)
     conn.close()
     return row
 
@@ -259,17 +273,36 @@ def send_to_ghl(booking, access_token):
 
         # 🔹 Get or create contact in GHL
         contact_id = get_contact_id(access_token, GHL_LOCATION_ID, first_name, last_name, email, phone)
-        arrival_date = (
-    datetime.strptime(booking.get("booking_arrival"), "%Y-%m-%d %H:%M:%S").date().isoformat()
-    if booking.get("booking_arrival") else ""
-)
+        stage_id = None
+        arrival = booking.get("booking_arrival")
+        departure = booking.get("booking_departure")
+        today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        tomorrow = today + timedelta(days=1)
+        day_after = today + timedelta(days=2)
+        seven_days = today + timedelta(days=7)
+
+        
+        if arrival:
+            arrival_dt = datetime.strptime(arrival, "%Y-%m-%d %H:%M:%S")
+            departure_dt = datetime.strptime(departure, "%Y-%m-%d %H:%M:%S") if departure else arrival_dt
+            if arrival_dt >= tomorrow and arrival_dt <= seven_days:
+                stage_id = '3aeae130-f411-4ac7-bcca-271291fdc3b9'
+            elif arrival_dt >= today and arrival_dt < tomorrow:
+                stage_id = 'b429a8e9-e73e-4590-b4c5-8ea1d65e0daf'
+            elif booking.get("booking_status", "").lower() == "arrived" and departure_dt >= tomorrow:
+                stage_id = '99912993-0e69-48f9-9943-096ae68408d7'
+            elif booking.get("booking_status", "").lower() == "arrived" and departure_dt >= today and departure_dt < day_after:
+                stage_id = 'fc60b2fa-8c2d-4202-9347-ac2dd32a0e43'
+            elif booking.get("booking_status", "").lower() == "departed":
+                stage_id = '8b54e5e5-27f3-463a-9d81-890c6dfd27eb'
+        print(f"Contact ID: {contact_id}, Stage ID: {stage_id}")
         ghl_payload = {
             "name": f"{guest.get('firstname', '').strip()} {guest.get('lastname', '').strip()} - {booking.get('site_id', '')} - {booking.get('booking_arrival', '').split(' ')[0]}",
             "status": "open",  # must be one of: open, won, lost, abandoned
             "contactId": contact_id,  # <-- must be a valid contact ID
             "locationId": GHL_LOCATION_ID,
             "pipelineId": GHL_PIPELINE_ID,
-            # "stageId": GHL_STAGE_ID,
+            "pipelineStageId": stage_id,
             "monetaryValue": float(booking.get("booking_total", 0)),
 
             # ✅ All custom fields must go here
@@ -305,9 +338,7 @@ def send_to_ghl(booking, access_token):
             "Accept": "application/json",
             "Version": "2021-07-28"
         }
-        # print(f"Api key {GHL_API_KEY}")
-        # print(f"GHL_OPPORTUNITY_URL key {GHL_OPPORTUNITY_URL}")
-        print(f"header {headers}")
+        
         print(f"[GHL] Sending booking {booking.get('booking_id')} to GHL...")
         response = requests.post(GHL_OPPORTUNITY_URL, json=ghl_payload, headers=headers)
 
