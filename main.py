@@ -16,12 +16,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import json
 import os
+from utils.logger import get_logger
 
 
 import time
 
 app = FastAPI()
-
+log = get_logger("FastAPI")
 
 
 # Allow origins (add your frontend URL)

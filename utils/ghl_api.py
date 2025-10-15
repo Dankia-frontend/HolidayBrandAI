@@ -7,6 +7,9 @@ import datetime
 
 from datetime import datetime, timedelta  # add this at the top
 from config import REGION, API_KEY, NEWBOOK_API_BASE, GHL_API_KEY, GHL_LOCATION_ID, GHL_PIPELINE_ID, GHL_CLIENT_ID, GHL_CLIENT_SECRET,  DBUSERNAME, DBPASSWORD, DBHOST, DATABASENAME
+from .logger import get_logger
+
+log = get_logger("GHLIntegration")
 
 USERNAME = "ParkPA"
 PASSWORD = "ZEVaWP4ZaVT@MDTb"
@@ -15,6 +18,7 @@ GHL_OPPORTUNITY_URL = "https://services.leadconnectorhq.com/opportunities/"
 CACHE_FILE = "bookings_cache.json"
 
 def create_opportunities_from_newbook():
+    log.exception("Starting job to fetch completed bookings...")
     print("[TEST] Starting job to fetch completed bookings...")
 
     try:
@@ -45,10 +49,12 @@ def create_opportunities_from_newbook():
         completed_bookings = response.json().get("data", [])
 
     except Exception as e:
+        log.exception(f"Failed to fetch completed bookings: {e}")
         print(f"[ERROR] Failed to fetch completed bookings: {e}")
         return
 
     if not completed_bookings:
+        log.exception("No completed bookings found in the specified date range.")
         print("[TEST] No completed bookings found.")
         return
 
@@ -74,6 +80,7 @@ def create_opportunities_from_newbook():
 
     # --- Process Changes ---
     if not (added or updated):
+        log.exception("No new or updated bookings detected — cache is up to date.")
         print("[TEST] No new or updated bookings detected — cache is up to date.")
     else:
         all_changes = added + updated
@@ -82,6 +89,7 @@ def create_opportunities_from_newbook():
 
             # --- Skip cancelled or no-show ---
             if booking_status in ["cancelled", "no_show", "no show"]:
+                log.exception(f" Booking {b['booking_id']} is cancelled or no-show, skipping...")
                 print(f"[SKIP] Booking {b['booking_id']} is cancelled or no-show, skipping...")
                 continue
 
@@ -108,7 +116,7 @@ def create_opportunities_from_newbook():
                 bucket = "checked_out"
             else:
                 bucket = "other"
-
+            log.exception(f"[BUCKET] Booking {b['booking_id']} -> {bucket}") 
             print(f"[BUCKET] Booking {b['booking_id']} -> {bucket}")
 
             # --- Send booking to GHL ---
@@ -118,9 +126,9 @@ def create_opportunities_from_newbook():
         # --- Update Cache ---
         with open(CACHE_FILE, "w") as f:
             json.dump({"bookings": completed_bookings}, f, indent=2)
-
+        log.exception("Cache updated with latest data.")
         print("[TEST] Cache updated with latest data.")
-
+    log.exception(f"Total Bookings Fetched: {len(completed_bookings)}")
     print(f"[TEST] Total Bookings Fetched: {len(completed_bookings)}")
 
 
@@ -137,6 +145,7 @@ db_config = {
 
 
 def get_token_row():
+    log.exception("Fetching token from DB...")
     conn = mysql.connector.connect(**db_config)
     cursor = conn.cursor(dictionary=True)
     cursor.execute("SELECT * FROM tokens WHERE id = 1")
@@ -146,6 +155,7 @@ def get_token_row():
 
 
 def update_tokens(tokens):
+    log.exception("Updating tokens in DB...")
     conn = mysql.connector.connect(**db_config)
     cursor = conn.cursor()
     query = """
@@ -159,7 +169,7 @@ def update_tokens(tokens):
     cursor.execute(query, (
         tokens.get("access_token"),
         tokens.get("refresh_token"),
-        tokens.get("expire_in")
+        tokens.get("expires_in")
     ))
     conn.commit()
     conn.close()
@@ -169,6 +179,7 @@ def update_tokens(tokens):
 
 def refresh_access_token(client_id, client_secret, refresh_token):
     print("♻️ Refreshing GoHighLevel access token...")
+    log.exception("♻️ Refreshing GoHighLevel access token...")
     token_url = "https://services.leadconnectorhq.com/oauth/token"
     data = {
         "client_id": client_id,
@@ -179,17 +190,20 @@ def refresh_access_token(client_id, client_secret, refresh_token):
 
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
     response = requests.post(token_url, data=data, headers=headers)
-
+    log.exception("📥 Raw Response Body: {response.text}")
     print("\n📥 Raw Response Status:", response.status_code)
     print("📥 Raw Response Body:", response.text)
     print("📥 Raw Response Body:", response)
 
     if response.status_code != 200:
+        log.exception("❌ Error refreshing token: {response.text}")
         print("❌ Error refreshing token:", response.text)
         return None
 
     new_tokens = response.json()
+    print("✅ Token refreshed successfully.", response.json())
     update_tokens(new_tokens)
+    log.exception("✅ Token refreshed and updated in DB.")
     print("✅ Token refreshed and updated in DB.")
     return new_tokens.get("access_token")
 
@@ -200,6 +214,7 @@ def get_valid_access_token(client_id, client_secret):
 
 
     if not token_data or not token_data["access_token"]:
+        log.exception("⚠️ No token found in DB. Run initial authorization first.")
         print("⚠️ No token found in DB. Run initial authorization first.")
         return None
 
@@ -209,9 +224,11 @@ def get_valid_access_token(client_id, client_secret):
 
     if datetime.now() < expiry_time:
         print("✅ Access token still valid.")
+        log.exception("✅ Access token still valid.")
         return token_data["access_token"]
     else:
         print("⏰ Access token expired, refreshing...")
+        log.exception("⏰ Access token expired, refreshing...")
         return refresh_access_token(client_id, client_secret, token_data["refresh_token"])
     
 access_token = get_valid_access_token(GHL_CLIENT_ID, GHL_CLIENT_SECRET)
@@ -240,8 +257,7 @@ def get_contact_id(token, location_id, first=None, last=None, email=None, phone=
     try:
         response = requests.post(url, headers=headers, json=body)
         print(f"[GHL CONTACT] Request Payload: {body}")
-        print(f"[GHL CONTACT] Response Status: {response.status_code}")
-        print(f"[GHL CONTACT] Response Body: {response.text}")
+        log.exception(f"GHL CONTACT Payload: {body}")
 
         data = response.json()
 
@@ -254,15 +270,19 @@ def get_contact_id(token, location_id, first=None, last=None, email=None, phone=
             return data["meta"]["contactId"]
         else:
             print("[GHL CONTACT] Could not extract contact ID from response.")
+            log.exception("[GHL CONTACT] Could not extract contact ID from response.")
             return None
 
     except Exception as e:
         print(f"[GHL CONTACT ERROR] Failed to create/get contact: {e}")
+        log.exception(f"[GHL CONTACT ERROR] Failed to create/get contact: {e}")
         return None
 # ✅ Helper function to send data to GHL (example)
 def send_to_ghl(booking, access_token):
 
     try:
+        
+
         guest = booking['guests'][0]
 
         first_name = guest.get("firstname", "")
@@ -340,12 +360,18 @@ def send_to_ghl(booking, access_token):
         }
         
         print(f"[GHL] Sending booking {booking.get('booking_id')} to GHL...")
+        log.info(f"Sending data to GHL for booking: {ghl_payload.get('name')}")
         response = requests.post(GHL_OPPORTUNITY_URL, json=ghl_payload, headers=headers)
+        log.info(f"[GHL RESPONSE] Status: {response.status_code}")
+        log.info(f"[GHL RESPONSE] Body: {response.text}")
 
         if response.status_code >= 400:
+            log.error(f"GHL Error Response: {response.text}")
             print(f"[GHL ERROR] {response.status_code}: {response.text}")
         else:
+            log.exception(f"[GHL] Booking {booking.get('booking_id')} sent successfully ✅")
             print(f"[GHL] Booking {booking.get('booking_id')} sent successfully ✅")
 
     except Exception as e:
+        log.exception("Error during GHL integration")
         print(f"[GHL ERROR] Failed to send booking {booking.get('booking_id')}: {e}")
