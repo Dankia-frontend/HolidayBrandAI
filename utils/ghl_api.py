@@ -86,24 +86,61 @@ def create_opportunities_from_newbook():
         period_from = today.strftime("%Y-%m-%d 00:00:00")
         period_to = (today + timedelta(days=30)).strftime("%Y-%m-%d 23:59:59")
 
-        payload = {
-            "region": REGION,
-            "api_key": API_KEY,
-            "period_from": period_from,
-            "period_to": period_to,
-            "list_type": "all"
-        }
+        list_types = [
+            "arrived",
+            "arriving",
+            "cancelled",
+            "departed",
+            "departing",
+            "inhouse",
+            "placed",
+            "staying",
+            "no_show",
+            "all"
+        ]
 
-        response = requests.post(f"{NEWBOOK_API_BASE}/bookings_list", json=payload, headers=headers, verify=False)
-        response.raise_for_status()
-        # print(f"[TEST] newbook response: {response}")
-        completed_bookings = response.json().get("data", [])
-        log.exception(f"newbook response: {completed_bookings}")
+        all_bookings_by_type = {}
+
+        for list_type in list_types:
+            payload = {
+                "region": REGION,
+                "api_key": API_KEY,
+                "list_type": list_type
+            }
+            if list_type != "inhouse":
+                payload["period_from"] = period_from
+                payload["period_to"] = period_to
+
+            try:
+                print(f"[INFO] Fetching bookings for list_type: {list_type}")
+                response = requests.post(
+                    f"{NEWBOOK_API_BASE}/bookings_list",
+                    json=payload,
+                    headers=headers,
+                    verify=False,  # ⚠️ set to True in production
+                    timeout=15
+                )
+                response.raise_for_status()
+                bookings = response.json().get("data", [])
+                all_bookings_by_type[list_type] = bookings
+                # Optionally save each type to its own file:
+                filename = f"{list_type}_bookings.json"
+                filepath = os.path.join(os.path.dirname(__file__), "..", filename)
+                with open(filepath, "w") as f:
+                    json.dump(bookings, f, indent=2)
+                print(f"[INFO] Saved {len(bookings)} bookings for {list_type} to {filepath}")
+            except Exception as e:
+                print(f"[ERROR] Failed to fetch bookings for {list_type}: {e}")
+
     except Exception as e:
         log.exception(f"Failed to fetch completed bookings: {e}")
         print(f"[ERROR] Failed to fetch completed bookings: {e}")
         return
 
+    # --- Use all bookings from all types for further processing ---
+    completed_bookings = []
+    for bookings in all_bookings_by_type.values():
+        completed_bookings.extend(bookings)
     if not completed_bookings:
         print("[TEST] No completed bookings found.")
         return
