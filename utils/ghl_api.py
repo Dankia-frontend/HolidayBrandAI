@@ -69,6 +69,8 @@ def bucket_bookings(bookings):
     return buckets
 
 def create_opportunities_from_newbook():
+    
+    # delete_opportunities_in_stage('3aeae130-f411-4ac7-bcca-271291fdc3b9')
     # delete_opportunities_in_stage('b429a8e9-e73e-4590-b4c5-8ea1d65e0daf')
     # delete_opportunities_in_stage('99912993-0e69-48f9-9943-096ae68408d7')
     # delete_opportunities_in_stage('fc60b2fa-8c2d-4202-9347-ac2dd32a0e43')
@@ -147,6 +149,12 @@ def create_opportunities_from_newbook():
     if not completed_bookings:
         print("[TEST] No completed bookings found.")
         return
+
+    # --- Deduplicate bookings by booking_id ---
+    deduped_bookings_dict = {}
+    for b in completed_bookings:
+        deduped_bookings_dict[b["booking_id"]] = b
+    completed_bookings = list(deduped_bookings_dict.values())
 
     # --- Load Cache ---
     if os.path.exists(CACHE_FILE):
@@ -368,7 +376,7 @@ def send_to_ghl(booking, access_token):
                 stage_id = '8b54e5e5-27f3-463a-9d81-890c6dfd27eb'
         print(f"Contact ID: {contact_id}, Stage ID: {stage_id}")
         ghl_payload = {
-            "name": f"{guest.get('firstname', '').strip()} {guest.get('lastname', '').strip()} - {booking.get('site_id', '')} - {booking.get('booking_arrival', '').split(' ')[0]}",
+            "name": f"{guest.get('firstname', '').strip()} {guest.get('lastname', '').strip()} - {booking.get('site_name', '')} - {booking.get('booking_arrival', '').split(' ')[0]}",
             "status": "open",  # must be one of: open, won, lost, abandoned
             "contactId": contact_id,  # <-- must be a valid contact ID
             "locationId": GHL_LOCATION_ID,
