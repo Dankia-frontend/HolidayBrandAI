@@ -69,7 +69,10 @@ def bucket_bookings(bookings):
     return buckets
 
 def create_opportunities_from_newbook():
-    # delete_opportunities_in_stage('3aeae130-f411-4ac7-bcca-271291fdc3b9')
+    # delete_opportunities_in_stage('b429a8e9-e73e-4590-b4c5-8ea1d65e0daf')
+    # delete_opportunities_in_stage('99912993-0e69-48f9-9943-096ae68408d7')
+    # delete_opportunities_in_stage('fc60b2fa-8c2d-4202-9347-ac2dd32a0e43')
+    # delete_opportunities_in_stage('8b54e5e5-27f3-463a-9d81-890c6dfd27eb')
     print("[TEST] Starting job to fetch completed bookings...")
 
     try:
@@ -84,7 +87,7 @@ def create_opportunities_from_newbook():
         # --- Date Range (Next 7 Days) ---
         today = datetime.now()
         period_from = today.strftime("%Y-%m-%d 00:00:00")
-        period_to = (today + timedelta(days=30)).strftime("%Y-%m-%d 23:59:59")
+        period_to = (today + timedelta(days=7)).strftime("%Y-%m-%d 23:59:59")
 
         list_types = [
             "arrived",
@@ -124,11 +127,11 @@ def create_opportunities_from_newbook():
                 bookings = response.json().get("data", [])
                 all_bookings_by_type[list_type] = bookings
                 # Optionally save each type to its own file:
-                filename = f"{list_type}_bookings.json"
-                filepath = os.path.join(os.path.dirname(__file__), "..", filename)
-                with open(filepath, "w") as f:
-                    json.dump(bookings, f, indent=2)
-                print(f"[INFO] Saved {len(bookings)} bookings for {list_type} to {filepath}")
+                # filename = f"{list_type}_bookings.json"
+                # filepath = os.path.join(os.path.dirname(__file__), "..", filename)
+                # with open(filepath, "w") as f:
+                #     json.dump(bookings, f, indent=2)
+                # print(f"[INFO] Saved {len(bookings)} bookings for {list_type} to {filepath}")
             except Exception as e:
                 print(f"[ERROR] Failed to fetch bookings for {list_type}: {e}")
 
