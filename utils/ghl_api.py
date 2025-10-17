@@ -366,10 +366,10 @@ def send_to_ghl(booking, access_token):
             departure_dt = datetime.strptime(departure, "%Y-%m-%d %H:%M:%S") if departure else arrival_dt
             if arrival_dt >= tomorrow and arrival_dt <= seven_days:
                 stage_id = '3aeae130-f411-4ac7-bcca-271291fdc3b9'
-            elif arrival_dt >= today and arrival_dt < tomorrow:
-                stage_id = 'b429a8e9-e73e-4590-b4c5-8ea1d65e0daf'
             elif booking.get("booking_status", "").lower() == "arrived" and departure_dt >= tomorrow:
                 stage_id = '99912993-0e69-48f9-9943-096ae68408d7'
+            elif arrival_dt >= today and arrival_dt < tomorrow:
+                stage_id = 'b429a8e9-e73e-4590-b4c5-8ea1d65e0daf'
             elif booking.get("booking_status", "").lower() == "arrived" and departure_dt >= today and departure_dt < day_after:
                 stage_id = 'fc60b2fa-8c2d-4202-9347-ac2dd32a0e43'
             elif booking.get("booking_status", "").lower() == "departed":
