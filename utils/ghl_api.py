@@ -182,7 +182,25 @@ def create_opportunities_from_newbook():
     # --- Remove opportunities for bookings that are no longer present or changed stage ---
     for b in removed + updated:
         booking_id = b["booking_id"]
-        delete_opportunity_by_booking_id(booking_id)
+        guest = b.get("guests", [{}])[0]
+        guest_firstname = guest.get("firstname", "")
+        guest_lastname = guest.get("lastname", "")
+        site_name = b.get("site_name", "")
+        booking_arrival = b.get("booking_arrival", "")
+        # Delete by booking_id (custom field) and by details (name match)
+        delete_opportunity_by_booking_id(
+            booking_id,
+            guest_firstname=guest_firstname,
+            guest_lastname=guest_lastname,
+            site_name=site_name,
+            booking_arrival=booking_arrival
+        )
+        delete_opportunity_by_booking_details(
+            guest_firstname,
+            guest_lastname,
+            site_name,
+            booking_arrival
+        )
 
     # --- Use new bucket logic ---
     bucket_dict = bucket_bookings(completed_bookings)
@@ -252,6 +270,26 @@ def create_opportunities_from_newbook():
                 # write_bucket_file(bucket, bookings)
                 for b in bookings:
                     if bucket != "cancelled":
+                        # --- Delete from GHL if already exists before sending ---
+                        guest = b.get("guests", [{}])[0]
+                        guest_firstname = guest.get("firstname", "")
+                        guest_lastname = guest.get("lastname", "")
+                        site_name = b.get("site_name", "")
+                        booking_arrival = b.get("booking_arrival", "")
+                        # Delete by booking_id (custom field) and by details (name match) before sending
+                        delete_opportunity_by_booking_id(
+                            b["booking_id"],
+                            guest_firstname=guest_firstname,
+                            guest_lastname=guest_lastname,
+                            site_name=site_name,
+                            booking_arrival=booking_arrival
+                        )
+                        delete_opportunity_by_booking_details(
+                            guest_firstname,
+                            guest_lastname,
+                            site_name,
+                            booking_arrival
+                        )
                         access_token = get_valid_access_token(GHL_CLIENT_ID, GHL_CLIENT_SECRET)
                         send_to_ghl(b, access_token)
                     else:
@@ -551,9 +589,11 @@ def delete_opportunities_in_stage(stage_id):
             resp = requests.delete(del_url, headers=headers)
             print(f"Deleted {name} (ID: {opp_id}): {'Success' if resp.status_code == 200 else 'Failed'}")
 
-def delete_opportunity_by_booking_id(booking_id):
+def delete_opportunity_by_booking_id(booking_id, guest_firstname=None, guest_lastname=None, site_name=None, booking_arrival=None):
     """
-    Deletes the opportunity in GHL that matches the booking_id in its name.
+    Deletes all opportunities in GHL that match the booking_id in name or custom fields.
+    If guest_firstname, guest_lastname, site_name, and booking_arrival are provided,
+    will match the exact opportunity name format.
     """
     access_token = get_valid_access_token(GHL_CLIENT_ID, GHL_CLIENT_SECRET)
     if not access_token:
@@ -566,18 +606,75 @@ def delete_opportunity_by_booking_id(booking_id):
         'Version': '2021-07-28'
     }
     url = f"{base_url}/opportunities/search?location_id={GHL_LOCATION_ID}&pipeline_id={GHL_PIPELINE_ID}&limit=100"
+    found = False
+
+    # Build expected name if all info provided
+    expected_name = None
+    if guest_firstname and guest_lastname and site_name and booking_arrival:
+        expected_name = f"{guest_firstname.strip()} {guest_lastname.strip()} - {site_name} - {booking_arrival.split(' ')[0]}"
+
     while url:
         resp = requests.get(url, headers=headers)
+        if resp.status_code != 200:
+            print(f"[GHL DELETE] Failed to fetch opportunities: {resp.status_code} {resp.text}")
+            break
         data = resp.json()
         for opp in data.get('opportunities', []):
-            # Try to match booking_id in the opportunity name
-            if str(booking_id) in opp.get('name', ''):
+            name = opp.get('name', '')
+            # Match by expected name if possible, otherwise fallback to booking_id in name or custom fields
+            exact_name_match = expected_name and name == expected_name
+            custom_match = any(
+                (str(f.get('field_value')) == str(booking_id))
+                for f in opp.get('customFields', [])
+                if f.get('id') == 'site_id' or f.get('id') == 'booking_id'
+            )
+            # Remove fallback to booking_id in name, only use exact name or custom field match
+            if exact_name_match or custom_match:
                 opp_id = opp.get('id')
-                name = opp.get('name')
                 del_url = f"{base_url}/opportunities/{opp_id}"
                 del_resp = requests.delete(del_url, headers=headers)
                 print(f"Deleted opportunity for booking_id {booking_id} ({name}): {'Success' if del_resp.status_code == 200 else 'Failed'}")
+                found = True
         url = data.get('meta', {}).get('nextPageUrl')
+    if not found:
+        print(f"No GHL opportunity found for booking_id {booking_id}.")
+
+def delete_opportunity_by_booking_details(guest_firstname, guest_lastname, site_name, booking_arrival):
+    """
+    Deletes all opportunities in GHL that match the exact opportunity name format.
+    """
+    access_token = get_valid_access_token(GHL_CLIENT_ID, GHL_CLIENT_SECRET)
+    if not access_token:
+        print("No valid access token. Aborting opportunity deletion for details:", guest_firstname, guest_lastname, site_name, booking_arrival)
+        return
+
+    base_url = 'https://services.leadconnectorhq.com'
+    headers = {
+        'Authorization': f'Bearer {access_token}',
+        'Version': '2021-07-28'
+    }
+    url = f"{base_url}/opportunities/search?location_id={GHL_LOCATION_ID}&pipeline_id={GHL_PIPELINE_ID}&limit=100"
+    found = False
+
+    expected_name = f"{guest_firstname.strip()} {guest_lastname.strip()} - {site_name} - {booking_arrival.split(' ')[0]}"
+
+    while url:
+        resp = requests.get(url, headers=headers)
+        if resp.status_code != 200:
+            print(f"[GHL DELETE] Failed to fetch opportunities: {resp.status_code} {resp.text}")
+            break
+        data = resp.json()
+        for opp in data.get('opportunities', []):
+            name = opp.get('name', '')
+            if name == expected_name:
+                opp_id = opp.get('id')
+                del_url = f"{base_url}/opportunities/{opp_id}"
+                del_resp = requests.delete(del_url, headers=headers)
+                print(f"Deleted opportunity ({name}): {'Success' if del_resp.status_code == 200 else 'Failed'}")
+                found = True
+        url = data.get('meta', {}).get('nextPageUrl')
+    if not found:
+        print(f"No GHL opportunity found for name: {expected_name}")
 
 def daily_cleanup():
     """
