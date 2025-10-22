@@ -17,6 +17,7 @@ from fastapi.responses import JSONResponse
 import json
 import os
 from utils.logger import get_logger
+from utils.ghl_api import daily_cleanup  # Import the function
 
 
 import time
@@ -238,18 +239,6 @@ def confirm_booking(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-# def start_scheduler():
-#     scheduler = BackgroundScheduler()
-#     scheduler.add_job(create_opportunities_from_newbook, "interval", minutes=5)
-#     scheduler.start()
-#     try:
-#         while True:
-#             time.sleep(2)
-#     except (KeyboardInterrupt, SystemExit):
-#         scheduler.shutdown()
-
-# threading.Thread(target=start_scheduler, daemon=True).start()
-
 def get_tariff_information(period_from, period_to, adults, children, category_id, tariff_label=None):
     """
     Helper function to get tariff information from NewBook availability API
@@ -375,6 +364,55 @@ def create_tariffs_quoted(period_from, period_to, tariff_total, tariff_id):
     except Exception as e:
         print(f"[TARIFF_HELPER] Error creating tariffs_quoted: {str(e)}")
         return {}
+    
+def daily_cleanup_with_cache():
+    """
+    Deletes the local cache file (bookings_cache.json) and then runs the GHL cleanup.
+    """
+    print("[DAILY CLEANUP] Running cache cleanup...")
+    cache_path = os.path.join(os.path.dirname(__file__), "bookings_cache.json")
+    try:
+        if os.path.exists(cache_path):
+            os.remove(cache_path)
+            print("[CACHE CLEANUP] Deleted bookings_cache.json successfully.")
+        else:
+            print("[CACHE CLEANUP] No bookings_cache.json file found.")
+    except Exception as e:
+        print(f"[ERROR] Could not delete cache file: {e}")
+    
+    # Run GHL cleanup after cache cleanup
+    try:
+        daily_cleanup()
+        print("[DAILY CLEANUP] Completed GHL pipeline cleanup successfully.")
+    except Exception as e:
+        print(f"[ERROR] Failed to run daily_cleanup(): {e}")
+
+def start_scheduler():
+    """
+    Starts background scheduler for:
+      - Daily cleanup (midnight)
+      - Opportunity creation job every 15 minutes
+    """
+    scheduler = BackgroundScheduler()
+
+    # Run daily cleanup every day at midnight
+    scheduler.add_job(daily_cleanup_with_cache, "cron", hour=0, minute=0)
+
+    # Run another task every 15 minutes
+    scheduler.add_job(create_opportunities_from_newbook, "interval", minutes=10)
+
+    scheduler.start()
+    print("[SCHEDULER] Started successfully. Running background tasks...")
+
+    try:
+        while True:
+            time.sleep(2)
+    except (KeyboardInterrupt, SystemExit):
+        scheduler.shutdown()
+        print("[SCHEDULER] Stopped gracefully.")
+
+# Run the scheduler in a background thread
+threading.Thread(target=start_scheduler, daemon=True).start()
 
 
 if __name__ == "__main__":

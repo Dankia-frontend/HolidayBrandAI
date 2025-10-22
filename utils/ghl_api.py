@@ -88,6 +88,8 @@ def create_opportunities_from_newbook():
 
         # --- Date Range (Next 7 Days) ---
         today = datetime.now()
+        
+        
         period_from = today.strftime("%Y-%m-%d 00:00:00")
         period_to = (today + timedelta(days=7)).strftime("%Y-%m-%d 23:59:59")
 
@@ -175,22 +177,119 @@ def create_opportunities_from_newbook():
     # --- Detect Changes ---
     added = [b for b_id, b in new_bookings.items() if b_id not in old_bookings]
     updated = [b for b_id, b in new_bookings.items() if b_id in old_bookings and b != old_bookings[b_id]]
+    removed = [b for b_id, b in old_bookings.items() if b_id not in new_bookings]
+
+    # --- Remove opportunities for bookings that are no longer present or changed stage ---
+    for b in removed + updated:
+        booking_id = b["booking_id"]
+        guest = b.get("guests", [{}])[0]
+        guest_firstname = guest.get("firstname", "")
+        guest_lastname = guest.get("lastname", "")
+        site_name = b.get("site_name", "")
+        booking_arrival = b.get("booking_arrival", "")
+        # Delete by booking_id (custom field) and by details (name match)
+        delete_opportunity_by_booking_id(
+            booking_id,
+            guest_firstname=guest_firstname,
+            guest_lastname=guest_lastname,
+            site_name=site_name,
+            booking_arrival=booking_arrival
+        )
+        delete_opportunity_by_booking_details(
+            guest_firstname,
+            guest_lastname,
+            site_name,
+            booking_arrival
+        )
+
+    # --- Use new bucket logic ---
+    bucket_dict = bucket_bookings(completed_bookings)
+    arriving_soon_ids = set()
+    arriving_today_ids = set()
+    today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+
+    # --- Filter out bookings not for today or future in arriving_today ---
+    filtered_arriving_today = []
+    for b in bucket_dict["arriving_today"]:
+        arrival_str = b.get("booking_arrival")
+        if arrival_str:
+            arrival_dt = datetime.strptime(arrival_str, "%Y-%m-%d %H:%M:%S")
+            # Only keep bookings where arrival is today
+            if arrival_dt.date() == today.date():
+                filtered_arriving_today.append(b)
+                arriving_today_ids.add(b["booking_id"])
+            else:
+                print(f"[CLEANUP] Booking {b['booking_id']} in arriving_today is for previous/future day ({arrival_dt.date()}), deleting opportunity.")
+                delete_opportunity_by_booking_id(b["booking_id"])
+        else:
+            print(f"[CLEANUP] Booking {b['booking_id']} in arriving_today has no arrival date, deleting opportunity.")
+            delete_opportunity_by_booking_id(b["booking_id"])
+    bucket_dict["arriving_today"] = filtered_arriving_today
+
+    # --- Filter out bookings not for future in arriving_soon ---
+    filtered_arriving_soon = []
+    for b in bucket_dict["arriving_soon"]:
+        arrival_str = b.get("booking_arrival")
+        if arrival_str:
+            arrival_dt = datetime.strptime(arrival_str, "%Y-%m-%d %H:%M:%S")
+            # Only keep bookings where arrival is after today
+            if arrival_dt.date() > today.date():
+                filtered_arriving_soon.append(b)
+                arriving_soon_ids.add(b["booking_id"])
+            else:
+                print(f"[CLEANUP] Booking {b['booking_id']} in arriving_soon is for today/past ({arrival_dt.date()}), deleting opportunity.")
+                delete_opportunity_by_booking_id(b["booking_id"])
+        else:
+            print(f"[CLEANUP] Booking {b['booking_id']} in arriving_soon has no arrival date, deleting opportunity.")
+            delete_opportunity_by_booking_id(b["booking_id"])
+    bucket_dict["arriving_soon"] = filtered_arriving_soon
+
+    # --- Remove from arriving_soon if now in arriving_today ---
+    for booking_id in arriving_soon_ids & arriving_today_ids:
+        print(f"[CLEANUP] Booking {booking_id} moved from arriving_soon to arriving_today, deleting from arriving_soon stage.")
+        delete_opportunity_by_booking_id(booking_id)
+
+    # --- Remove from arriving_today if person was supposed to arrive yesterday but did not ---
+    yesterday = today - timedelta(days=1)
+    for b in bucket_dict["arriving_today"]:
+        arrival_str = b.get("booking_arrival")
+        if arrival_str:
+            arrival_dt = datetime.strptime(arrival_str, "%Y-%m-%d %H:%M:%S")
+            if arrival_dt.date() == yesterday.date() and b.get("booking_status", "").lower() != "arrived":
+                print(f"[CLEANUP] Booking {b['booking_id']} was supposed to arrive yesterday but did not, deleting from arriving_today stage.")
+                delete_opportunity_by_booking_id(b["booking_id"])
 
     # --- Process Changes ---
     if not (added or updated):
         print("[TEST] No new or updated bookings detected — cache is up to date.")
     else:
         all_changes = added + updated
-
-        # --- Use new bucket logic ---
-        bucket_dict = bucket_bookings(all_changes)
-
-        for bucket, bookings in bucket_dict.items():
+        bucket_dict_changes = bucket_bookings(all_changes)
+        for bucket, bookings in bucket_dict_changes.items():
             if bookings:
                 # write_bucket_file(bucket, bookings)
                 for b in bookings:
-                    # Only send non-cancelled bookings to GHL
                     if bucket != "cancelled":
+                        # --- Delete from GHL if already exists before sending ---
+                        guest = b.get("guests", [{}])[0]
+                        guest_firstname = guest.get("firstname", "")
+                        guest_lastname = guest.get("lastname", "")
+                        site_name = b.get("site_name", "")
+                        booking_arrival = b.get("booking_arrival", "")
+                        # Delete by booking_id (custom field) and by details (name match) before sending
+                        delete_opportunity_by_booking_id(
+                            b["booking_id"],
+                            guest_firstname=guest_firstname,
+                            guest_lastname=guest_lastname,
+                            site_name=site_name,
+                            booking_arrival=booking_arrival
+                        )
+                        delete_opportunity_by_booking_details(
+                            guest_firstname,
+                            guest_lastname,
+                            site_name,
+                            booking_arrival
+                        )
                         access_token = get_valid_access_token(GHL_CLIENT_ID, GHL_CLIENT_SECRET)
                         send_to_ghl(b, access_token)
                     else:
@@ -275,9 +374,6 @@ def refresh_access_token(client_id, client_secret, refresh_token):
 
 def get_valid_access_token(client_id, client_secret):
     token_data = get_token_row()
-
-
-
     if not token_data or not token_data["access_token"]:
         print("⚠️ No token found in DB. Run initial authorization first.")
         return None
@@ -286,6 +382,7 @@ def get_valid_access_token(client_id, client_secret):
     expire_in = token_data["expire_in"]
     expiry_time = created_at + timedelta(seconds=expire_in)
 
+    # Only refresh if expired
     if datetime.now() < expiry_time:
         print("✅ Access token still valid.")
         return token_data["access_token"]
@@ -492,4 +589,97 @@ def delete_opportunities_in_stage(stage_id):
             resp = requests.delete(del_url, headers=headers)
             print(f"Deleted {name} (ID: {opp_id}): {'Success' if resp.status_code == 200 else 'Failed'}")
 
-      # <-- replace with actual stage id or call as needed
+def delete_opportunity_by_booking_id(booking_id, guest_firstname=None, guest_lastname=None, site_name=None, booking_arrival=None):
+    """
+    Deletes all opportunities in GHL that match the booking_id in name or custom fields.
+    If guest_firstname, guest_lastname, site_name, and booking_arrival are provided,
+    will match the exact opportunity name format.
+    """
+    access_token = get_valid_access_token(GHL_CLIENT_ID, GHL_CLIENT_SECRET)
+    if not access_token:
+        print("No valid access token. Aborting opportunity deletion for booking_id:", booking_id)
+        return
+
+    base_url = 'https://services.leadconnectorhq.com'
+    headers = {
+        'Authorization': f'Bearer {access_token}',
+        'Version': '2021-07-28'
+    }
+    url = f"{base_url}/opportunities/search?location_id={GHL_LOCATION_ID}&pipeline_id={GHL_PIPELINE_ID}&limit=100"
+    found = False
+
+    # Build expected name if all info provided
+    expected_name = None
+    if guest_firstname and guest_lastname and site_name and booking_arrival:
+        expected_name = f"{guest_firstname.strip()} {guest_lastname.strip()} - {site_name} - {booking_arrival.split(' ')[0]}"
+
+    while url:
+        resp = requests.get(url, headers=headers)
+        if resp.status_code != 200:
+            print(f"[GHL DELETE] Failed to fetch opportunities: {resp.status_code} {resp.text}")
+            break
+        data = resp.json()
+        for opp in data.get('opportunities', []):
+            name = opp.get('name', '')
+            # Match by expected name if possible, otherwise fallback to booking_id in name or custom fields
+            exact_name_match = expected_name and name == expected_name
+            custom_match = any(
+                (str(f.get('field_value')) == str(booking_id))
+                for f in opp.get('customFields', [])
+                if f.get('id') == 'site_id' or f.get('id') == 'booking_id'
+            )
+            # Remove fallback to booking_id in name, only use exact name or custom field match
+            if exact_name_match or custom_match:
+                opp_id = opp.get('id')
+                del_url = f"{base_url}/opportunities/{opp_id}"
+                del_resp = requests.delete(del_url, headers=headers)
+                print(f"Deleted opportunity for booking_id {booking_id} ({name}): {'Success' if del_resp.status_code == 200 else 'Failed'}")
+                found = True
+        url = data.get('meta', {}).get('nextPageUrl')
+    if not found:
+        print(f"No GHL opportunity found for booking_id {booking_id}.")
+
+def delete_opportunity_by_booking_details(guest_firstname, guest_lastname, site_name, booking_arrival):
+    """
+    Deletes all opportunities in GHL that match the exact opportunity name format.
+    """
+    access_token = get_valid_access_token(GHL_CLIENT_ID, GHL_CLIENT_SECRET)
+    if not access_token:
+        print("No valid access token. Aborting opportunity deletion for details:", guest_firstname, guest_lastname, site_name, booking_arrival)
+        return
+
+    base_url = 'https://services.leadconnectorhq.com'
+    headers = {
+        'Authorization': f'Bearer {access_token}',
+        'Version': '2021-07-28'
+    }
+    url = f"{base_url}/opportunities/search?location_id={GHL_LOCATION_ID}&pipeline_id={GHL_PIPELINE_ID}&limit=100"
+    found = False
+
+    expected_name = f"{guest_firstname.strip()} {guest_lastname.strip()} - {site_name} - {booking_arrival.split(' ')[0]}"
+
+    while url:
+        resp = requests.get(url, headers=headers)
+        if resp.status_code != 200:
+            print(f"[GHL DELETE] Failed to fetch opportunities: {resp.status_code} {resp.text}")
+            break
+        data = resp.json()
+        for opp in data.get('opportunities', []):
+            name = opp.get('name', '')
+            if name == expected_name:
+                opp_id = opp.get('id')
+                del_url = f"{base_url}/opportunities/{opp_id}"
+                del_resp = requests.delete(del_url, headers=headers)
+                print(f"Deleted opportunity ({name}): {'Success' if del_resp.status_code == 200 else 'Failed'}")
+                found = True
+        url = data.get('meta', {}).get('nextPageUrl')
+    if not found:
+        print(f"No GHL opportunity found for name: {expected_name}")
+
+def daily_cleanup():
+    """
+    Call at the start of each day to clean up GHL pipeline stages.
+    """
+    print("[DAILY CLEANUP] Removing all opportunities from arriving_soon and arriving_today stages.")
+    delete_opportunities_in_stage('3aeae130-f411-4ac7-bcca-271291fdc3b9')  # arriving_soon
+    delete_opportunities_in_stage('b429a8e9-e73e-4590-b4c5-8ea1d65e0daf')  # arriving_today
