@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from fastapi import FastAPI, Query, Body, HTTPException
 from pydantic import BaseModel
 from schemas.schemas import BookingRequest, AvailabilityRequest, CheckBooking
@@ -99,10 +99,30 @@ def confirm_booking(
     children: str = Query(..., description="Number of children"),
     category_id: int = Query(..., description="Category ID of the room or package"),
     daily_mode: str = Query(..., description="Daily booking mode (yes/no)"),
-    amount: int = Query(..., description="Total booking amount")
+    amount: int = Query(..., description="Total booking amount"),
 ):
     try:
-        # --- Build payload ---
+        # Get tariff information from availability API
+        tariff_info = get_tariff_information(
+            period_from=period_from,
+            period_to=period_to,
+            adults=adults,
+            children=children,
+            category_id=category_id,
+        )
+        
+        if not tariff_info:
+            raise HTTPException(status_code=400, detail="No tariff information found for the specified category and dates")
+        
+        # Create tariffs_quoted using the actual tariff ID from availability
+        tariffs_quoted = create_tariffs_quoted(
+            period_from=period_from,
+            period_to=period_to,
+            tariff_total=tariff_info["tariff_total"],
+            tariff_id=tariff_info["tariff_id"]  # Use the actual tariff ID
+        )
+        
+        # Build payload with tariff information
         payload = {
             "region": REGION,
             "api_key": API_KEY,
@@ -116,7 +136,11 @@ def confirm_booking(
             "children": children,
             "category_id": category_id,
             "daily_mode": daily_mode,
-            "amount": amount
+            "amount": amount,
+            "tariff_label": tariff_info["tariff_label"],
+            "tariff_total": tariff_info["tariff_total"],
+            "special_deal": tariff_info["special_deal"],
+            "tariffs_quoted": tariffs_quoted
         }
 
         print(f"[INFO] Sending payload to NewBook: {payload}")
@@ -126,9 +150,12 @@ def confirm_booking(
             f"{NEWBOOK_API_BASE}/bookings_create",
             headers=header,
             json=payload,
-            verify=False,  # ⚠️ Use verify=True in production
+            verify=False,
             timeout=15
         )
+
+        print(f"[DEBUG] Response Status Code: {response.status_code}")
+        print(f"[DEBUG] Response Text: {response.text}")
 
         response.raise_for_status()
         result = response.json()
@@ -139,6 +166,7 @@ def confirm_booking(
         return result
 
     except Exception as e:
+        print(f"❌ Error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
     
     
@@ -210,18 +238,143 @@ def confirm_booking(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-def start_scheduler():
-    scheduler = BackgroundScheduler()
-    scheduler.add_job(create_opportunities_from_newbook, "interval", minutes=5)
-    scheduler.start()
+# def start_scheduler():
+#     scheduler = BackgroundScheduler()
+#     scheduler.add_job(create_opportunities_from_newbook, "interval", minutes=5)
+#     scheduler.start()
+#     try:
+#         while True:
+#             time.sleep(2)
+#     except (KeyboardInterrupt, SystemExit):
+#         scheduler.shutdown()
+
+# threading.Thread(target=start_scheduler, daemon=True).start()
+
+def get_tariff_information(period_from, period_to, adults, children, category_id, tariff_label=None):
+    """
+    Helper function to get tariff information from NewBook availability API
+    Returns tariff data that can be used for booking creation
+    """
     try:
-        while True:
-            time.sleep(2)
-    except (KeyboardInterrupt, SystemExit):
-        scheduler.shutdown()
+        # Call the availability API
+        payload = {
+            "region": REGION,
+            "api_key": API_KEY,
+            "period_from": period_from,
+            "period_to": period_to,
+            "adults": adults,
+            "children": children,
+            "daily_mode": "false"
+        }
 
-threading.Thread(target=start_scheduler, daemon=True).start()
+        print(f"[TARIFF_HELPER] Getting availability for category {category_id}")
+        print(f"[TARIFF_HELPER] Payload: {payload}")
 
+        response = requests.post(
+            f"{NEWBOOK_API_BASE}/bookings_availability_pricing",
+            headers=header,
+            json=payload,
+            verify=False,
+            timeout=15
+        )
+
+        response.raise_for_status()
+        availability_data = response.json()
+
+        print(f"[TARIFF_HELPER] Availability response received")
+
+        # Extract tariff information for the specific category
+        if "data" in availability_data and str(category_id) in availability_data["data"]:
+            category_data = availability_data["data"][str(category_id)]
+            tariffs_available = category_data.get("tariffs_available", [])
+            
+            print(f"[TARIFF_HELPER] Found {len(tariffs_available)} tariffs for category {category_id}")
+            
+            # If tariff_label is specified, find that specific tariff
+            if tariff_label:
+                for tariff in tariffs_available:
+                    if tariff.get("tariff_label") == tariff_label:
+                        print(f"[TARIFF_HELPER] Found matching tariff: {tariff_label}")
+                        # Extract the tariff ID from deposits
+                        tariff_id = None
+                        if tariff.get("deposits") and len(tariff["deposits"]) > 0:
+                            tariff_id = int(tariff["deposits"][0].get("from_type_id", 1))
+                        
+                        return {
+                            "tariff_label": tariff["tariff_label"],
+                            "tariff_total": tariff["tariff_total"],
+                            "original_tariff_total": tariff["original_tariff_total"],
+                            "special_deal": tariff["special_deal"],
+                            "tariff_code": tariff.get("tariff_code", 0),
+                            "tariff_id": tariff_id,
+                            "tariffs_available": [tariff]
+                        }
+                print(f"[TARIFF_HELPER] Warning: Tariff '{tariff_label}' not found, using first available")
+            
+            # Return the first available tariff if no specific label or label not found
+            if tariffs_available:
+                first_tariff = tariffs_available[0]
+                print(f"[TARIFF_HELPER] Using first available tariff: {first_tariff['tariff_label']}")
+                
+                # Extract the tariff ID from deposits
+                tariff_id = None
+                if first_tariff.get("deposits") and len(first_tariff["deposits"]) > 0:
+                    tariff_id = int(first_tariff["deposits"][0].get("from_type_id", 1))
+                
+                return {
+                    "tariff_label": first_tariff["tariff_label"],
+                    "tariff_total": first_tariff["tariff_total"],
+                    "original_tariff_total": first_tariff["original_tariff_total"],
+                    "special_deal": first_tariff["special_deal"],
+                    "tariff_code": first_tariff.get("tariff_code", 0),
+                    "tariff_id": tariff_id,
+                    "tariffs_available": [first_tariff]
+                }
+        
+        print(f"[TARIFF_HELPER] No tariffs found for category {category_id}")
+        return None
+
+    except Exception as e:
+        print(f"[TARIFF_HELPER] Error getting tariff information: {str(e)}")
+        return None
+
+def create_tariffs_quoted(period_from, period_to, tariff_total, tariff_id):
+    """
+    Helper function to create tariffs_quoted in the correct format
+    """
+    from datetime import datetime, timedelta
+    
+    try:
+        # Extract dates
+        start_date = datetime.strptime(period_from.split()[0], "%Y-%m-%d")
+        end_date = datetime.strptime(period_to.split()[0], "%Y-%m-%d")
+        
+        # Calculate number of nights
+        nights = (end_date - start_date).days
+        if nights <= 0:
+            nights = 1
+        
+        # Calculate price per night
+        price_per_night = tariff_total // nights
+        
+        # Create tariffs_quoted for each date
+        tariffs_quoted = {}
+        current_date = start_date
+        
+        while current_date < end_date:
+            date_str = current_date.strftime("%Y-%m-%d")
+            tariffs_quoted[date_str] = {
+                "tariff_applied_id": tariff_id,  # Use the actual tariff ID from availability
+                "price": price_per_night
+            }
+            current_date += timedelta(days=1)
+        
+        print(f"[TARIFF_HELPER] Created tariffs_quoted: {tariffs_quoted}")
+        return tariffs_quoted
+        
+    except Exception as e:
+        print(f"[TARIFF_HELPER] Error creating tariffs_quoted: {str(e)}")
+        return {}
 
 
 if __name__ == "__main__":
