@@ -179,6 +179,9 @@ def create_opportunities_from_newbook():
     updated = [b for b_id, b in new_bookings.items() if b_id in old_bookings and b != old_bookings[b_id]]
     removed = [b for b_id, b in old_bookings.items() if b_id not in new_bookings]
 
+    # --- Track deleted booking_ids to avoid duplicate deletes ---
+    deleted_booking_ids = set()
+
     # --- Remove opportunities for bookings that are no longer present or changed stage ---
     for b in removed + updated:
         booking_id = b["booking_id"]
@@ -201,12 +204,39 @@ def create_opportunities_from_newbook():
             site_name,
             booking_arrival
         )
+        deleted_booking_ids.add(booking_id)
 
     # --- Use new bucket logic ---
     bucket_dict = bucket_bookings(completed_bookings)
     arriving_soon_ids = set()
     arriving_today_ids = set()
     today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+
+    # --- Delete GHL opportunities for cancelled bookings (only if not already deleted) ---
+    for b in bucket_dict["cancelled"]:
+        booking_id = b["booking_id"]
+        if booking_id in deleted_booking_ids:
+            continue  # Already deleted above
+        guest = b.get("guests", [{}])[0]
+        guest_firstname = guest.get("firstname", "")
+        guest_lastname = guest.get("lastname", "")
+        site_name = b.get("site_name", "")
+        booking_arrival = b.get("booking_arrival", "")
+        print(f"[CANCELLED] Booking {booking_id} is cancelled, deleting opportunity from GHL.")
+        delete_opportunity_by_booking_id(
+            booking_id,
+            guest_firstname=guest_firstname,
+            guest_lastname=guest_lastname,
+            site_name=site_name,
+            booking_arrival=booking_arrival
+        )
+        delete_opportunity_by_booking_details(
+            guest_firstname,
+            guest_lastname,
+            site_name,
+            booking_arrival
+        )
+        deleted_booking_ids.add(booking_id)
 
     # --- Filter out bookings not for today or future in arriving_today ---
     filtered_arriving_today = []
