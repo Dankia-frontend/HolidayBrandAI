@@ -3,7 +3,7 @@ from fastapi import FastAPI, Query, Body, HTTPException
 from pydantic import BaseModel
 from schemas.schemas import BookingRequest, AvailabilityRequest, CheckBooking
 import requests
-from config import NEWBOOK_API_BASE,REGION,API_KEY,GHL_CLIENT_ID,GHL_CLIENT_SECRET,GHL_API_BASE,GHL_API_KEY,GHL_LOCATION_ID,GHL_REDIRECT_URI
+from config import NEWBOOK_API_BASE,REGION,API_KEY,GHL_CLIENT_ID,GHL_CLIENT_SECRET,GHL_API_BASE,GHL_API_KEY,GHL_LOCATION_ID,GHL_REDIRECT_URI,AI_AGENT_KEY
 import base64
 # from utils.ghl_api import create_opportunity
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -11,7 +11,7 @@ import threading
 import requests
 # from utils.ghl_api import get_ghl_access_token, create_opportunity
 from utils.ghl_api import create_opportunities_from_newbook
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Header, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import json
@@ -24,6 +24,20 @@ import time
 
 app = FastAPI()
 log = get_logger("FastAPI")
+
+
+def authenticate_request(x_ai_agent_key: str = Header(None)):
+    """
+    Authentication helper function that validates the AI_AGENT_KEY from headers.
+    Returns the key if valid, raises HTTPException if invalid or missing.
+    """
+    if not x_ai_agent_key:
+        raise HTTPException(status_code=401, detail="Missing AI_AGENT_KEY in headers")
+    
+    if x_ai_agent_key != AI_AGENT_KEY:
+        raise HTTPException(status_code=401, detail="Invalid AI_AGENT_KEY")
+    
+    return x_ai_agent_key
 
 
 # Allow origins (add your frontend URL)
@@ -52,7 +66,8 @@ def get_availability(
     period_to: str = Query(..., description="End date in YYYY-MM-DD format"),
     adults: int = Query(..., description="Number of adults"),
     daily_mode: str = Query(..., description="Daily mode value, e.g., 'true' or 'false'"),
-    Children: int = Query(..., description="Number of children")
+    Children: int = Query(..., description="Number of children"),
+    _: str = Depends(authenticate_request)
 ):
     try:
         headers = {"Content-Type": "application/json"}
@@ -101,6 +116,7 @@ def confirm_booking(
     category_id: int = Query(..., description="Category ID of the room or package"),
     daily_mode: str = Query(..., description="Daily booking mode (yes/no)"),
     amount: int = Query(..., description="Total booking amount"),
+    _: str = Depends(authenticate_request)
 ):
     try:
         # Get tariff information from availability API
@@ -176,7 +192,8 @@ def confirm_booking(
 def confirm_booking(
     name: str = Query(..., description="Guest name"),
     email: str = Query(..., description="Guest email"),
-    booking_date: str | None = Query(None, description="Optional booking date (YYYY-MM-DD)")
+    booking_date: str | None = Query(None, description="Optional booking date (YYYY-MM-DD)"),
+    _: str = Depends(authenticate_request)
 ):
     try:
         name = name.strip()
