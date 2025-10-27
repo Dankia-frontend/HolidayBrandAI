@@ -97,7 +97,58 @@ def get_availability(
         print("📥 Response Body:", response.text)
 
         response.raise_for_status()
-        return response.json()
+        data = response.json()
+
+        # Sort categories by highest amount first (descending order)
+        if "data" in data and isinstance(data["data"], dict):
+            # Convert categories to list of tuples (category_id, category_data, max_amount)
+            categories_with_amounts = []
+            
+            for category_id, category_data in data["data"].items():
+                tariffs_available = category_data.get("tariffs_available", [])
+                
+                # Find the highest amount among all tariffs for this category
+                max_amount = 0
+                if tariffs_available:
+                    for tariff in tariffs_available:
+                        tariffs_quoted = tariff.get("tariffs_quoted", {})
+                        if isinstance(tariffs_quoted, dict):
+                            # Get the maximum amount from all dates in tariffs_quoted
+                            for date_key, quote_data in tariffs_quoted.items():
+                                if isinstance(quote_data, dict):
+                                    amount = quote_data.get("amount", 0)
+                                    # Ensure amount is treated as a number
+                                    try:
+                                        amount = float(amount) if amount is not None else 0
+                                        max_amount = max(max_amount, amount)
+                                    except (ValueError, TypeError):
+                                        continue
+                
+                categories_with_amounts.append((category_id, category_data, max_amount))
+            
+            # Sort by max_amount in descending order (highest first)
+            categories_with_amounts.sort(key=lambda x: float(x[2]), reverse=True)
+            
+            # This ensures the order is preserved in the JSON response
+            new_data = {
+                "success": data.get("success", "true"),
+                "data": {}
+            }
+            
+            # Add categories in sorted order
+            for category_id, category_data, _ in categories_with_amounts:
+                new_data["data"][category_id] = category_data
+            
+            # Copy any other fields from original response
+            for key, value in data.items():
+                if key not in ["success", "data"]:
+                    new_data[key] = value
+            
+            data = new_data
+            
+            
+
+        return data
 
     except Exception as e:
         print("❌ Error:", str(e))
