@@ -177,6 +177,7 @@ def confirm_booking(
             adults=adults,
             children=children,
             category_id=category_id,
+            daily_mode=daily_mode
         )
         
         if not tariff_info:
@@ -307,7 +308,7 @@ def confirm_booking(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-def get_tariff_information(period_from, period_to, adults, children, category_id, tariff_label=None):
+def get_tariff_information(period_from, period_to, adults, children, category_id, daily_mode, tariff_label=None):
     """
     Helper function to get tariff information from NewBook availability API
     Returns tariff data that can be used for booking creation
@@ -321,7 +322,7 @@ def get_tariff_information(period_from, period_to, adults, children, category_id
             "period_to": period_to,
             "adults": adults,
             "children": children,
-            "daily_mode": "false"
+            "daily_mode": daily_mode
         }
 
         print(f"[TARIFF_HELPER] Getting availability for category {category_id}")
@@ -352,10 +353,16 @@ def get_tariff_information(period_from, period_to, adults, children, category_id
                 for tariff in tariffs_available:
                     if tariff.get("tariff_label") == tariff_label:
                         print(f"[TARIFF_HELPER] Found matching tariff: {tariff_label}")
-                        # Extract the tariff ID from deposits
+                        # Extract the tariff ID from tariffs_quoted
                         tariff_id = None
-                        if tariff.get("deposits") and len(tariff["deposits"]) > 0:
-                            tariff_id = int(tariff["deposits"][0].get("from_type_id", 1))
+                        tariffs_quoted = tariff.get("tariffs_quoted", {})
+                        if tariffs_quoted:
+                            # Get the first date's tariff_applied_id
+                            first_date = next(iter(tariffs_quoted.keys()))
+                            tariff_applied_data = tariffs_quoted[first_date]
+                            tariff_applied_id = tariff_applied_data.get("tariff_applied_id")
+                            if tariff_applied_id:
+                                tariff_id = int(tariff_applied_id)
                         
                         return {
                             "tariff_label": tariff["tariff_label"],
@@ -373,10 +380,16 @@ def get_tariff_information(period_from, period_to, adults, children, category_id
                 first_tariff = tariffs_available[0]
                 print(f"[TARIFF_HELPER] Using first available tariff: {first_tariff['tariff_label']}")
                 
-                # Extract the tariff ID from deposits
+                # Extract the tariff ID from tariffs_quoted
                 tariff_id = None
-                if first_tariff.get("deposits") and len(first_tariff["deposits"]) > 0:
-                    tariff_id = int(first_tariff["deposits"][0].get("from_type_id", 1))
+                tariffs_quoted = first_tariff.get("tariffs_quoted", {})
+                if tariffs_quoted:
+                    # Get the first date's tariff_applied_id
+                    first_date = next(iter(tariffs_quoted.keys()))
+                    tariff_applied_data = tariffs_quoted[first_date]
+                    tariff_applied_id = tariff_applied_data.get("tariff_applied_id")
+                    if tariff_applied_id:
+                        tariff_id = int(tariff_applied_id)
                 
                 return {
                     "tariff_label": first_tariff["tariff_label"],
