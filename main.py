@@ -468,32 +468,32 @@ def daily_cleanup_with_cache():
     except Exception as e:
         print(f"[ERROR] Failed to run daily_cleanup(): {e}")
 
-# def start_scheduler():
-#     """
-#     Starts background scheduler for:
-#       - Daily cleanup (midnight)
-#       - Opportunity creation job every 15 minutes
-#     """
-#     scheduler = BackgroundScheduler()
+def start_scheduler():
+    """
+    Starts background scheduler for:
+      - Daily cleanup (midnight)
+      - Opportunity creation job every 15 minutes
+    """
+    scheduler = BackgroundScheduler()
 
-#     # Run daily cleanup every day at midnight
-#     scheduler.add_job(daily_cleanup_with_cache, "cron", hour=0, minute=0)
+    # Run daily cleanup every day at midnight
+    scheduler.add_job(daily_cleanup_with_cache, "cron", hour=0, minute=0)
 
-#     # Run another task every 15 minutes
-#     scheduler.add_job(create_opportunities_from_newbook, "interval", minutes=10)
+    # Run another task every 15 minutes
+    scheduler.add_job(create_opportunities_from_newbook, "interval", minutes=10)
 
-#     scheduler.start()
-#     print("[SCHEDULER] Started successfully. Running background tasks...")
+    scheduler.start()
+    print("[SCHEDULER] Started successfully. Running background tasks...")
 
-#     try:
-#         while True:
-#             time.sleep(2)
-#     except (KeyboardInterrupt, SystemExit):
-#         scheduler.shutdown()
-#         print("[SCHEDULER] Stopped gracefully.")
+    try:
+        while True:
+            time.sleep(2)
+    except (KeyboardInterrupt, SystemExit):
+        scheduler.shutdown()
+        print("[SCHEDULER] Stopped gracefully.")
 
-# # Run the scheduler in a background thread
-# threading.Thread(target=start_scheduler, daemon=True).start()
+# Run the scheduler in a background thread
+threading.Thread(target=start_scheduler, daemon=True).start()
 
 
 if __name__ == "__main__":
