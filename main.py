@@ -33,7 +33,7 @@ def get_availability(
     Children: int = Query(..., description="Number of children"),
     _: str = Depends(authenticate_request)
 ):
-    print(period_from, period_to, adults, daily_mode, Children)
+    # print(period_from, period_to, adults, daily_mode, Children)
     try:
         payload = {
             "region": REGION,
@@ -45,9 +45,9 @@ def get_availability(
             "daily_mode": daily_mode
         }
 
-        print("\n📤 Payload being sent to NewBook API:")
-        print(payload)
-        print(NB_HEADERS)
+        # print("\n📤 Payload being sent to NewBook API:")
+        # print(payload)
+        # print(NB_HEADERS)
         response = requests.post(
             f"{NEWBOOK_API_BASE}/bookings_availability_pricing",
             headers=NB_HEADERS,
@@ -56,8 +56,8 @@ def get_availability(
             timeout=15
         )
 
-        print("📥 Response Code:", response.status_code)
-        print("📥 Response Body:", response.text)
+        # print("📥 Response Code:", response.status_code)
+        # print("📥 Response Body:", response.text)
 
         response.raise_for_status()
         data = response.json()
@@ -106,11 +106,38 @@ def get_availability(
             for key, value in data.items():
                 if key not in ["success", "data"]:
                     new_data[key] = value
-            
-            data = new_data
-            
-            
 
+            # Filter to only required fields per category
+            filtered = {
+                "success": new_data.get("success", "true"),
+                "data": {}
+            }
+
+            for category_id, category_data in new_data["data"].items():
+                category_name = category_data.get("category_name")
+                sites_message = category_data.get("sites_message", {})
+
+                # Derive price: prefer average_nightly_tariff from first tariff; fallback to first quoted amount
+                price = None
+                tariffs_available = category_data.get("tariffs_available", [])
+                if tariffs_available:
+                    first_tariff = tariffs_available[0]
+                    price = first_tariff.get("average_nightly_tariff")
+                    if price is None:
+                        tariffs_quoted = first_tariff.get("tariffs_quoted", {})
+                        if isinstance(tariffs_quoted, dict) and tariffs_quoted:
+                            first_date_key = next(iter(tariffs_quoted.keys()))
+                            quote = tariffs_quoted.get(first_date_key) or {}
+                            price = quote.get("amount")
+
+                filtered["data"][category_id] = {
+                    "category_name": category_name,
+                    "price": price,
+                    "sites_message": sites_message,
+                }
+
+            data = filtered
+        print(f"📥 Response Data: {data}")
         return data
 
     except Exception as e:
