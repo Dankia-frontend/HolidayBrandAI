@@ -1,44 +1,18 @@
 from datetime import datetime, timedelta
-from fastapi import FastAPI, Query, Body, HTTPException
-from pydantic import BaseModel
+from fastapi import FastAPI, Query, HTTPException, Depends
 from schemas.schemas import BookingRequest, AvailabilityRequest, CheckBooking
 import requests
-from config import NEWBOOK_API_BASE,REGION,API_KEY,GHL_CLIENT_ID,GHL_CLIENT_SECRET,GHL_API_BASE,GHL_API_KEY,GHL_LOCATION_ID,GHL_REDIRECT_URI,AI_AGENT_KEY
-import base64
-# from utils.ghl_api import create_opportunity
-from apscheduler.schedulers.background import BackgroundScheduler
-import threading
-import requests
-# from utils.ghl_api import get_ghl_access_token, create_opportunity
-from utils.ghl_api import create_opportunities_from_newbook
-from fastapi import FastAPI, Request, Header, Depends
+from config.config import NEWBOOK_API_BASE,REGION,API_KEY
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import json
-import os
 from utils.logger import get_logger
-from utils.ghl_api import daily_cleanup  # Import the function
-
-
-import time
+from auth.auth import authenticate_request
+from utils.newbook import NB_HEADERS, get_tariff_information, create_tariffs_quoted
+from utils.scheduler import start_scheduler_in_background
 
 app = FastAPI()
 log = get_logger("FastAPI")
-
-
-def authenticate_request(x_ai_agent_key: str = Header(None)):
-    """
-    Authentication helper function that validates the AI_AGENT_KEY from headers.
-    Returns the key if valid, raises HTTPException if invalid or missing.
-    """
-    if not x_ai_agent_key:
-        raise HTTPException(status_code=401, detail="Missing AI_AGENT_KEY in headers")
-    
-    if x_ai_agent_key != AI_AGENT_KEY:
-        raise HTTPException(status_code=401, detail="Invalid AI_AGENT_KEY")
-    
-    return x_ai_agent_key
-
 
 # Allow origins (add your frontend URL)
 app.add_middleware(
@@ -50,16 +24,6 @@ app.add_middleware(
 )
 
 
-USERNAME = "ParkPA"
-PASSWORD = "ZEVaWP4ZaVT@MDTb"
-user_pass = f"{USERNAME}:{PASSWORD}"
-encoded_credentials = base64.b64encode(user_pass.encode()).decode()
-
-header = {
-    "Content-Type": "application/json",
-    "Authorization": f"Basic {encoded_credentials}"
-}
-
 @app.get("/availability")
 def get_availability(
     period_from: str = Query(..., description="Start date in YYYY-MM-DD format"),
@@ -69,9 +33,8 @@ def get_availability(
     Children: int = Query(..., description="Number of children"),
     _: str = Depends(authenticate_request)
 ):
+    print(period_from, period_to, adults, daily_mode, Children)
     try:
-        headers = {"Content-Type": "application/json"}
-
         payload = {
             "region": REGION,
             "api_key": API_KEY,
@@ -84,10 +47,10 @@ def get_availability(
 
         print("\n📤 Payload being sent to NewBook API:")
         print(payload)
-
+        print(NB_HEADERS)
         response = requests.post(
             f"{NEWBOOK_API_BASE}/bookings_availability_pricing",
-            headers=header,
+            headers=NB_HEADERS,
             json=payload,
             verify=False,  # ⚠️ Only for local testing
             timeout=15
@@ -217,7 +180,7 @@ def confirm_booking(
         # --- API Call to NewBook ---
         response = requests.post(
             f"{NEWBOOK_API_BASE}/bookings_create",
-            headers=header,
+            headers=NB_HEADERS,
             json=payload,
             verify=False,
             timeout=15
@@ -277,7 +240,6 @@ def confirm_booking(
             period_from = first_day.strftime("%Y-%m-%d 00:00:00")
             period_to = last_day.strftime("%Y-%m-%d 23:59:59")
 
-        headers = {"Content-Type": "application/json"}
         # 🧾 Build request payload
         payload = {
             "region": REGION,
@@ -293,7 +255,7 @@ def confirm_booking(
         # 🔗 Send request to NewBook
         response = requests.post(
             f"{NEWBOOK_API_BASE}/bookings_list",
-            headers=header,
+            headers=NB_HEADERS,
             json=payload,
             verify=False,  # Disable SSL for local testing only
             timeout=15
@@ -308,192 +270,9 @@ def confirm_booking(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-def get_tariff_information(period_from, period_to, adults, children, category_id, daily_mode, tariff_label=None):
-    """
-    Helper function to get tariff information from NewBook availability API
-    Returns tariff data that can be used for booking creation
-    """
-    try:
-        # Call the availability API
-        payload = {
-            "region": REGION,
-            "api_key": API_KEY,
-            "period_from": period_from,
-            "period_to": period_to,
-            "adults": adults,
-            "children": children,
-            "daily_mode": daily_mode
-        }
-
-        print(f"[TARIFF_HELPER] Getting availability for category {category_id}")
-        print(f"[TARIFF_HELPER] Payload: {payload}")
-
-        response = requests.post(
-            f"{NEWBOOK_API_BASE}/bookings_availability_pricing",
-            headers=header,
-            json=payload,
-            verify=False,
-            timeout=15
-        )
-
-        response.raise_for_status()
-        availability_data = response.json()
-
-        print(f"[TARIFF_HELPER] Availability response received")
-
-        # Extract tariff information for the specific category
-        if "data" in availability_data and str(category_id) in availability_data["data"]:
-            category_data = availability_data["data"][str(category_id)]
-            tariffs_available = category_data.get("tariffs_available", [])
-            
-            print(f"[TARIFF_HELPER] Found {len(tariffs_available)} tariffs for category {category_id}")
-            
-            # If tariff_label is specified, find that specific tariff
-            if tariff_label:
-                for tariff in tariffs_available:
-                    if tariff.get("tariff_label") == tariff_label:
-                        print(f"[TARIFF_HELPER] Found matching tariff: {tariff_label}")
-                        # Extract the tariff ID from tariffs_quoted
-                        tariff_id = None
-                        tariffs_quoted = tariff.get("tariffs_quoted", {})
-                        if tariffs_quoted:
-                            # Get the first date's tariff_applied_id
-                            first_date = next(iter(tariffs_quoted.keys()))
-                            tariff_applied_data = tariffs_quoted[first_date]
-                            tariff_applied_id = tariff_applied_data.get("tariff_applied_id")
-                            if tariff_applied_id:
-                                tariff_id = int(tariff_applied_id)
-                        
-                        return {
-                            "tariff_label": tariff["tariff_label"],
-                            "tariff_total": tariff["tariff_total"],
-                            "original_tariff_total": tariff["original_tariff_total"],
-                            "special_deal": tariff["special_deal"],
-                            "tariff_code": tariff.get("tariff_code", 0),
-                            "tariff_id": tariff_id,
-                            "tariffs_available": [tariff]
-                        }
-                print(f"[TARIFF_HELPER] Warning: Tariff '{tariff_label}' not found, using first available")
-            
-            # Return the first available tariff if no specific label or label not found
-            if tariffs_available:
-                first_tariff = tariffs_available[0]
-                print(f"[TARIFF_HELPER] Using first available tariff: {first_tariff['tariff_label']}")
-                
-                # Extract the tariff ID from tariffs_quoted
-                tariff_id = None
-                tariffs_quoted = first_tariff.get("tariffs_quoted", {})
-                if tariffs_quoted:
-                    # Get the first date's tariff_applied_id
-                    first_date = next(iter(tariffs_quoted.keys()))
-                    tariff_applied_data = tariffs_quoted[first_date]
-                    tariff_applied_id = tariff_applied_data.get("tariff_applied_id")
-                    if tariff_applied_id:
-                        tariff_id = int(tariff_applied_id)
-                
-                return {
-                    "tariff_label": first_tariff["tariff_label"],
-                    "tariff_total": first_tariff["tariff_total"],
-                    "original_tariff_total": first_tariff["original_tariff_total"],
-                    "special_deal": first_tariff["special_deal"],
-                    "tariff_code": first_tariff.get("tariff_code", 0),
-                    "tariff_id": tariff_id,
-                    "tariffs_available": [first_tariff]
-                }
-        
-        print(f"[TARIFF_HELPER] No tariffs found for category {category_id}")
-        return None
-
-    except Exception as e:
-        print(f"[TARIFF_HELPER] Error getting tariff information: {str(e)}")
-        return None
-
-def create_tariffs_quoted(period_from, period_to, tariff_total, tariff_id):
-    """
-    Helper function to create tariffs_quoted in the correct format
-    """
-    from datetime import datetime, timedelta
-    
-    try:
-        # Extract dates
-        start_date = datetime.strptime(period_from.split()[0], "%Y-%m-%d")
-        end_date = datetime.strptime(period_to.split()[0], "%Y-%m-%d")
-        
-        # Calculate number of nights
-        nights = (end_date - start_date).days
-        if nights <= 0:
-            nights = 1
-        
-        # Calculate price per night
-        price_per_night = tariff_total // nights
-        
-        # Create tariffs_quoted for each date
-        tariffs_quoted = {}
-        current_date = start_date
-        
-        while current_date < end_date:
-            date_str = current_date.strftime("%Y-%m-%d")
-            tariffs_quoted[date_str] = {
-                "tariff_applied_id": tariff_id,  # Use the actual tariff ID from availability
-                "price": price_per_night
-            }
-            current_date += timedelta(days=1)
-        
-        print(f"[TARIFF_HELPER] Created tariffs_quoted: {tariffs_quoted}")
-        return tariffs_quoted
-        
-    except Exception as e:
-        print(f"[TARIFF_HELPER] Error creating tariffs_quoted: {str(e)}")
-        return {}
-    
-def daily_cleanup_with_cache():
-    """
-    Deletes the local cache file (bookings_cache.json) and then runs the GHL cleanup.
-    """
-    print("[DAILY CLEANUP] Running cache cleanup...")
-    cache_path = os.path.join(os.path.dirname(__file__), "bookings_cache.json")
-    try:
-        if os.path.exists(cache_path):
-            os.remove(cache_path)
-            print("[CACHE CLEANUP] Deleted bookings_cache.json successfully.")
-        else:
-            print("[CACHE CLEANUP] No bookings_cache.json file found.")
-    except Exception as e:
-        print(f"[ERROR] Could not delete cache file: {e}")
-    
-    # Run GHL cleanup after cache cleanup
-    try:
-        daily_cleanup()
-        print("[DAILY CLEANUP] Completed GHL pipeline cleanup successfully.")
-    except Exception as e:
-        print(f"[ERROR] Failed to run daily_cleanup(): {e}")
-
-def start_scheduler():
-    """
-    Starts background scheduler for:
-      - Daily cleanup (midnight)
-      - Opportunity creation job every 15 minutes
-    """
-    scheduler = BackgroundScheduler()
-
-    # Run daily cleanup every day at midnight
-    scheduler.add_job(daily_cleanup_with_cache, "cron", hour=0, minute=0)
-
-    # Run another task every 15 minutes
-    scheduler.add_job(create_opportunities_from_newbook, "interval", minutes=10)
-
-    scheduler.start()
-    print("[SCHEDULER] Started successfully. Running background tasks...")
-
-    try:
-        while True:
-            time.sleep(2)
-    except (KeyboardInterrupt, SystemExit):
-        scheduler.shutdown()
-        print("[SCHEDULER] Stopped gracefully.")
 
 # Run the scheduler in a background thread
-threading.Thread(target=start_scheduler, daemon=True).start()
+start_scheduler_in_background() # Comment out for local testing
 
 
 if __name__ == "__main__":
