@@ -33,6 +33,7 @@ def get_availability(
     Children: int = Query(..., description="Number of children"),
     _: str = Depends(authenticate_request)
 ):
+    print(period_from, period_to, adults, daily_mode, Children)
     try:
         payload = {
             "region": REGION,
