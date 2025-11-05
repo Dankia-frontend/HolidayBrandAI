@@ -16,19 +16,15 @@ class RMSAuth:
         self._token_expiry: Optional[datetime] = None
     
     async def get_token(self) -> str:
-        """Get valid auth token (from cache or generate new)"""
-        # Check if cached token is still valid
         if self._token and self._token_expiry:
             if datetime.now() < self._token_expiry:
                 print(f"🔑 Using cached token (expires: {self._token_expiry})")
                 return self._token
         
-        # Generate new token
         print("🔄 Token expired or missing, generating new token...")
         return await self._generate_token()
     
     async def _generate_token(self) -> str:
-        """Generate new auth token from RMS API"""
         url = f"{self.base_url}/authToken"
         payload = {
             "agentId": self.agent_id,
@@ -55,7 +51,6 @@ class RMSAuth:
                 response.raise_for_status()
                 data = response.json()
                 
-                # Cache token and expiry
                 self._token = data.get("token")
                 expiry_str = data.get("expiryDate")
                 
@@ -64,11 +59,9 @@ class RMSAuth:
                     raise Exception("No token received from RMS API")
                 
                 if expiry_str:
-                    # Handle different datetime formats
                     try:
                         self._token_expiry = datetime.fromisoformat(expiry_str.replace('Z', '+00:00'))
                     except:
-                        # If parsing fails, set expiry to 24 hours from now
                         from datetime import timedelta
                         self._token_expiry = datetime.now() + timedelta(hours=24)
                 
@@ -88,10 +81,8 @@ class RMSAuth:
             raise
     
     def clear_cache(self):
-        """Clear cached token"""
         self._token = None
         self._token_expiry = None
         print("🗑️ Token cache cleared")
 
-# Singleton instance
 rms_auth = RMSAuth()

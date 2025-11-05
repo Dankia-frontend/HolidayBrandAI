@@ -1,5 +1,5 @@
 import httpx
-from typing import Dict, List, Any
+from typing import Dict, List
 from .rms_auth import rms_auth
 import os
 
@@ -8,12 +8,10 @@ class RMSApiClient:
         self.base_url = os.getenv("RMS_BASE_URL", "https://restapi8.rmscloud.com")
     
     async def _make_request(self, method: str, endpoint: str, **kwargs) -> Dict:
-        """Make authenticated request to RMS API"""
         token = await rms_auth.get_token()
         
-        # RMS uses 'authtoken' header, not 'Authorization: Bearer'
         headers = {
-            "authtoken": token,  # Changed from Authorization: Bearer
+            "authtoken": token,
             "Content-Type": "application/json",
             "Accept": "application/json"
         }
@@ -23,7 +21,6 @@ class RMSApiClient:
         print(f"📤 {method} {url}")
         print(f"   Using token: {token[:20]}...")
         
-        # Print payload if it's a POST/PUT request
         if method in ["POST", "PUT", "PATCH"] and "json" in kwargs:
             import json as json_lib
             payload_str = json_lib.dumps(kwargs["json"], indent=2)
@@ -42,16 +39,13 @@ class RMSApiClient:
                 
                 print(f"📥 Response: {response.status_code}")
                 
-                # If 401, token might be invalid - clear cache and retry once
                 if response.status_code == 401:
                     print("⚠️ 401 Unauthorized - clearing token cache and retrying...")
                     rms_auth.clear_cache()
                     
-                    # Get new token
                     new_token = await rms_auth.get_token()
-                    headers["authtoken"] = new_token  # Update header with new token
+                    headers["authtoken"] = new_token
                     
-                    # Retry request
                     print(f"🔄 Retrying {method} {url}")
                     print(f"   Using new token: {new_token[:20]}...")
                     response = await client.request(
