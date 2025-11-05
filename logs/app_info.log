@@ -52,3 +52,12 @@
 2025-10-21 09:37:44,021 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Anita Rigoni - Chalet 1 - 2025-10-19
 2025-10-21 09:37:47,854 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Cliff Chae - Chalet 2 - 2025-10-19
 2025-10-21 09:37:51,421 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Rick Payne - 052 - 2025-10-13
+2025-11-05 11:14:18,959 - [ERROR] - AppLogger.GHLSubAccount - GHL_AGENCY_API_KEY not configured. Get it from Agency Dashboard → Settings → API Keys
+2025-11-05 11:15:09,660 - [INFO] - AppLogger.GHLSubAccount - Creating GHL sub-account: Test
+2025-11-05 11:15:10,421 - [ERROR] - AppLogger.GHLSubAccount - Failed to create sub-account: 422 - {"businessName":{"message":"The business name field is mandatory.","rule":"required"},"country":{"message":"The country value must be a 2 digit country code, refer : https://www.iban.com/country-codes.","rule":"country"},"timezone":{"message":"The timzone value is invalid.","rule":"timezone"}}
+2025-11-05 11:17:49,027 - [INFO] - AppLogger.GHLSubAccount - Creating GHL sub-account: Test
+2025-11-05 11:17:49,651 - [ERROR] - AppLogger.GHLSubAccount - Failed to create sub-account: 422 - {"businessName":{"message":"The business name field is mandatory.","rule":"required"},"timezone":{"message":"The timzone value is invalid.","rule":"timezone"}}
+2025-11-05 11:19:29,328 - [INFO] - AppLogger.GHLSubAccount - Creating GHL sub-account: Test
+2025-11-05 11:19:31,274 - [INFO] - AppLogger.GHLSubAccount - Successfully created sub-account: Test (ID: 7GnLfRPOVTnLeWxCaSHD)
+2025-11-05 11:26:28,656 - [INFO] - AppLogger.GHLSubAccount - Fetching all GHL locations
+2025-11-05 11:26:29,891 - [INFO] - AppLogger.GHLSubAccount - Found 87 location(s)

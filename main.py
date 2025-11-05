@@ -10,6 +10,7 @@ from utils.logger import get_logger
 from auth.auth import authenticate_request
 from utils.newbook import NB_HEADERS, get_tariff_information, create_tariffs_quoted
 from utils.scheduler import start_scheduler_in_background
+from test_script import create_ghl_subaccount, create_ghl_subaccount_simple, delete_ghl_subaccount, list_ghl_locations, get_ghl_location
 
 app = FastAPI()
 log = get_logger("FastAPI")
@@ -298,8 +299,183 @@ def confirm_booking(
         raise HTTPException(status_code=500, detail=str(e))
 
 
+# 4. Create GHL Sub-Account [POST]
+@app.post("/ghl/create-subaccount")
+def create_ghl_subaccount_endpoint(
+    business_name: str = Query(..., description="Business name for the sub-account (required)"),
+    address: str = Query(None, description="Street address"),
+    city: str = Query(None, description="City name"),
+    state: str = Query(None, description="State/Province code (e.g., 'CA', 'NY')"),
+    postal_code: str = Query(None, description="ZIP/Postal code"),
+    country: str = Query("US", description="Country code (default: 'US')"),
+    website: str = Query(None, description="Business website URL"),
+    timezone: str = Query("America/New_York", description="Timezone (default: 'America/New_York')"),
+    first_name: str = Query(None, description="Primary contact first name"),
+    last_name: str = Query(None, description="Primary contact last name"),
+    email: str = Query(None, description="Primary contact email"),
+    phone: str = Query(None, description="Primary contact phone (E.164 format recommended, e.g., '+1234567890')"),
+    snapshot_id: str = Query(None, description="Optional snapshot ID to apply template"),
+    # _: str = Depends(authenticate_request)
+):
+    """
+    Creates a new sub-account (location) in GoHighLevel using Agency API Key.
+    """
+    try:
+        result = create_ghl_subaccount(
+            businessName=business_name,
+            address=address,
+            city=city,
+            state=state,
+            postal_code=postal_code,
+            country=country,
+            website=website,
+            timezone=timezone,
+            first_name=first_name,
+            last_name=last_name,
+            email=email,
+            phone=phone,
+            snapshot_id=snapshot_id
+        )
+        
+        if result:
+            return {
+                "success": True,
+                "message": "Sub-account created successfully",
+                "data": result
+            }
+        else:
+            raise HTTPException(status_code=400, detail="Failed to create sub-account")
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        log.error(f"Error creating GHL sub-account: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# 5. Create GHL Sub-Account (Simple) [POST]
+@app.post("/ghl/create-subaccount-simple")
+def create_ghl_subaccount_simple_endpoint(
+    name: str = Query(..., description="Business name (required)"),
+    email: str = Query(None, description="Primary contact email"),
+    phone: str = Query(None, description="Primary contact phone"),
+    city: str = Query(None, description="City name"),
+    state: str = Query(None, description="State/Province code"),
+    country: str = Query("US", description="Country code (default: 'US')"),
+    _: str = Depends(authenticate_request)
+):
+    """
+    Simplified endpoint to create a sub-account with minimal required fields.
+    """
+    try:
+        result = create_ghl_subaccount_simple(
+            name=name,
+            email=email,
+            phone=phone,
+            city=city,
+            state=state,
+            country=country
+        )
+        
+        if result:
+            return {
+                "success": True,
+                "message": "Sub-account created successfully",
+                "data": result
+            }
+        else:
+            raise HTTPException(status_code=400, detail="Failed to create sub-account")
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        log.error(f"Error creating GHL sub-account: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# 6. Delete GHL Sub-Account [DELETE]
+@app.delete("/ghl/delete-subaccount")
+def delete_ghl_subaccount_endpoint(
+    location_id: str = Query(..., description="The ID of the location to delete"),
+    _: str = Depends(authenticate_request)
+):
+    """
+    Deletes a sub-account (location) by its ID.
+    """
+    try:
+        success = delete_ghl_subaccount(location_id)
+        
+        if success:
+            return {
+                "success": True,
+                "message": f"Sub-account {location_id} deleted successfully"
+            }
+        else:
+            raise HTTPException(status_code=400, detail=f"Failed to delete sub-account {location_id}")
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        log.error(f"Error deleting GHL sub-account: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# 7. List GHL Locations [GET]
+@app.get("/ghl/list-locations")
+def list_ghl_locations_endpoint(
+    # _: str = Depends(authenticate_request)
+):
+    """
+    Lists all locations (sub-accounts) in the agency.
+    """
+    try:
+        locations = list_ghl_locations()
+        
+        if locations is not None:
+            return {
+                "success": True,
+                "count": len(locations),
+                "locations": locations
+            }
+        else:
+            raise HTTPException(status_code=400, detail="Failed to list locations")
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        log.error(f"Error listing GHL locations: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# 8. Get GHL Location [GET]
+@app.get("/ghl/get-location")
+def get_ghl_location_endpoint(
+    location_id: str = Query(..., description="The ID of the location to retrieve"),
+    # _: str = Depends(authenticate_request)
+):
+    """
+    Gets details of a specific location by ID.
+    """
+    try:
+        location = get_ghl_location(location_id)
+        
+        if location:
+            return {
+                "success": True,
+                "data": location
+            }
+        else:
+            raise HTTPException(status_code=404, detail=f"Location {location_id} not found")
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        log.error(f"Error getting GHL location: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # Run the scheduler in a background thread
-start_scheduler_in_background() # Comment out for local testing
+# start_scheduler_in_background() # Comment out for local testing
 
 
 if __name__ == "__main__":

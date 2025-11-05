@@ -2,12 +2,22 @@
 import requests
 import json
 from config.config import GHL_AGENCY_API_KEY
-from .logger import get_logger
+from utils.logger import get_logger
 
 log = get_logger("GHLSubAccount")
 
+# Common timezone typos mapping
+TIMEZONE_FIXES = {
+    "Austrailia/Sydney": "Australia/Sydney",
+    "Austrailia/Melbourne": "Australia/Melbourne",
+    "Austrailia/Brisbane": "Australia/Brisbane",
+    "Austrailia/Perth": "Australia/Perth",
+    "Austrailia/Adelaide": "Australia/Adelaide",
+    "Austrailia/Darwin": "Australia/Darwin",
+}
+
 def create_ghl_subaccount(
-    name: str,
+    businessName: str,
     address: str = None,
     city: str = None,
     state: str = None,
@@ -58,8 +68,8 @@ def create_ghl_subaccount(
         print(f"❌ Error: {error_msg}")
         return None
     
-    if not name:
-        error_msg = "name is required"
+    if not businessName:
+        error_msg = "businessName is required"
         log.error(error_msg)
         print(f"❌ Error: {error_msg}")
         return None
@@ -74,7 +84,7 @@ def create_ghl_subaccount(
     
     # Build request body
     data = {
-        "name": name
+        "businessName": businessName
     }
     
     # Add optional fields
@@ -91,6 +101,8 @@ def create_ghl_subaccount(
     if website:
         data["website"] = website
     if timezone:
+        # Fix common timezone typos
+        timezone = TIMEZONE_FIXES.get(timezone, timezone)
         data["timezone"] = timezone
     if first_name:
         data["firstName"] = first_name
@@ -106,19 +118,24 @@ def create_ghl_subaccount(
         data["settings"] = settings
     
     try:
-        log.info(f"Creating GHL sub-account: {name}")
-        print(f"[GHL] Creating sub-account: {name}")
+        log.info(f"Creating GHL sub-account: {businessName}")
+        print(f"[GHL] Creating sub-account: {businessName}")
         
         response = requests.post(url, headers=headers, json=data, timeout=30)
         
         if response.status_code == 200:
             result = response.json()
             location_id = result.get("id")
-            location_name = result.get("name")
+            location_name = result.get("name") or result.get("businessName", "N/A")
+            is_archived = result.get("archived", False)
             
             log.info(f"Successfully created sub-account: {location_name} (ID: {location_id})")
             print(f"✅ Successfully created sub-account: {location_name}")
             print(f"   Location ID: {location_id}")
+            print(f"   Archived: {is_archived}")
+            if is_archived:
+                print(f"   ⚠️  WARNING: Location is archived! It may not appear in the dashboard.")
+            print(f"   Full response: {json.dumps(result, indent=2)}")
             
             return result
         else:
@@ -157,7 +174,7 @@ def create_ghl_subaccount_simple(
         dict: Response from GHL API, or None on error
     """
     return create_ghl_subaccount(
-        name=name,
+        businessName=name,
         email=email,
         phone=phone,
         city=city,
@@ -211,6 +228,110 @@ def delete_ghl_subaccount(location_id: str):
         log.exception(error_msg)
         print(f"❌ {error_msg}")
         return False
+
+
+def list_ghl_locations():
+    """
+    Lists all locations (sub-accounts) in the agency.
+    
+    Returns:
+        list: List of location dictionaries, or None on error
+    """
+    if not GHL_AGENCY_API_KEY:
+        log.error("GHL_AGENCY_API_KEY not configured")
+        print("❌ Error: GHL_AGENCY_API_KEY not configured")
+        return None
+    
+    url = "https://rest.gohighlevel.com/v1/locations/"
+    headers = {
+        "Authorization": f"Bearer {GHL_AGENCY_API_KEY}",
+        "Content-Type": "application/json"
+    }
+    
+    try:
+        log.info("Fetching all GHL locations")
+        response = requests.get(url, headers=headers, timeout=30)
+        
+        if response.status_code == 200:
+            result = response.json()
+            locations = result.get("locations", [])
+            
+            log.info(f"Found {len(locations)} location(s)")
+            print(f"✅ Found {len(locations)} location(s):")
+            
+            for loc in locations:
+                loc_id = loc.get("id")
+                loc_name = loc.get("name") or loc.get("businessName", "N/A")
+                is_archived = loc.get("archived", False)
+                status = "ARCHIVED" if is_archived else "ACTIVE"
+                print(f"   - {loc_name} (ID: {loc_id}) - {status}")
+            
+            return locations
+        else:
+            error_msg = f"Failed to list locations: {response.status_code} - {response.text}"
+            log.error(error_msg)
+            print(f"❌ {error_msg}")
+            return None
+            
+    except Exception as e:
+        error_msg = f"Exception while listing locations: {str(e)}"
+        log.exception(error_msg)
+        print(f"❌ {error_msg}")
+        return None
+
+
+def get_ghl_location(location_id: str):
+    """
+    Gets details of a specific location by ID.
+    
+    Args:
+        location_id: The ID of the location to retrieve
+    
+    Returns:
+        dict: Location details, or None on error
+    """
+    if not GHL_AGENCY_API_KEY:
+        log.error("GHL_AGENCY_API_KEY not configured")
+        print("❌ Error: GHL_AGENCY_API_KEY not configured")
+        return None
+    
+    if not location_id:
+        log.error("location_id is required")
+        print("❌ Error: location_id is required")
+        return None
+    
+    url = f"https://rest.gohighlevel.com/v1/locations/{location_id}"
+    headers = {
+        "Authorization": f"Bearer {GHL_AGENCY_API_KEY}",
+        "Content-Type": "application/json"
+    }
+    
+    try:
+        log.info(f"Fetching GHL location: {location_id}")
+        response = requests.get(url, headers=headers, timeout=30)
+        
+        if response.status_code == 200:
+            result = response.json()
+            location_name = result.get("name") or result.get("businessName", "N/A")
+            is_archived = result.get("archived", False)
+            
+            log.info(f"Location found: {location_name} (Archived: {is_archived})")
+            print(f"✅ Location found: {location_name}")
+            print(f"   Archived: {is_archived}")
+            print(f"   Full response: {json.dumps(result, indent=2)}")
+            
+            return result
+        else:
+            error_msg = f"Failed to get location: {response.status_code} - {response.text}"
+            log.error(error_msg)
+            print(f"❌ {error_msg}")
+            return None
+            
+    except Exception as e:
+        error_msg = f"Exception while getting location: {str(e)}"
+        log.exception(error_msg)
+        print(f"❌ {error_msg}")
+        return None
 
 
 # Example usage
