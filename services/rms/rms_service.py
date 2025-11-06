@@ -84,14 +84,21 @@ class RMSService:
             "departure": departure,
             "adults": adults,
             "children": children,
+            "status": "Confirmed",  # Add reservation status
+            "source": "API",  # Add source
             "guest": {
                 "firstName": guest.get('firstName'),
                 "lastName": guest.get('lastName'),
                 "email": guest.get('email'),
                 "phone": guest.get('phone'),
                 "address": guest.get('address', {})
+            },
+            "payment": {  # Add payment object even if empty
+                "method": "PayLater"
             }
         }
+        
+        print(f"📤 Payload being sent: {payload}")
         
         reservation = await rms_client.create_reservation(payload)
         print(f"✅ Reservation created: {reservation.get('confirmationNumber')}")

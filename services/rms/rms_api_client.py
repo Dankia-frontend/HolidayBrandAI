@@ -80,7 +80,8 @@ class RMSApiClient:
         return await self._make_request("POST", "/rates/grid", json=payload)
     
     async def create_reservation(self, payload: Dict) -> Dict:
-        return await self._make_request("POST", "/reservations", json=payload)
+        endpoint = "/reservations?ignoreMandatoryFieldWarnings=false&useIbeDepositRules=true"
+        return await self._make_request("POST", endpoint, json=payload)
     
     async def get_reservation(self, reservation_id: int) -> Dict:
         return await self._make_request("GET", f"/reservations/{reservation_id}")
