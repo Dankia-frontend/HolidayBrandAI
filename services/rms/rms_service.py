@@ -48,7 +48,7 @@ class RMSService:
         
         payload = {
             "propertyId": property_id,
-            "agentId": agent_id,
+            "agentId": 2,
             "arrival": arrival,
             "departure": departure,
             "adults": adults,
