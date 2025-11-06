@@ -111,16 +111,41 @@ class RMSService:
         
         categories = grid_response.get('categories', [])
         for category in categories:
+            category_id = category.get('categoryId')
+            category_name = category.get('name', 'Unknown')
+            
             for rate in category.get('rates', []):
-                if rate.get('available'):
+                rate_id = rate.get('rateId')
+                rate_name = rate.get('name', 'Unknown')
+                
+                day_breakdown = rate.get('dayBreakdown', [])
+                if not day_breakdown:
+                    continue
+                
+                total_price = 0
+                is_available = True
+                
+                for day in day_breakdown:
+                    available_areas = day.get('availableAreas', 0)
+                    
+                    if available_areas <= 0:
+                        is_available = False
+                        break
+                    
+                    daily_rate = day.get('dailyRate', 0)
+                    if daily_rate:
+                        total_price += daily_rate
+                
+                if is_available and total_price > 0:
                     available.append({
-                        'category_id': category['id'],
-                        'category_name': category['name'],
-                        'rate_plan_id': rate['id'],
-                        'rate_plan_name': rate['name'],
-                        'price': rate.get('price'),
-                        'total_price': rate.get('totalPrice', rate.get('price')),
-                        'currency': rate.get('currency', 'USD')
+                        'category_id': category_id,
+                        'category_name': category_name,
+                        'rate_plan_id': rate_id,
+                        'rate_plan_name': rate_name,
+                        'price': day_breakdown[0].get('dailyRate', 0) if day_breakdown else 0,
+                        'total_price': total_price,
+                        'currency': 'AUD',
+                        'available_areas': day_breakdown[0].get('availableAreas', 0) if day_breakdown else 0
                     })
         
         available.sort(key=lambda x: x['total_price'])
