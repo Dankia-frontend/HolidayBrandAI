@@ -91,5 +91,22 @@ class RMSApiClient:
     
     async def search_reservations(self, payload: Dict) -> List[Dict]:
         return await self._make_request("POST", "/reservations/search", json=payload)
+    
+    async def get_account(self, account_id: int) -> Dict:
+        payload = {
+            "accountClass": "Guest",
+            "ids": [account_id]
+        }
+        results = await self._make_request("POST", "/accounts/search", json=payload)
+        # The API may return a list or dict; normalize to a single account dict
+        if isinstance(results, list) and results:
+            return results[0]
+        elif isinstance(results, dict):
+            # Some APIs return {"items": [...]}
+            items = results.get("items") or results.get("accounts") or results.get("data") or []
+            if isinstance(items, list) and items:
+                return items[0]
+            return results
+        return {}
 
 rms_client = RMSApiClient()

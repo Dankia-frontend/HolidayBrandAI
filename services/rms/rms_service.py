@@ -6,6 +6,7 @@ import httpx
 import json
 import asyncio
 from datetime import datetime, timedelta
+from utils.ghl_api import send_to_ghl, get_contact_id, get_valid_access_token, GHL_LOCATION_ID, GHL_CLIENT_ID, GHL_CLIENT_SECRET
 
 class RMSService:
     async def initialize(self):
@@ -283,130 +284,6 @@ class RMSService:
             "value": val
         }
 
-    async def _ghl_upsert_contact(self, client: httpx.AsyncClient, guest: Dict) -> Optional[str]:
-        api_key = os.getenv("GHL_API_KEY")
-        location_id = os.getenv("GHL_LOCATION_ID")
-        if not api_key or not location_id:
-            print("⚠️ Missing GHL_API_KEY or GHL_LOCATION_ID; skipping contact upsert")
-            return None
-
-        headers = {
-            "Authorization": f"Bearer {api_key}",
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-            "Version": "2021-07-28"
-        }
-        payload = {
-            "firstName": guest.get("firstName") or "Guest",
-            "lastName": guest.get("lastName") or "",
-            "email": guest.get("email"),
-            "phone": guest.get("phone"),
-            "source": "RMS",
-            "locationId": location_id
-        }
-        # Remove empty keys to avoid API complaints
-        clean_payload = {k: v for k, v in payload.items() if v}
-
-        # Dump payload to file for auditing/debugging
-        try:
-            await self._dump_ghl_payload(clean_payload, "contact", clean_payload.get("email") or clean_payload.get("phone"))
-        except Exception as e:
-            print(f"⚠️ Failed to write GHL contact payload to disk: {e}")
-
-        r = await client.post(f"{os.getenv('GHL_API_BASE', 'https://services.leadconnectorhq.com')}/contacts/upsert",
-                              headers=headers, json=clean_payload, timeout=30.0)
-        print(f"📥 GHL upsert contact: {r.status_code}")
-        r.raise_for_status()
-        data = r.json()
-        contact = data.get("contact") or data.get("data") or data
-        return contact.get("id")
-
-    async def _ghl_create_opportunity(
-        self,
-        client: httpx.AsyncClient,
-        contact_id: str,
-        booking_info: Dict
-    ) -> Optional[str]:
-        api_key = os.getenv("GHL_API_KEY")
-        location_id = os.getenv("GHL_LOCATION_ID")
-        pipeline_id = os.getenv("GHL_PIPELINE_ID")
-        stage_id = os.getenv("GHL_STAGE_ID")
-        if not all([api_key, location_id, pipeline_id, stage_id, contact_id]):
-            print("⚠️ Missing GHL config; skipping opportunity create")
-            return None
-
-        headers = {
-            "Authorization": f"Bearer {api_key}",
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-            "Version": "2021-07-28"
-        }
-        name = f"RMS Booking {booking_info['id']}" if booking_info.get("id") else "RMS Booking"
-        payload = {
-            "name": name,
-            "pipelineId": pipeline_id,
-            "pipelineStageId": stage_id,
-            "locationId": location_id,
-            "contactId": contact_id,
-            "status": "open",
-            "monetaryValue": booking_info.get("value") or 0,
-            "source": "RMS",
-            "notes": self._format_booking_note(booking_info)
-        }
-
-        # Dump opportunity payload to file for auditing/debugging
-        try:
-            await self._dump_ghl_payload(payload, "opportunity", str(booking_info.get("id") or contact_id))
-        except Exception as e:
-            print(f"⚠️ Failed to write GHL opportunity payload to disk: {e}")
-
-        # r = await client.post(f"{os.getenv('GHL_API_BASE', 'https://services.leadconnectorhq.com')}/opportunities/",
-        #                       headers=headers, json=payload, timeout=30.0)
-        # print(f"📥 GHL create opportunity: {r.status_code}")
-        # r.raise_for_status()
-        # data = r.json()
-        # opp = data.get("opportunity") or data.get("data") or data
-        # return opp.get("id")
-
-    async def _dump_ghl_payload(self, payload: Dict, kind: str, identifier: Optional[str] = None) -> None:
-        """
-        Write the JSON payload to disk asynchronously so we can inspect what we sent to GHL.
-        Controlled by env var GHL_DUMP_DIR (default ./ghl_payloads).
-        """
-        dump_dir = os.getenv("GHL_DUMP_DIR", "./ghl_payloads")
-        try:
-            os.makedirs(dump_dir, exist_ok=True)
-            ts = datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
-            safe_id = "".join(c for c in (identifier or "na") if c.isalnum() or c in ("@", ".", "_", "-"))[:64]
-            filename = f"{ts}_{kind}_{safe_id}.json"
-            path = os.path.join(dump_dir, filename)
-
-            async def _write():
-                with open(path, "w", encoding="utf-8") as f:
-                    json.dump({
-                        "timestamp": ts,
-                        "kind": kind,
-                        "identifier": identifier,
-                        "payload": payload
-                    }, f, indent=2, ensure_ascii=False)
-
-            await asyncio.to_thread(lambda: asyncio.get_event_loop().run_until_complete(_write()) if False else open(path, "w").close())  # placeholder to keep event-loop safe
-
-            # Simpler safe write using to_thread
-            def sync_write():
-                with open(path, "w", encoding="utf-8") as f:
-                    json.dump({
-                        "timestamp": ts,
-                        "kind": kind,
-                        "identifier": identifier,
-                        "payload": payload
-                    }, f, indent=2, ensure_ascii=False)
-
-            await asyncio.to_thread(sync_write)
-            print(f"💾 Wrote GHL payload to {path}")
-        except Exception as e:
-            print(f"⚠️ Error dumping GHL payload: {e}")
-
     async def fetch_and_sync_bookings(
         self,
         arrival_from: Optional[str] = None,
@@ -426,20 +303,58 @@ class RMSService:
         created_opps = 0
         errors = 0
 
-        async with httpx.AsyncClient() as client:
-            for b in items:
+        # Collect all account info in a dict for saving
+        all_accounts = {}
+
+        # Fetch and merge guest info for each reservation
+        for item in items:
+            account_id = item.get("accountId")
+            if account_id:
                 try:
-                    guest = self._extract_primary_guest(b)
-                    booking_info = self._booking_summary(b)
-                    contact_id = await self._ghl_upsert_contact(client, guest)
-                    if contact_id:
-                        synced_contacts += 1
-                        opp_id = await self._ghl_create_opportunity(client, contact_id, booking_info)
-                        if opp_id:
-                            created_opps += 1
+                    account_info = await rms_client.get_account(account_id)
+                    item["account_info"] = account_info
+                    all_accounts[account_id] = account_info
                 except Exception as e:
-                    errors += 1
-                    print(f"❌ Sync failed for booking: {e}")
+                    print(f"⚠️ Failed to fetch account info for accountId={account_id}: {e}")
+
+        # Save all accounts info to a JSON file
+        try:
+            with open("rms_accounts_cache.json", "w", encoding="utf-8") as f:
+                json.dump(all_accounts, f, indent=2, ensure_ascii=False)
+            print(f"✅ Saved {len(all_accounts)} RMS accounts to rms_accounts_cache.json")
+        except Exception as e:
+            print(f"⚠️ Failed to save RMS accounts cache: {e}")
+
+        # Use your ghl_api helpers for GHL sync
+        access_token = get_valid_access_token(GHL_CLIENT_ID, GHL_CLIENT_SECRET)
+        for b in items:
+            try:
+                # Prepare guest info
+                guest = self._extract_primary_guest(b)
+                if "account_info" in b:
+                    guest.update({
+                        "firstName": b["account_info"].get("firstName") or guest.get("firstName"),
+                        "lastName": b["account_info"].get("lastName") or guest.get("lastName"),
+                        "email": b["account_info"].get("email") or guest.get("email"),
+                        "phone": b["account_info"].get("phone") or guest.get("phone"),
+                    })
+                # Use your GHL API helper to get/create contact
+                contact_id = get_contact_id(
+                    access_token,
+                    GHL_LOCATION_ID,
+                    guest.get("firstName"),
+                    guest.get("lastName"),
+                    guest.get("email"),
+                    guest.get("phone")
+                )
+                if contact_id:
+                    synced_contacts += 1
+                    # Use your GHL API helper to send opportunity
+                    send_to_ghl(b, access_token)
+                    created_opps += 1
+            except Exception as e:
+                errors += 1
+                print(f"❌ Sync failed for booking: {e}")
 
         return {
             "fetched": len(items),
