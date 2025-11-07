@@ -362,11 +362,15 @@ class RMSService:
         access_token = get_valid_access_token(GHL_CLIENT_ID, GHL_CLIENT_SECRET)
         for b in items:
             try:
-                # Use guest_info for GHL sync
                 guest = b.get("guest_info") or {}
                 # Ensure booking_status is present for GHL logic
                 if "booking_status" not in b and "status" in b:
                     b["booking_status"] = b["status"]
+                # Map RMS date fields to GHL fields if needed
+                if "booking_arrival" not in b and "arrivalDate" in b:
+                    b["booking_arrival"] = b["arrivalDate"]
+                if "booking_departure" not in b and "departureDate" in b:
+                    b["booking_departure"] = b["departureDate"]
                 contact_id = get_contact_id(
                     access_token,
                     GHL_LOCATION_ID,
