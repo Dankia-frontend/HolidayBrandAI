@@ -349,11 +349,11 @@ async def startup_event():
     # Schedule daily RMS refresh at 3 AM
     try:
         scheduler.add_job(daily_rms_refresh, 'cron', hour=3, minute=0)
-        # Add RMS sync job every 5 minutes
+        # Add RMS sync job every 5 minutes (use asyncio.run for async job in thread)
         scheduler.add_job(
-            lambda: asyncio.create_task(rms_sync_job()),
+            lambda: asyncio.run(rms_sync_job()),
             'interval',
-            minutes=5
+            minutes=1
         )
         scheduler.start()
         print("✅ RMS daily refresh scheduled (3 AM)")
