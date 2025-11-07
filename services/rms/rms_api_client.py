@@ -108,5 +108,8 @@ class RMSApiClient:
                 return items[0]
             return results
         return {}
+    
+    async def search_guests(self, payload: Dict) -> List[Dict]:
+        return await self._make_request("POST", "/guests/search", json=payload)
 
 rms_client = RMSApiClient()

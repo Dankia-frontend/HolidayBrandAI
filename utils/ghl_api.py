@@ -412,17 +412,21 @@ def get_contact_id(token, location_id, first=None, last=None, email=None, phone=
         print(f"[GHL CONTACT ERROR] Failed to create/get contact: {e}")
         return None
 # ✅ Helper function to send data to GHL (example)
-def send_to_ghl(booking, access_token):
+def send_to_ghl(booking, access_token, guest_info=None):
 
     try:
-        
-
-        guest = booking['guests'][0]
-
-        first_name = guest.get("firstname", "")
-        last_name = guest.get("lastname", "")
-        email = next((g.get("content") for g in guest.get("contact_details", []) if g["type"] == "email"), "")
-        phone = next((g.get("content") for g in guest.get("contact_details", []) if g["type"] == "mobile"), "")
+        # Use guest_info if provided, else fallback to booking['guests'][0]
+        if guest_info:
+            first_name = guest_info.get("firstName", "")
+            last_name = guest_info.get("lastName", "")
+            email = guest_info.get("email", "")
+            phone = guest_info.get("phone", "")
+        else:
+            guest = booking['guests'][0]
+            first_name = guest.get("firstname", "")
+            last_name = guest.get("lastname", "")
+            email = next((g.get("content") for g in guest.get("contact_details", []) if g["type"] == "email"), "")
+            phone = next((g.get("content") for g in guest.get("contact_details", []) if g["type"] == "mobile"), "")
 
 
         # 🔹 Get or create contact in GHL
