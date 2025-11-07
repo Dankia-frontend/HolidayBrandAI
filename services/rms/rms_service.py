@@ -5,7 +5,7 @@ import os
 import httpx
 import json
 import asyncio
-from datetime import datetime
+from datetime import datetime, timedelta
 
 class RMSService:
     async def initialize(self):
@@ -174,7 +174,11 @@ class RMSService:
         statuses: Optional[List[str]] = None,
         include_guests: bool = True,
         limit: int = 200,
-        offset: int = 0
+        offset: int = 0,
+        model_type: str = "basic",
+        sort: Optional[str] = None,
+        include_room_move_headers: bool = True,
+        include_group_master_reservations: str = "excludeGroupMasters"
     ) -> Dict:
         """
         Fetch existing bookings from RMS via /reservations/search.
@@ -185,21 +189,39 @@ class RMSService:
         if not property_id:
             raise Exception("RMS not initialized")
 
-        payload: Dict = {
-            "propertyId": property_id,
+        # Build request body for filters and options
+        body: Dict = {
+            "propertyIds": [property_id],
             "includeGuests": include_guests,
-            "limit": limit,
-            "offset": offset
         }
-        if arrival_from:
-            payload["arrivalFrom"] = arrival_from  # ISO date YYYY-MM-DD
-        if arrival_to:
-            payload["arrivalTo"] = arrival_to      # ISO date YYYY-MM-DD
-        if statuses:
-            payload["status"] = statuses           # e.g., ["Confirmed", "Arrived"]
+        # Always use a date range, default to current month if not provided
+        if not arrival_from or not arrival_to:
+            today = datetime.utcnow()
+            first_day = today.replace(day=1)
+            next_month = first_day + timedelta(days=32)
+            last_day = next_month.replace(day=1) - timedelta(days=1)
+            arrival_from = arrival_from or first_day.strftime("%Y-%m-%d")
+            arrival_to = arrival_to or last_day.strftime("%Y-%m-%d")
+        body["arriveFrom"] = arrival_from
+        body["arriveTo"] = arrival_to
 
-        print(f"📡 RMS search reservations: {payload}")
-        results = await rms_client.search_reservations(payload)
+        if statuses:
+            body["listOfStatus"] = statuses
+
+        # Add advanced options to body
+        body["limit"] = limit
+        body["offset"] = offset
+        body["modelType"] = model_type
+        body["includeRoomMoveHeaders"] = include_room_move_headers
+        body["includeGroupMasterReservations"] = include_group_master_reservations
+        if sort:
+            body["sort"] = sort
+
+        print(f"📡 RMS search reservations: body={body}")
+
+        # Use the API client for the request
+        results = await rms_client.search_reservations(body)
+
         # The API may return either a list or an object with items/total; normalize:
         if isinstance(results, dict):
             items = results.get("items") or results.get("reservations") or results.get("data") or []
