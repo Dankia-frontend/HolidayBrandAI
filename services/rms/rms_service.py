@@ -303,19 +303,44 @@ class RMSService:
         created_opps = 0
         errors = 0
 
-        # Collect all account info in a dict for saving
-        all_accounts = {}
-
-        # Fetch and merge guest info for each reservation
+        # Collect all unique account IDs
+        account_ids = set()
         for item in items:
             account_id = item.get("accountId")
             if account_id:
-                try:
-                    account_info = await rms_client.get_account(account_id)
-                    item["account_info"] = account_info
-                    all_accounts[account_id] = account_info
-                except Exception as e:
-                    print(f"⚠️ Failed to fetch account info for accountId={account_id}: {e}")
+                account_ids.add(account_id)
+
+        all_accounts = {}
+
+        # Batch fetch all account infos at once
+        if account_ids:
+            try:
+                payload = {
+                    "accountClass": "Guest",
+                    "ids": list(account_ids)
+                }
+                results = await rms_client._make_request("POST", "/accounts/search", json=payload)
+                # Normalize results to a dict keyed by accountId
+                if isinstance(results, list):
+                    for acc in results:
+                        acc_id = acc.get("id") or acc.get("accountId")
+                        if acc_id:
+                            all_accounts[acc_id] = acc
+                elif isinstance(results, dict):
+                    items_list = results.get("items") or results.get("accounts") or results.get("data") or []
+                    for acc in items_list:
+                        acc_id = acc.get("id") or acc.get("accountId")
+                        if acc_id:
+                            all_accounts[acc_id] = acc
+                print(f"✅ Batch fetched {len(all_accounts)} RMS accounts")
+            except Exception as e:
+                print(f"⚠️ Failed to batch fetch account info: {e}")
+
+        # Attach account_info to each item
+        for item in items:
+            account_id = item.get("accountId")
+            if account_id and account_id in all_accounts:
+                item["account_info"] = all_accounts[account_id]
 
         # Save all accounts info to a JSON file
         try:
@@ -326,35 +351,35 @@ class RMSService:
             print(f"⚠️ Failed to save RMS accounts cache: {e}")
 
         # Use your ghl_api helpers for GHL sync
-        access_token = get_valid_access_token(GHL_CLIENT_ID, GHL_CLIENT_SECRET)
-        for b in items:
-            try:
-                # Prepare guest info
-                guest = self._extract_primary_guest(b)
-                if "account_info" in b:
-                    guest.update({
-                        "firstName": b["account_info"].get("firstName") or guest.get("firstName"),
-                        "lastName": b["account_info"].get("lastName") or guest.get("lastName"),
-                        "email": b["account_info"].get("email") or guest.get("email"),
-                        "phone": b["account_info"].get("phone") or guest.get("phone"),
-                    })
-                # Use your GHL API helper to get/create contact
-                contact_id = get_contact_id(
-                    access_token,
-                    GHL_LOCATION_ID,
-                    guest.get("firstName"),
-                    guest.get("lastName"),
-                    guest.get("email"),
-                    guest.get("phone")
-                )
-                if contact_id:
-                    synced_contacts += 1
-                    # Use your GHL API helper to send opportunity
-                    send_to_ghl(b, access_token)
-                    created_opps += 1
-            except Exception as e:
-                errors += 1
-                print(f"❌ Sync failed for booking: {e}")
+        # access_token = get_valid_access_token(GHL_CLIENT_ID, GHL_CLIENT_SECRET)
+        # for b in items:
+        #     try:
+        #         # Prepare guest info
+        #         guest = self._extract_primary_guest(b)
+        #         if "account_info" in b:
+        #             guest.update({
+        #                 "firstName": b["account_info"].get("firstName") or guest.get("firstName"),
+        #                 "lastName": b["account_info"].get("lastName") or guest.get("lastName"),
+        #                 "email": b["account_info"].get("email") or guest.get("email"),
+        #                 "phone": b["account_info"].get("phone") or guest.get("phone"),
+        #             })
+        #         # Use your GHL API helper to get/create contact
+        #         contact_id = get_contact_id(
+        #             access_token,
+        #             GHL_LOCATION_ID,
+        #             guest.get("firstName"),
+        #             guest.get("lastName"),
+        #             guest.get("email"),
+        #             guest.get("phone")
+        #         )
+        #         if contact_id:
+        #             synced_contacts += 1
+        #             # Use your GHL API helper to send opportunity
+        #             send_to_ghl(b, access_token)
+        #             created_opps += 1
+        #     except Exception as e:
+        #         errors += 1
+        #         print(f"❌ Sync failed for booking: {e}")
 
         return {
             "fetched": len(items),
