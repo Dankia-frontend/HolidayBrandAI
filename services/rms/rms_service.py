@@ -359,26 +359,29 @@ class RMSService:
             print(f"⚠️ Failed to save RMS guests cache: {e}")
 
         # Use your ghl_api helpers for GHL sync
-        # access_token = get_valid_access_token(GHL_CLIENT_ID, GHL_CLIENT_SECRET)
-        # for b in items:
-        #     try:
-        #         # Use guest_info for GHL sync
-        #         guest = b.get("guest_info") or {}
-        #         contact_id = get_contact_id(
-        #             access_token,
-        #             GHL_LOCATION_ID,
-        #             guest.get("firstName"),
-        #             guest.get("lastName"),
-        #             guest.get("email"),
-        #             guest.get("phone")
-        #         )
-        #         if contact_id:
-        #             synced_contacts += 1
-        #             send_to_ghl(b, access_token, guest_info=guest)
-        #             created_opps += 1
-        #     except Exception as e:
-        #         errors += 1
-        #         print(f"❌ Sync failed for booking: {e}")
+        access_token = get_valid_access_token(GHL_CLIENT_ID, GHL_CLIENT_SECRET)
+        for b in items:
+            try:
+                # Use guest_info for GHL sync
+                guest = b.get("guest_info") or {}
+                # Ensure booking_status is present for GHL logic
+                if "booking_status" not in b and "status" in b:
+                    b["booking_status"] = b["status"]
+                contact_id = get_contact_id(
+                    access_token,
+                    GHL_LOCATION_ID,
+                    guest.get("firstName"),
+                    guest.get("lastName"),
+                    guest.get("email"),
+                    guest.get("phone")
+                )
+                if contact_id:
+                    synced_contacts += 1
+                    send_to_ghl(b, access_token, guest_info=guest)
+                    created_opps += 1
+            except Exception as e:
+                errors += 1
+                print(f"❌ Sync failed for booking: {e}")
 
         return {
             "fetched": len(items),
