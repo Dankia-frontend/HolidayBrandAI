@@ -3,6 +3,8 @@ from .rms_api_client import rms_client
 from .rms_cache import rms_cache
 import os
 import httpx
+import json
+import asyncio
 from datetime import datetime
 
 class RMSService:
@@ -282,6 +284,13 @@ class RMSService:
         }
         # Remove empty keys to avoid API complaints
         clean_payload = {k: v for k, v in payload.items() if v}
+
+        # Dump payload to file for auditing/debugging
+        try:
+            await self._dump_ghl_payload(clean_payload, "contact", clean_payload.get("email") or clean_payload.get("phone"))
+        except Exception as e:
+            print(f"⚠️ Failed to write GHL contact payload to disk: {e}")
+
         r = await client.post(f"{os.getenv('GHL_API_BASE', 'https://services.leadconnectorhq.com')}/contacts/upsert",
                               headers=headers, json=clean_payload, timeout=30.0)
         print(f"📥 GHL upsert contact: {r.status_code}")
@@ -322,26 +331,59 @@ class RMSService:
             "source": "RMS",
             "notes": self._format_booking_note(booking_info)
         }
-        r = await client.post(f"{os.getenv('GHL_API_BASE', 'https://services.leadconnectorhq.com')}/opportunities/",
-                              headers=headers, json=payload, timeout=30.0)
-        print(f"📥 GHL create opportunity: {r.status_code}")
-        r.raise_for_status()
-        data = r.json()
-        opp = data.get("opportunity") or data.get("data") or data
-        return opp.get("id")
 
-    def _format_booking_note(self, booking_info: Dict) -> str:
-        a = booking_info.get("arrival")
-        d = booking_info.get("departure")
+        # Dump opportunity payload to file for auditing/debugging
         try:
-            a_str = datetime.fromisoformat(a.replace("Z", "+00:00")).strftime("%Y-%m-%d %H:%M") if a else str(a)
-        except Exception:
-            a_str = str(a)
+            await self._dump_ghl_payload(payload, "opportunity", str(booking_info.get("id") or contact_id))
+        except Exception as e:
+            print(f"⚠️ Failed to write GHL opportunity payload to disk: {e}")
+
+        # r = await client.post(f"{os.getenv('GHL_API_BASE', 'https://services.leadconnectorhq.com')}/opportunities/",
+        #                       headers=headers, json=payload, timeout=30.0)
+        # print(f"📥 GHL create opportunity: {r.status_code}")
+        # r.raise_for_status()
+        # data = r.json()
+        # opp = data.get("opportunity") or data.get("data") or data
+        # return opp.get("id")
+
+    async def _dump_ghl_payload(self, payload: Dict, kind: str, identifier: Optional[str] = None) -> None:
+        """
+        Write the JSON payload to disk asynchronously so we can inspect what we sent to GHL.
+        Controlled by env var GHL_DUMP_DIR (default ./ghl_payloads).
+        """
+        dump_dir = os.getenv("GHL_DUMP_DIR", "./ghl_payloads")
         try:
-            d_str = datetime.fromisoformat(d.replace("Z", "+00:00")).strftime("%Y-%m-%d %H:%M") if d else str(d)
-        except Exception:
-            d_str = str(d)
-        return f"Status: {booking_info.get('status')}\nArrival: {a_str}\nDeparture: {d_str}"
+            os.makedirs(dump_dir, exist_ok=True)
+            ts = datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
+            safe_id = "".join(c for c in (identifier or "na") if c.isalnum() or c in ("@", ".", "_", "-"))[:64]
+            filename = f"{ts}_{kind}_{safe_id}.json"
+            path = os.path.join(dump_dir, filename)
+
+            async def _write():
+                with open(path, "w", encoding="utf-8") as f:
+                    json.dump({
+                        "timestamp": ts,
+                        "kind": kind,
+                        "identifier": identifier,
+                        "payload": payload
+                    }, f, indent=2, ensure_ascii=False)
+
+            await asyncio.to_thread(lambda: asyncio.get_event_loop().run_until_complete(_write()) if False else open(path, "w").close())  # placeholder to keep event-loop safe
+
+            # Simpler safe write using to_thread
+            def sync_write():
+                with open(path, "w", encoding="utf-8") as f:
+                    json.dump({
+                        "timestamp": ts,
+                        "kind": kind,
+                        "identifier": identifier,
+                        "payload": payload
+                    }, f, indent=2, ensure_ascii=False)
+
+            await asyncio.to_thread(sync_write)
+            print(f"💾 Wrote GHL payload to {path}")
+        except Exception as e:
+            print(f"⚠️ Error dumping GHL payload: {e}")
 
     async def fetch_and_sync_bookings(
         self,

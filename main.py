@@ -1,3 +1,4 @@
+import asyncio
 from datetime import datetime, timedelta
 from fastapi import FastAPI, Query, HTTPException, Depends
 from schemas.schemas import BookingRequest, AvailabilityRequest, CheckBooking
@@ -321,6 +322,15 @@ async def daily_rms_refresh():
     except Exception as e:
         print(f"❌ Daily RMS cache refresh failed: {e}")
 
+async def rms_sync_job():
+    """Sync RMS bookings with GHL every 5 minutes."""
+    print("⏰ Running RMS fetch_and_sync_bookings job...")
+    try:
+        result = await rms_service.fetch_and_sync_bookings()
+        print("✅ Sync result:", result)
+    except Exception as e:
+        print(f"❌ RMS sync job failed: {e}")
+
 @app.on_event("startup")
 async def startup_event():
     # Initialize RMS (lightweight - only property ID)
@@ -339,8 +349,15 @@ async def startup_event():
     # Schedule daily RMS refresh at 3 AM
     try:
         scheduler.add_job(daily_rms_refresh, 'cron', hour=3, minute=0)
+        # Add RMS sync job every 5 minutes
+        scheduler.add_job(
+            lambda: asyncio.create_task(rms_sync_job()),
+            'interval',
+            minutes=5
+        )
         scheduler.start()
         print("✅ RMS daily refresh scheduled (3 AM)")
+        print("✅ RMS sync job scheduled (every 5 minutes)")
     except Exception as e:
         print(f"⚠️ Scheduler error: {e}")
 
