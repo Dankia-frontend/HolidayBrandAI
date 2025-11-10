@@ -284,6 +284,19 @@ class RMSService:
             "value": val
         }
 
+    def _save_ghl_payloads_by_status(self, ghl_payloads_by_status: Dict[str, list]):
+        """
+        Save each status list to its own JSON file for GHL payload auditing.
+        """
+        for status, bookings in ghl_payloads_by_status.items():
+            filename = f"rms_ghl_payload_{status}.json"
+            try:
+                with open(filename, "w", encoding="utf-8") as f:
+                    json.dump(bookings, f, indent=2, ensure_ascii=False)
+                print(f"✅ Saved {len(bookings)} bookings to {filename}")
+            except Exception as e:
+                print(f"⚠️ Failed to save {filename}: {e}")
+
     async def fetch_and_sync_bookings(
         self,
         arrival_from: Optional[str] = None,
@@ -303,7 +316,9 @@ class RMSService:
         created_opps = 0
         errors = 0
 
-     
+        # Prepare dict to collect bookings by status for GHL payload tracking
+        ghl_payloads_by_status = {}
+
         # Collect all unique guest IDs
         guest_ids = set()
         for item in items:
@@ -350,16 +365,9 @@ class RMSService:
             if guest_id and guest_id in all_guests:
                 item["guest_info"] = all_guests[guest_id]
 
-        # Save only GHL-relevant guest info to a JSON file
-        try:
-            with open("rms_guests_cache.json", "w", encoding="utf-8") as f:
-                json.dump(all_guests, f, indent=2, ensure_ascii=False)
-            print(f"✅ Saved {len(all_guests)} RMS guests to rms_guests_cache.json")
-        except Exception as e:
-            print(f"⚠️ Failed to save RMS guests cache: {e}")
-
+   
         # Use your ghl_api helpers for GHL sync
-        access_token = get_valid_access_token(GHL_CLIENT_ID, GHL_CLIENT_SECRET)
+        # access_token = get_valid_access_token(GHL_CLIENT_ID, GHL_CLIENT_SECRET)
         for b in items:
             try:
                 guest = b.get("guest_info") or {}
@@ -371,21 +379,46 @@ class RMSService:
                     b["booking_arrival"] = b["arrivalDate"]
                 if "booking_departure" not in b and "departureDate" in b:
                     b["booking_departure"] = b["departureDate"]
-                contact_id = get_contact_id(
-                    access_token,
-                    GHL_LOCATION_ID,
-                    guest.get("firstName"),
-                    guest.get("lastName"),
-                    guest.get("email"),
-                    guest.get("phone")
-                )
-                if contact_id:
-                    synced_contacts += 1
-                    send_to_ghl(b, access_token, guest_info=guest)
-                    created_opps += 1
+
+                # Skip if firstName is missing or empty
+                if not guest.get("firstName"):
+                    continue
+
+                # Track by status for reporting
+                status_key = b.get("booking_status", "unknown").lower()
+                if status_key not in ghl_payloads_by_status:
+                    ghl_payloads_by_status[status_key] = []
+                # Save a copy of the guest info and dates as sent to GHL
+                ghl_payloads_by_status[status_key].append({
+                    "guest_info": {
+                        "firstName": guest.get("firstName"),
+                        "lastName": guest.get("lastName"),
+                        "email": guest.get("email"),
+                        "phone": guest.get("phone"),
+                        "status": b.get("booking_status"),
+                        "booking_arrival": b.get("booking_arrival"),
+                        "booking_departure": b.get("booking_departure")
+                    }
+                })
+
+                # contact_id = get_contact_id(
+                #     access_token,
+                #     GHL_LOCATION_ID,
+                #     guest.get("firstName"),
+                #     guest.get("lastName"),
+                #     guest.get("email"),
+                #     guest.get("phone")
+                # )
+                # if contact_id:
+                #     synced_contacts += 1
+                #     send_to_ghl(b, access_token, guest_info=guest)
+                #     created_opps += 1
             except Exception as e:
                 errors += 1
                 print(f"❌ Sync failed for booking: {e}")
+
+        # Save each status list to its own JSON file (now via helper)
+        self._save_ghl_payloads_by_status(ghl_payloads_by_status)
 
         return {
             "fetched": len(items),

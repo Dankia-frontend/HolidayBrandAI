@@ -326,7 +326,7 @@ async def rms_sync_job():
     """Sync RMS bookings with GHL every 5 minutes."""
     print("⏰ Running RMS fetch_and_sync_bookings job...")
     try:
-        result = await rms_service.fetch_and_sync_bookings()
+        result = await rms_service.fetch_and_sync_bookings(arrival_from='2025-11-10')
         print("✅ Sync result:", result)
     except Exception as e:
         print(f"❌ RMS sync job failed: {e}")
