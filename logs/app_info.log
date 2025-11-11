@@ -1,197 +1,63 @@
-2025-11-11 06:52:03,681 - [INFO] - AppLogger.FastAPI - Initializing database tables...
-2025-11-11 06:52:05,553 - [INFO] - AppLogger.ParkConfigDB - park_configurations table created successfully or already exists
-2025-11-11 07:46:36,584 - [INFO] - AppLogger.FastAPI - Initializing database tables...
-2025-11-11 07:46:38,165 - [INFO] - AppLogger.ParkConfigDB - park_configurations table created successfully or already exists
-2025-11-11 07:46:44,987 - [INFO] - AppLogger.FastAPI - Initializing database tables...
-2025-11-11 07:46:46,527 - [INFO] - AppLogger.ParkConfigDB - park_configurations table created successfully or already exists
-2025-11-11 07:48:12,967 - [INFO] - AppLogger.FastAPI - Initializing database tables...
-2025-11-11 07:48:14,678 - [INFO] - AppLogger.ParkConfigDB - park_configurations table created successfully or already exists
-2025-11-11 07:49:07,176 - [INFO] - AppLogger.FastAPI - Cloning Voice AI agents from UTkbqQXAR7A3UsirpOje to BP7bzYGH9SpCRK6oPNVg
-2025-11-11 07:49:07,177 - [INFO] - AppLogger.VoiceAIAgents - Starting Voice AI agents cloning from UTkbqQXAR7A3UsirpOje to BP7bzYGH9SpCRK6oPNVg
-2025-11-11 07:49:07,177 - [INFO] - AppLogger.VoiceAIAgents - Using GHL Agency/Private Integration API Key for Voice AI Agents
-2025-11-11 07:49:07,179 - [INFO] - AppLogger.VoiceAIAgents - Fetching Voice AI agents for location UTkbqQXAR7A3UsirpOje (limit: 100, offset: 0)
-2025-11-11 07:49:09,095 - [ERROR] - AppLogger.VoiceAIAgents - ❌ Authorization error: {"statusCode":401,"message":"Invalid JWT"}
-2025-11-11 07:49:09,101 - [ERROR] - AppLogger.VoiceAIAgents - ================================================================================
-2025-11-11 07:49:09,120 - [ERROR] - AppLogger.VoiceAIAgents - 🔐 AUTHENTICATION REQUIRED:
-2025-11-11 07:49:09,134 - [ERROR] - AppLogger.VoiceAIAgents - The Voice AI Agents API requires a Private Integration key with specific scopes.
-2025-11-11 07:49:09,135 - [ERROR] - AppLogger.VoiceAIAgents - 
-2025-11-11 07:49:09,137 - [ERROR] - AppLogger.VoiceAIAgents - 📋 TO FIX THIS:
-2025-11-11 07:49:09,156 - [ERROR] - AppLogger.VoiceAIAgents - 1. Go to GHL Settings → Company Settings → Integrations
-2025-11-11 07:49:09,160 - [ERROR] - AppLogger.VoiceAIAgents - 2. Create a new Private Integration
-2025-11-11 07:49:09,207 - [ERROR] - AppLogger.VoiceAIAgents - 3. Select these scopes:
-2025-11-11 07:49:09,225 - [ERROR] - AppLogger.VoiceAIAgents -    ✅ voiceai.agents.read
-2025-11-11 07:49:09,237 - [ERROR] - AppLogger.VoiceAIAgents -    ✅ voiceai.agents.write
-2025-11-11 07:49:09,247 - [ERROR] - AppLogger.VoiceAIAgents -    ✅ locations.readonly (optional)
-2025-11-11 07:49:09,254 - [ERROR] - AppLogger.VoiceAIAgents - 4. Copy the generated API key
-2025-11-11 07:49:09,259 - [ERROR] - AppLogger.VoiceAIAgents - 5. Update your .env file: GHL_AGENCY_API_KEY=your_private_integration_key
-2025-11-11 07:49:09,269 - [ERROR] - AppLogger.VoiceAIAgents - 6. Restart your backend server
-2025-11-11 07:49:09,273 - [ERROR] - AppLogger.VoiceAIAgents - 
-2025-11-11 07:49:09,294 - [ERROR] - AppLogger.VoiceAIAgents - 📖 See detailed guide: VOICE_AI_PRIVATE_INTEGRATION_SETUP.md
-2025-11-11 07:49:09,405 - [ERROR] - AppLogger.VoiceAIAgents - ================================================================================
-2025-11-11 07:54:26,209 - [INFO] - AppLogger.FastAPI - Initializing database tables...
-2025-11-11 07:54:27,816 - [INFO] - AppLogger.ParkConfigDB - park_configurations table created successfully or already exists
-2025-11-11 07:54:47,323 - [INFO] - AppLogger.FastAPI - Initializing database tables...
-2025-11-11 07:54:48,915 - [INFO] - AppLogger.ParkConfigDB - park_configurations table created successfully or already exists
-2025-11-11 08:10:03,890 - [INFO] - AppLogger.GHLSubAccount - Fetching all GHL locations
-2025-11-11 08:10:03,893 - [INFO] - AppLogger.VoiceAI - Using GHL Agency API Key for authentication
-2025-11-11 08:10:03,897 - [INFO] - AppLogger.VoiceAI - Fetching AI assistants for location UTkbqQXAR7A3UsirpOje
-2025-11-11 08:10:03,900 - [INFO] - AppLogger.VoiceAIAgents - Using GHL Agency/Private Integration API Key for Voice AI Agents
-2025-11-11 08:10:03,902 - [INFO] - AppLogger.VoiceAIAgents - Fetching Voice AI agents for location UTkbqQXAR7A3UsirpOje (limit: 100, offset: 0)
-2025-11-11 08:10:06,229 - [ERROR] - AppLogger.VoiceAI - ❌ Authorization error with Agency API Key. Error: {"statusCode":401,"message":"Invalid JWT"}
-2025-11-11 08:10:06,233 - [INFO] - AppLogger.VoiceAI - Using GHL Agency API Key for authentication
-2025-11-11 08:10:06,233 - [INFO] - AppLogger.VoiceAI - Fetching workflows for location UTkbqQXAR7A3UsirpOje
-2025-11-11 08:10:06,240 - [ERROR] - AppLogger.VoiceAIAgents - ❌ Authorization error: {"statusCode":401,"message":"Invalid JWT"}
-2025-11-11 08:10:06,241 - [ERROR] - AppLogger.VoiceAIAgents - ================================================================================
-2025-11-11 08:10:06,242 - [ERROR] - AppLogger.VoiceAIAgents - 🔐 AUTHENTICATION REQUIRED:
-2025-11-11 08:10:06,242 - [ERROR] - AppLogger.VoiceAIAgents - The Voice AI Agents API requires a Private Integration key with specific scopes.
-2025-11-11 08:10:06,243 - [ERROR] - AppLogger.VoiceAIAgents - 
-2025-11-11 08:10:06,244 - [ERROR] - AppLogger.VoiceAIAgents - 📋 TO FIX THIS:
-2025-11-11 08:10:06,245 - [ERROR] - AppLogger.VoiceAIAgents - 1. Go to GHL Settings → Company Settings → Integrations
-2025-11-11 08:10:06,246 - [ERROR] - AppLogger.VoiceAIAgents - 2. Create a new Private Integration
-2025-11-11 08:10:06,247 - [ERROR] - AppLogger.VoiceAIAgents - 3. Select these scopes:
-2025-11-11 08:10:06,248 - [ERROR] - AppLogger.VoiceAIAgents -    ✅ voiceai.agents.read
-2025-11-11 08:10:06,249 - [ERROR] - AppLogger.VoiceAIAgents -    ✅ voiceai.agents.write
-2025-11-11 08:10:06,254 - [ERROR] - AppLogger.VoiceAIAgents -    ✅ locations.readonly (optional)
-2025-11-11 08:10:06,299 - [ERROR] - AppLogger.VoiceAIAgents - 4. Copy the generated API key
-2025-11-11 08:10:06,300 - [ERROR] - AppLogger.VoiceAIAgents - 5. Update your .env file: GHL_AGENCY_API_KEY=your_private_integration_key
-2025-11-11 08:10:06,305 - [ERROR] - AppLogger.VoiceAIAgents - 6. Restart your backend server
-2025-11-11 08:10:06,313 - [ERROR] - AppLogger.VoiceAIAgents - 
-2025-11-11 08:10:06,330 - [ERROR] - AppLogger.VoiceAIAgents - 📖 See detailed guide: VOICE_AI_PRIVATE_INTEGRATION_SETUP.md
-2025-11-11 08:10:06,334 - [ERROR] - AppLogger.VoiceAIAgents - ================================================================================
-2025-11-11 08:10:06,453 - [INFO] - AppLogger.VoiceAIAgents - Using GHL Agency/Private Integration API Key for Voice AI Agents
-2025-11-11 08:10:06,463 - [INFO] - AppLogger.VoiceAIAgents - Fetching Voice AI agents for location UTkbqQXAR7A3UsirpOje (limit: 100, offset: 0)
-2025-11-11 08:10:07,023 - [INFO] - AppLogger.GHLSubAccount - Found 88 location(s)
-2025-11-11 08:10:07,951 - [ERROR] - AppLogger.VoiceAI - ❌ Failed to fetch workflows: 404 - 
-2025-11-11 08:10:07,994 - [INFO] - AppLogger.VoiceAI - Using GHL Agency API Key for authentication
-2025-11-11 08:10:08,010 - [INFO] - AppLogger.VoiceAI - Fetching AI assistants for location UTkbqQXAR7A3UsirpOje
-2025-11-11 08:10:08,076 - [INFO] - AppLogger.GHLSubAccount - Fetching all GHL locations
-2025-11-11 08:10:08,198 - [ERROR] - AppLogger.VoiceAIAgents - ❌ Authorization error: {"statusCode":401,"message":"Invalid JWT"}
-2025-11-11 08:10:08,203 - [ERROR] - AppLogger.VoiceAIAgents - ================================================================================
-2025-11-11 08:10:08,208 - [ERROR] - AppLogger.VoiceAIAgents - 🔐 AUTHENTICATION REQUIRED:
-2025-11-11 08:10:08,221 - [ERROR] - AppLogger.VoiceAIAgents - The Voice AI Agents API requires a Private Integration key with specific scopes.
-2025-11-11 08:10:08,222 - [ERROR] - AppLogger.VoiceAIAgents - 
-2025-11-11 08:10:08,223 - [ERROR] - AppLogger.VoiceAIAgents - 📋 TO FIX THIS:
-2025-11-11 08:10:08,224 - [ERROR] - AppLogger.VoiceAIAgents - 1. Go to GHL Settings → Company Settings → Integrations
-2025-11-11 08:10:08,224 - [ERROR] - AppLogger.VoiceAIAgents - 2. Create a new Private Integration
-2025-11-11 08:10:08,227 - [ERROR] - AppLogger.VoiceAIAgents - 3. Select these scopes:
-2025-11-11 08:10:08,229 - [ERROR] - AppLogger.VoiceAIAgents -    ✅ voiceai.agents.read
-2025-11-11 08:10:08,245 - [ERROR] - AppLogger.VoiceAIAgents -    ✅ voiceai.agents.write
-2025-11-11 08:10:08,275 - [ERROR] - AppLogger.VoiceAIAgents -    ✅ locations.readonly (optional)
-2025-11-11 08:10:08,278 - [ERROR] - AppLogger.VoiceAIAgents - 4. Copy the generated API key
-2025-11-11 08:10:08,281 - [ERROR] - AppLogger.VoiceAIAgents - 5. Update your .env file: GHL_AGENCY_API_KEY=your_private_integration_key
-2025-11-11 08:10:08,295 - [ERROR] - AppLogger.VoiceAIAgents - 6. Restart your backend server
-2025-11-11 08:10:08,297 - [ERROR] - AppLogger.VoiceAIAgents - 
-2025-11-11 08:10:08,362 - [ERROR] - AppLogger.VoiceAIAgents - 📖 See detailed guide: VOICE_AI_PRIVATE_INTEGRATION_SETUP.md
-2025-11-11 08:10:08,410 - [ERROR] - AppLogger.VoiceAIAgents - ================================================================================
-2025-11-11 08:10:09,756 - [ERROR] - AppLogger.VoiceAI - ❌ Authorization error with Agency API Key. Error: {"statusCode":401,"message":"Invalid JWT"}
-2025-11-11 08:10:09,761 - [INFO] - AppLogger.VoiceAI - Using GHL Agency API Key for authentication
-2025-11-11 08:10:09,762 - [INFO] - AppLogger.VoiceAI - Fetching workflows for location UTkbqQXAR7A3UsirpOje
-2025-11-11 08:10:10,489 - [INFO] - AppLogger.GHLSubAccount - Found 88 location(s)
-2025-11-11 08:10:11,191 - [ERROR] - AppLogger.VoiceAI - ❌ Failed to fetch workflows: 404 - 
-2025-11-11 08:12:39,973 - [INFO] - AppLogger.FastAPI - Initializing database tables...
-2025-11-11 08:12:41,617 - [INFO] - AppLogger.ParkConfigDB - park_configurations table created successfully or already exists
-2025-11-11 08:12:55,408 - [INFO] - AppLogger.FastAPI - Initializing database tables...
-2025-11-11 08:12:57,137 - [INFO] - AppLogger.ParkConfigDB - park_configurations table created successfully or already exists
-2025-11-11 08:13:05,478 - [INFO] - AppLogger.FastAPI - Initializing database tables...
-2025-11-11 08:13:07,025 - [INFO] - AppLogger.ParkConfigDB - park_configurations table created successfully or already exists
-2025-11-11 08:13:48,734 - [INFO] - AppLogger.FastAPI - Initializing database tables...
-2025-11-11 08:13:50,391 - [INFO] - AppLogger.ParkConfigDB - park_configurations table created successfully or already exists
-2025-11-11 08:14:26,392 - [INFO] - AppLogger.GHLSubAccount - Fetching all GHL locations
-2025-11-11 08:14:26,610 - [INFO] - AppLogger.VoiceAI - Using GHL Agency API Key for authentication
-2025-11-11 08:14:26,670 - [INFO] - AppLogger.VoiceAI - Fetching AI assistants for location UTkbqQXAR7A3UsirpOje
-2025-11-11 08:14:27,855 - [INFO] - AppLogger.VoiceAIAgents - ✅ Using OAuth access token from database for Voice AI Agents
-2025-11-11 08:14:27,937 - [INFO] - AppLogger.VoiceAIAgents - Fetching Voice AI agents for location UTkbqQXAR7A3UsirpOje (limit: 100, offset: 0)
-2025-11-11 08:14:28,654 - [ERROR] - AppLogger.VoiceAI - ❌ Authorization error with Agency API Key. Error: {"statusCode":401,"message":"Invalid JWT"}
-2025-11-11 08:14:28,662 - [INFO] - AppLogger.VoiceAI - Using GHL Agency API Key for authentication
-2025-11-11 08:14:28,663 - [INFO] - AppLogger.VoiceAI - Fetching workflows for location UTkbqQXAR7A3UsirpOje
-2025-11-11 08:14:29,175 - [INFO] - AppLogger.GHLSubAccount - Found 88 location(s)
-2025-11-11 08:14:30,042 - [ERROR] - AppLogger.VoiceAIAgents - ❌ Authorization error: {"statusCode":401,"message":"The token is not authorized for this scope."}
-2025-11-11 08:14:31,267 - [ERROR] - AppLogger.VoiceAI - ❌ Failed to fetch workflows: 404 - 
-2025-11-11 08:14:32,713 - [ERROR] - AppLogger.VoiceAIAgents - ================================================================================
-2025-11-11 08:14:32,743 - [ERROR] - AppLogger.VoiceAIAgents - 🔐 AUTHENTICATION REQUIRED:
-2025-11-11 08:14:32,751 - [ERROR] - AppLogger.VoiceAIAgents - The Voice AI Agents API requires authentication with specific scopes.
-2025-11-11 08:14:32,782 - [ERROR] - AppLogger.VoiceAIAgents - 
-2025-11-11 08:14:32,799 - [ERROR] - AppLogger.VoiceAIAgents - 📋 YOUR OAUTH TOKEN IS MISSING REQUIRED SCOPES
-2025-11-11 08:14:32,823 - [ERROR] - AppLogger.VoiceAIAgents - 
-2025-11-11 08:14:32,829 - [ERROR] - AppLogger.VoiceAIAgents - 🔧 HOW TO FIX:
-2025-11-11 08:14:32,840 - [ERROR] - AppLogger.VoiceAIAgents - 1. Go to GHL Marketplace → My Apps → Your OAuth App
-2025-11-11 08:14:32,847 - [ERROR] - AppLogger.VoiceAIAgents - 2. Edit your OAuth app settings
-2025-11-11 08:14:32,854 - [ERROR] - AppLogger.VoiceAIAgents - 3. In the 'Scopes' section, add these scopes:
-2025-11-11 08:14:32,856 - [ERROR] - AppLogger.VoiceAIAgents -    ✅ voiceai.agents.read
-2025-11-11 08:14:32,860 - [INFO] - AppLogger.GHLSubAccount - Fetching all GHL locations
-2025-11-11 08:14:32,863 - [INFO] - AppLogger.VoiceAI - Using GHL Agency API Key for authentication
-2025-11-11 08:14:32,866 - [ERROR] - AppLogger.VoiceAIAgents -    ✅ voiceai.agents.write
-2025-11-11 08:14:32,872 - [INFO] - AppLogger.VoiceAI - Fetching AI assistants for location UTkbqQXAR7A3UsirpOje
-2025-11-11 08:14:32,875 - [ERROR] - AppLogger.VoiceAIAgents -    ✅ locations.readonly (optional)
-2025-11-11 08:14:32,883 - [ERROR] - AppLogger.VoiceAIAgents - 4. Save the changes
-2025-11-11 08:14:32,896 - [ERROR] - AppLogger.VoiceAIAgents - 5. Re-authorize your application:
-2025-11-11 08:14:32,901 - [ERROR] - AppLogger.VoiceAIAgents -    - Delete old tokens: DELETE FROM tokens WHERE id = 1;
-2025-11-11 08:14:32,916 - [ERROR] - AppLogger.VoiceAIAgents -    - Run: python test_ghl_auth.py
-2025-11-11 08:14:32,917 - [ERROR] - AppLogger.VoiceAIAgents -    - Complete the OAuth authorization flow
-2025-11-11 08:14:32,931 - [ERROR] - AppLogger.VoiceAIAgents - 6. Restart your backend server
-2025-11-11 08:14:32,931 - [ERROR] - AppLogger.VoiceAIAgents - 
-2025-11-11 08:14:32,947 - [ERROR] - AppLogger.VoiceAIAgents - 📖 See: VOICE_AI_AGENTS_CORRECT_SCOPES.md
-2025-11-11 08:14:32,948 - [ERROR] - AppLogger.VoiceAIAgents - ================================================================================
-2025-11-11 08:14:34,436 - [INFO] - AppLogger.VoiceAIAgents - ✅ Using OAuth access token from database for Voice AI Agents
-2025-11-11 08:14:34,437 - [INFO] - AppLogger.VoiceAIAgents - Fetching Voice AI agents for location UTkbqQXAR7A3UsirpOje (limit: 100, offset: 0)
-2025-11-11 08:14:34,461 - [ERROR] - AppLogger.VoiceAI - ❌ Authorization error with Agency API Key. Error: {"statusCode":401,"message":"Invalid JWT"}
-2025-11-11 08:14:34,467 - [INFO] - AppLogger.VoiceAI - Using GHL Agency API Key for authentication
-2025-11-11 08:14:34,474 - [INFO] - AppLogger.VoiceAI - Fetching workflows for location UTkbqQXAR7A3UsirpOje
-2025-11-11 08:14:34,956 - [INFO] - AppLogger.GHLSubAccount - Found 88 location(s)
-2025-11-11 08:14:36,701 - [ERROR] - AppLogger.VoiceAI - ❌ Failed to fetch workflows: 404 - 
-2025-11-11 08:14:36,772 - [ERROR] - AppLogger.VoiceAIAgents - ❌ Authorization error: {"statusCode":401,"message":"The token is not authorized for this scope."}
-2025-11-11 08:14:37,146 - [ERROR] - AppLogger.VoiceAIAgents - ================================================================================
-2025-11-11 08:14:37,163 - [ERROR] - AppLogger.VoiceAIAgents - 🔐 AUTHENTICATION REQUIRED:
-2025-11-11 08:14:37,176 - [ERROR] - AppLogger.VoiceAIAgents - The Voice AI Agents API requires authentication with specific scopes.
-2025-11-11 08:14:37,179 - [ERROR] - AppLogger.VoiceAIAgents - 
-2025-11-11 08:14:37,180 - [ERROR] - AppLogger.VoiceAIAgents - 📋 YOUR OAUTH TOKEN IS MISSING REQUIRED SCOPES
-2025-11-11 08:14:37,212 - [ERROR] - AppLogger.VoiceAIAgents - 
-2025-11-11 08:14:37,229 - [ERROR] - AppLogger.VoiceAIAgents - 🔧 HOW TO FIX:
-2025-11-11 08:14:37,240 - [ERROR] - AppLogger.VoiceAIAgents - 1. Go to GHL Marketplace → My Apps → Your OAuth App
-2025-11-11 08:14:37,243 - [ERROR] - AppLogger.VoiceAIAgents - 2. Edit your OAuth app settings
-2025-11-11 08:14:37,245 - [ERROR] - AppLogger.VoiceAIAgents - 3. In the 'Scopes' section, add these scopes:
-2025-11-11 08:14:37,246 - [ERROR] - AppLogger.VoiceAIAgents -    ✅ voiceai.agents.read
-2025-11-11 08:14:37,246 - [ERROR] - AppLogger.VoiceAIAgents -    ✅ voiceai.agents.write
-2025-11-11 08:14:37,258 - [ERROR] - AppLogger.VoiceAIAgents -    ✅ locations.readonly (optional)
-2025-11-11 08:14:37,260 - [ERROR] - AppLogger.VoiceAIAgents - 4. Save the changes
-2025-11-11 08:14:37,261 - [ERROR] - AppLogger.VoiceAIAgents - 5. Re-authorize your application:
-2025-11-11 08:14:37,261 - [ERROR] - AppLogger.VoiceAIAgents -    - Delete old tokens: DELETE FROM tokens WHERE id = 1;
-2025-11-11 08:14:37,262 - [ERROR] - AppLogger.VoiceAIAgents -    - Run: python test_ghl_auth.py
-2025-11-11 08:14:37,263 - [ERROR] - AppLogger.VoiceAIAgents -    - Complete the OAuth authorization flow
-2025-11-11 08:14:37,270 - [ERROR] - AppLogger.VoiceAIAgents - 6. Restart your backend server
-2025-11-11 08:14:37,274 - [ERROR] - AppLogger.VoiceAIAgents - 
-2025-11-11 08:14:37,274 - [ERROR] - AppLogger.VoiceAIAgents - 📖 See: VOICE_AI_AGENTS_CORRECT_SCOPES.md
-2025-11-11 08:14:37,275 - [ERROR] - AppLogger.VoiceAIAgents - ================================================================================
-2025-11-11 08:14:43,223 - [INFO] - AppLogger.GHLSubAccount - Fetching all GHL locations
-2025-11-11 08:14:43,223 - [INFO] - AppLogger.VoiceAI - Using GHL Agency API Key for authentication
-2025-11-11 08:14:43,225 - [INFO] - AppLogger.VoiceAI - Fetching AI assistants for location UTkbqQXAR7A3UsirpOje
-2025-11-11 08:14:44,710 - [ERROR] - AppLogger.VoiceAI - ❌ Authorization error with Agency API Key. Error: {"statusCode":401,"message":"Invalid JWT"}
-2025-11-11 08:14:44,717 - [INFO] - AppLogger.VoiceAI - Using GHL Agency API Key for authentication
-2025-11-11 08:14:44,734 - [INFO] - AppLogger.VoiceAI - Fetching workflows for location UTkbqQXAR7A3UsirpOje
-2025-11-11 08:14:44,833 - [INFO] - AppLogger.VoiceAIAgents - ✅ Using OAuth access token from database for Voice AI Agents
-2025-11-11 08:14:44,877 - [INFO] - AppLogger.VoiceAIAgents - Fetching Voice AI agents for location UTkbqQXAR7A3UsirpOje (limit: 100, offset: 0)
-2025-11-11 08:14:45,293 - [INFO] - AppLogger.GHLSubAccount - Found 88 location(s)
-2025-11-11 08:14:46,545 - [ERROR] - AppLogger.VoiceAI - ❌ Failed to fetch workflows: 404 - 
-2025-11-11 08:14:46,704 - [ERROR] - AppLogger.VoiceAIAgents - ❌ Authorization error: {"statusCode":401,"message":"The token is not authorized for this scope."}
-2025-11-11 08:14:46,706 - [ERROR] - AppLogger.VoiceAIAgents - ================================================================================
-2025-11-11 08:14:46,708 - [ERROR] - AppLogger.VoiceAIAgents - 🔐 AUTHENTICATION REQUIRED:
-2025-11-11 08:14:46,709 - [ERROR] - AppLogger.VoiceAIAgents - The Voice AI Agents API requires authentication with specific scopes.
-2025-11-11 08:14:46,719 - [ERROR] - AppLogger.VoiceAIAgents - 
-2025-11-11 08:14:46,720 - [ERROR] - AppLogger.VoiceAIAgents - 📋 YOUR OAUTH TOKEN IS MISSING REQUIRED SCOPES
-2025-11-11 08:14:46,721 - [ERROR] - AppLogger.VoiceAIAgents - 
-2025-11-11 08:14:46,728 - [ERROR] - AppLogger.VoiceAIAgents - 🔧 HOW TO FIX:
-2025-11-11 08:14:46,729 - [ERROR] - AppLogger.VoiceAIAgents - 1. Go to GHL Marketplace → My Apps → Your OAuth App
-2025-11-11 08:14:46,731 - [ERROR] - AppLogger.VoiceAIAgents - 2. Edit your OAuth app settings
-2025-11-11 08:14:46,731 - [ERROR] - AppLogger.VoiceAIAgents - 3. In the 'Scopes' section, add these scopes:
-2025-11-11 08:14:46,732 - [ERROR] - AppLogger.VoiceAIAgents -    ✅ voiceai.agents.read
-2025-11-11 08:14:46,733 - [ERROR] - AppLogger.VoiceAIAgents -    ✅ voiceai.agents.write
-2025-11-11 08:14:46,734 - [ERROR] - AppLogger.VoiceAIAgents -    ✅ locations.readonly (optional)
-2025-11-11 08:14:46,734 - [ERROR] - AppLogger.VoiceAIAgents - 4. Save the changes
-2025-11-11 08:14:46,735 - [ERROR] - AppLogger.VoiceAIAgents - 5. Re-authorize your application:
-2025-11-11 08:14:46,736 - [ERROR] - AppLogger.VoiceAIAgents -    - Delete old tokens: DELETE FROM tokens WHERE id = 1;
-2025-11-11 08:14:46,737 - [ERROR] - AppLogger.VoiceAIAgents -    - Run: python test_ghl_auth.py
-2025-11-11 08:14:46,738 - [ERROR] - AppLogger.VoiceAIAgents -    - Complete the OAuth authorization flow
-2025-11-11 08:14:46,739 - [ERROR] - AppLogger.VoiceAIAgents - 6. Restart your backend server
-2025-11-11 08:14:46,746 - [ERROR] - AppLogger.VoiceAIAgents - 
-2025-11-11 08:14:46,747 - [ERROR] - AppLogger.VoiceAIAgents - 📖 See: VOICE_AI_AGENTS_CORRECT_SCOPES.md
-2025-11-11 08:14:46,748 - [ERROR] - AppLogger.VoiceAIAgents - ================================================================================
+2025-10-21 08:41:26,308 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Malcolm Hill - 052 - 2025-10-26
+2025-10-21 08:41:32,265 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Mark Hansen - 041 - 2025-10-27
+2025-10-21 08:41:37,063 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Stuart Brownbill - Bush 001 - 2025-10-25
+2025-10-21 08:41:41,512 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Matt Kelso - 048 - 2025-10-25
+2025-10-21 08:41:46,050 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Apirl Croydon - 35 / 38 - 2025-10-24
+2025-10-21 08:41:50,135 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: James Boyd - 020 - 2025-10-23
+2025-10-21 08:41:54,357 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Alan Daff - 051 - 2025-10-22
+2025-10-21 08:41:58,549 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Randima Wijayarathna - 062 - 2025-10-22
+2025-10-21 08:42:02,805 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Fu-Ning Yang - Chalet 2 - 2025-10-23
+2025-10-21 08:42:07,709 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Briar Clarke - 064 - 2025-10-24
+2025-10-21 08:42:12,461 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Anthony Dunsmore - Hideaway 1 - 2025-10-24
+2025-10-21 08:42:17,339 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Mark Straney - 041 - 2025-10-24
+2025-10-21 08:42:22,137 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Tim Dick - 049 - 2025-10-23
+2025-10-21 08:42:27,784 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Geoff Jennings - Chalet 3 - 2025-10-21
+2025-10-21 08:42:33,227 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Laureen Hines - 063 - 2025-10-21
+2025-10-21 08:42:39,437 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Travis Bannister - 29 / 44 - 2025-10-20
+2025-10-21 08:42:44,771 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Bob Foster - 30 / 43 - 2025-10-19
+2025-10-21 08:42:49,899 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Cheryl Bailey - 42 - 2025-10-20
+2025-10-21 08:42:55,285 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Geoff Mortlock - Cabin 4 - 2025-10-20
+2025-10-21 08:43:01,275 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Maria Mawbey - 35 / 38 - 2025-10-20
+2025-10-21 08:43:07,512 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Carolyn McHenry - 023 S - 2025-10-20
+2025-10-21 08:43:13,072 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Lance Pocock - 051 - 2025-10-19
+2025-10-21 08:43:18,740 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Terry Bryant - 048 - 2025-10-20
+2025-10-21 08:43:24,342 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Peter Carroll - 31 - 2025-10-21
+2025-10-21 08:43:30,004 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Maree King - 019 S - 2025-10-18
+2025-10-21 08:43:35,062 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Peter Chiricosta - Seasonal - 2025-09-13
+2025-10-21 08:43:39,799 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Aaron Harvey - 008 S - 2025-09-08
+2025-10-21 08:43:44,507 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Wayne Dodson - 31 - 2025-10-20
+2025-10-21 08:43:49,343 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Jacqui Prendergast - Bush 001 - 2025-10-20
+2025-10-21 08:43:54,064 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Anita Rigoni - Chalet 1 - 2025-10-19
+2025-10-21 08:43:59,053 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Cliff Chae - Chalet 2 - 2025-10-19
+2025-10-21 08:44:04,337 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: John Grimshaw - 42 - 2025-10-13
+2025-10-21 08:44:09,084 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Warrick Pollock - 31 - 2025-10-13
+2025-10-21 08:44:14,234 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Paul Marscham - 050 - 2025-10-16
+2025-10-21 08:44:18,991 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Leanne Williams - Cabin 4 - 2025-10-17
+2025-10-21 08:44:23,467 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Katie Collison - Bush 004 - 2025-10-16
+2025-10-21 08:44:28,145 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: LANCE PREDO - 062 - 2025-10-17
+2025-10-21 08:44:33,474 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Steven Omeara - Cabin 5 - 2025-10-17
+2025-10-21 08:44:38,515 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Rodney Dennis - Bush 006 - 2025-10-17
+2025-10-21 08:44:43,307 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Garry Cootes - 037 - 2025-10-18
+2025-10-21 08:44:47,525 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Gary Dolby - 058 - 2025-10-17
+2025-10-21 08:44:52,108 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Rick Payne - 052 - 2025-10-13
+2025-10-21 08:44:56,714 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Tran Huyen Tran - Chalet 3 - 2025-10-18
+2025-10-21 08:45:00,955 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Katie Collison - Bush 003 - 2025-10-16
+2025-10-21 08:45:05,765 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Julie Warren - 014 - 2025-10-17
+2025-10-21 08:45:10,884 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Paul Ferrrari - 013 S - 2025-10-17
+2025-10-21 09:37:22,528 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Bianca Hamilton - Chalet 1 - 2025-10-24
+2025-10-21 09:37:26,679 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Balk Mrs - Chalet 2 - 2025-10-24
+2025-10-21 09:37:31,750 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Fu-Ning Yang - Chalet 2 - 2025-10-23
+2025-10-21 09:37:35,806 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Fu-Ning Yang - Chalet 1 - 2025-10-23
+2025-10-21 09:37:39,847 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Lance Pocock - 051 - 2025-10-19
+2025-10-21 09:37:44,021 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Anita Rigoni - Chalet 1 - 2025-10-19
+2025-10-21 09:37:47,854 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Cliff Chae - Chalet 2 - 2025-10-19
+2025-10-21 09:37:51,421 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Rick Payne - 052 - 2025-10-13
+2025-11-05 11:14:18,959 - [ERROR] - AppLogger.GHLSubAccount - GHL_AGENCY_API_KEY not configured. Get it from Agency Dashboard → Settings → API Keys
+2025-11-05 11:15:09,660 - [INFO] - AppLogger.GHLSubAccount - Creating GHL sub-account: Test
+2025-11-05 11:15:10,421 - [ERROR] - AppLogger.GHLSubAccount - Failed to create sub-account: 422 - {"businessName":{"message":"The business name field is mandatory.","rule":"required"},"country":{"message":"The country value must be a 2 digit country code, refer : https://www.iban.com/country-codes.","rule":"country"},"timezone":{"message":"The timzone value is invalid.","rule":"timezone"}}
+2025-11-05 11:17:49,027 - [INFO] - AppLogger.GHLSubAccount - Creating GHL sub-account: Test
+2025-11-05 11:17:49,651 - [ERROR] - AppLogger.GHLSubAccount - Failed to create sub-account: 422 - {"businessName":{"message":"The business name field is mandatory.","rule":"required"},"timezone":{"message":"The timzone value is invalid.","rule":"timezone"}}
+2025-11-05 11:19:29,328 - [INFO] - AppLogger.GHLSubAccount - Creating GHL sub-account: Test
+2025-11-05 11:19:31,274 - [INFO] - AppLogger.GHLSubAccount - Successfully created sub-account: Test (ID: 7GnLfRPOVTnLeWxCaSHD)
+2025-11-05 11:26:28,656 - [INFO] - AppLogger.GHLSubAccount - Fetching all GHL locations
+2025-11-05 11:26:29,891 - [INFO] - AppLogger.GHLSubAccount - Found 87 location(s)

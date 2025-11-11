@@ -11,26 +11,15 @@ NB_HEADERS = {
     "Authorization": f"Basic {_encoded_credentials}",
 }
 
-def get_tariff_information(period_from, period_to, adults, children, category_id, daily_mode, tariff_label=None, park_config=None):
+def get_tariff_information(period_from, period_to, adults, children, category_id, daily_mode, tariff_label=None):
     """
     Helper to get tariff information from NewBook availability API.
     Logic preserved from the previous implementation in main.py.
-    Supports dynamic park configuration if provided.
     """
     try:
-        # Use park-specific config if provided, otherwise use global config
-        if park_config:
-            region = park_config.newbook_region
-            api_key = park_config.newbook_api_key
-            headers = park_config.get_newbook_headers()
-        else:
-            region = REGION
-            api_key = API_KEY
-            headers = NB_HEADERS
-        
         payload = {
-            "region": region,
-            "api_key": api_key,
+            "region": REGION,
+            "api_key": API_KEY,
             "period_from": period_from,
             "period_to": period_to,
             "adults": adults,
@@ -43,7 +32,7 @@ def get_tariff_information(period_from, period_to, adults, children, category_id
 
         response = requests.post(
             f"{NEWBOOK_API_BASE}/bookings_availability_pricing",
-            headers=headers,
+            headers=NB_HEADERS,
             json=payload,
             verify=False,
             timeout=15
