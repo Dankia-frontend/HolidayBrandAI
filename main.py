@@ -1,6 +1,11 @@
 from datetime import datetime, timedelta
-from fastapi import FastAPI, Query, HTTPException, Depends
-from schemas.schemas import BookingRequest, AvailabilityRequest, CheckBooking
+from fastapi import FastAPI, Query, HTTPException, Depends, Body
+from schemas.schemas import (
+    BookingRequest, AvailabilityRequest, CheckBooking,
+    ParkConfigurationCreate, ParkConfigurationUpdate, ParkConfigurationResponse,
+    VoiceAICloneRequest, VoiceAIConfigResponse,
+    VoiceAIAgentsCloneRequest, VoiceAIAgentCreateRequest, VoiceAIAgentUpdateRequest
+)
 import requests
 from config.config import NEWBOOK_API_BASE,REGION,API_KEY
 from fastapi.middleware.cors import CORSMiddleware
@@ -11,6 +16,30 @@ from auth.auth import authenticate_request
 from utils.newbook import NB_HEADERS, get_tariff_information, create_tariffs_quoted
 from utils.scheduler import start_scheduler_in_background
 from test_script import create_ghl_subaccount, create_ghl_subaccount_simple, delete_ghl_subaccount, list_ghl_locations, get_ghl_location
+from utils.db_park_config import (
+    create_park_configurations_table,
+    add_park_configuration,
+    update_park_configuration,
+    get_park_configuration,
+    get_all_park_configurations,
+    delete_park_configuration
+)
+from utils.dynamic_config import get_dynamic_park_config
+from utils.voice_ai_utils import (
+    clone_voice_ai_configuration,
+    get_voice_ai_summary,
+    get_conversation_ai_bots
+)
+from utils.voice_ai_agents import (
+    list_voice_ai_agents,
+    get_voice_ai_agent,
+    create_voice_ai_agent,
+    patch_voice_ai_agent,
+    delete_voice_ai_agent,
+    clone_voice_ai_agents,
+    get_voice_ai_agents_summary,
+    compare_voice_ai_agents
+)
 
 app = FastAPI()
 log = get_logger("FastAPI")
@@ -27,6 +56,7 @@ app.add_middleware(
 
 @app.get("/availability")
 def get_availability(
+    location_id: str = Query(..., description="GHL Location ID for the park"),
     period_from: str = Query(..., description="Start date in YYYY-MM-DD format"),
     period_to: str = Query(..., description="End date in YYYY-MM-DD format"),
     adults: int = Query(..., description="Number of adults"),
@@ -34,11 +64,15 @@ def get_availability(
     Children: int = Query(..., description="Number of children"),
     _: str = Depends(authenticate_request)
 ):
-    # print(period_from, period_to, adults, daily_mode, Children)
     try:
+        # Get park-specific configuration from database
+        park_config = get_dynamic_park_config(location_id)
+        log.info(f"Processing availability request for park: {park_config.park_name} (Location ID: {location_id})")
+        
+        # Build payload with park-specific settings
         payload = {
-            "region": REGION,
-            "api_key": API_KEY,
+            "region": park_config.newbook_region,
+            "api_key": park_config.newbook_api_key,
             "period_from": period_from,
             "period_to": period_to,
             "adults": adults,
@@ -46,12 +80,13 @@ def get_availability(
             "daily_mode": daily_mode
         }
 
-        # print("\n📤 Payload being sent to NewBook API:")
-        # print(payload)
-        # print(NB_HEADERS)
+        print(f"\n📤 Payload being sent to NewBook API for {park_config.park_name}:")
+        print(payload)
+        
+        # Use park-specific headers
         response = requests.post(
             f"{NEWBOOK_API_BASE}/bookings_availability_pricing",
-            headers=NB_HEADERS,
+            headers=park_config.get_newbook_headers(),
             json=payload,
             verify=False,  # ⚠️ Only for local testing
             timeout=15
@@ -147,6 +182,7 @@ def get_availability(
 # 2. Confirm Booking [POST]
 @app.post("/confirm-booking")
 def confirm_booking(
+    location_id: str = Query(..., description="GHL Location ID for the park"),
     period_from: str = Query(..., description="Booking start date, e.g. 2025-10-10 00:00:00"),
     period_to: str = Query(..., description="Booking end date, e.g. 2025-10-15 23:59:59"),
     guest_firstname: str = Query(..., description="Guest first name"),
@@ -161,14 +197,19 @@ def confirm_booking(
     _: str = Depends(authenticate_request)
 ):
     try:
-        # Get tariff information from availability API
+        # Get park-specific configuration from database
+        park_config = get_dynamic_park_config(location_id)
+        log.info(f"Processing booking confirmation for park: {park_config.park_name} (Location ID: {location_id})")
+        
+        # Get tariff information from availability API with park-specific config
         tariff_info = get_tariff_information(
             period_from=period_from,
             period_to=period_to,
             adults=adults,
             children=children,
             category_id=category_id,
-            daily_mode=daily_mode
+            daily_mode=daily_mode,
+            park_config=park_config
         )
         
         if not tariff_info:
@@ -182,10 +223,10 @@ def confirm_booking(
             tariff_id=tariff_info["tariff_id"]  # Use the actual tariff ID
         )
         
-        # Build payload with tariff information
+        # Build payload with park-specific tariff information
         payload = {
-            "region": REGION,
-            "api_key": API_KEY,
+            "region": park_config.newbook_region,
+            "api_key": park_config.newbook_api_key,
             "period_from": period_from,
             "period_to": period_to,
             "guest_firstname": guest_firstname,
@@ -203,12 +244,12 @@ def confirm_booking(
             "tariffs_quoted": tariffs_quoted
         }
 
-        print(f"[INFO] Sending payload to NewBook: {payload}")
+        print(f"[INFO] Sending payload to NewBook for {park_config.park_name}: {payload}")
 
-        # --- API Call to NewBook ---
+        # --- API Call to NewBook with park-specific headers ---
         response = requests.post(
             f"{NEWBOOK_API_BASE}/bookings_create",
-            headers=NB_HEADERS,
+            headers=park_config.get_newbook_headers(),
             json=payload,
             verify=False,
             timeout=15
@@ -471,6 +512,549 @@ def get_ghl_location_endpoint(
         raise
     except Exception as e:
         log.error(f"Error getting GHL location: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ==================== Voice AI Configuration Management Endpoints ====================
+
+@app.get("/voice-ai/summary/{location_id}")
+def get_voice_ai_summary_endpoint(
+    location_id: str,
+    # _: str = Depends(authenticate_request)
+):
+    """
+    Get a summary of Voice AI configuration for a specific GHL location.
+    Shows all AI assistants and Voice AI related workflows.
+    """
+    try:
+        summary = get_voice_ai_summary(location_id)
+        
+        return {
+            "success": True,
+            "data": summary
+        }
+    
+    except Exception as e:
+        log.error(f"Error getting Voice AI summary for {location_id}: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/voice-ai/clone")
+def clone_voice_ai_endpoint(
+    request: VoiceAICloneRequest,
+    # _: str = Depends(authenticate_request)
+):
+    """
+    Clone Voice AI configuration from one GHL location to another.
+    
+    This endpoint will:
+    - Copy AI assistants (conversation bots) with their configurations
+    - Identify Voice AI related workflows (manual export/import required)
+    - Optionally clone phone number configurations
+    
+    Example:
+    {
+        "source_location_id": "UTkbqQXAR7A3UsirpOje",
+        "target_location_id": "target_location_id_here",
+        "clone_assistants": true,
+        "clone_workflows": true,
+        "clone_phone_numbers": false
+    }
+    """
+    try:
+        log.info(f"Cloning Voice AI from {request.source_location_id} to {request.target_location_id}")
+        
+        result = clone_voice_ai_configuration(
+            source_location_id=request.source_location_id,
+            target_location_id=request.target_location_id,
+            clone_assistants=request.clone_assistants,
+            clone_workflows=request.clone_workflows,
+            clone_phone_numbers=request.clone_phone_numbers
+        )
+        
+        return {
+            "success": result["success"],
+            "message": "Voice AI configuration cloning completed",
+            "data": result
+        }
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        log.error(f"Error cloning Voice AI configuration: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/voice-ai/assistants/{location_id}")
+def list_ai_assistants_endpoint(
+    location_id: str,
+    # _: str = Depends(authenticate_request)
+):
+    """
+    List all AI assistants for a specific GHL location.
+    """
+    try:
+        assistants = get_conversation_ai_bots(location_id)
+        
+        if assistants is not None:
+            return {
+                "success": True,
+                "location_id": location_id,
+                "count": len(assistants),
+                "assistants": assistants
+            }
+        else:
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Failed to fetch AI assistants for location {location_id}"
+            )
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        log.error(f"Error listing AI assistants: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ==================== Voice AI Agents Management Endpoints ====================
+
+@app.get("/voice-ai-agents/list/{location_id}")
+def list_voice_ai_agents_endpoint(
+    location_id: str,
+    limit: int = Query(100, description="Number of agents to retrieve"),
+    offset: int = Query(0, description="Pagination offset"),
+    # _: str = Depends(authenticate_request)
+):
+    """
+    List all Voice AI agents for a specific GHL location.
+    Uses the Voice AI Agents API (different from Conversation AI assistants).
+    
+    API Documentation: https://marketplace.gohighlevel.com/docs/ghl/voice-ai/agents
+    """
+    try:
+        agents_data = list_voice_ai_agents(location_id, limit=limit, offset=offset)
+        
+        if agents_data is not None:
+            return {
+                "success": True,
+                "location_id": location_id,
+                "data": agents_data
+            }
+        else:
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Failed to fetch Voice AI agents for location {location_id}"
+            )
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        log.error(f"Error listing Voice AI agents: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/voice-ai-agents/get/{location_id}/{agent_id}")
+def get_voice_ai_agent_endpoint(
+    location_id: str,
+    agent_id: str,
+    # _: str = Depends(authenticate_request)
+):
+    """
+    Get detailed configuration for a specific Voice AI agent.
+    
+    API Documentation: https://marketplace.gohighlevel.com/docs/ghl/voice-ai/agents/get-agent
+    """
+    try:
+        agent = get_voice_ai_agent(agent_id, location_id)
+        
+        if agent:
+            return {
+                "success": True,
+                "location_id": location_id,
+                "agent_id": agent_id,
+                "data": agent
+            }
+        else:
+            raise HTTPException(
+                status_code=404, 
+                detail=f"Voice AI agent {agent_id} not found in location {location_id}"
+            )
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        log.error(f"Error fetching Voice AI agent: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/voice-ai-agents/create")
+def create_voice_ai_agent_endpoint(
+    request: VoiceAIAgentCreateRequest,
+    # _: str = Depends(authenticate_request)
+):
+    """
+    Create a new Voice AI agent in a location.
+    
+    API Documentation: https://marketplace.gohighlevel.com/docs/ghl/voice-ai/agents/create-agent
+    """
+    try:
+        agent_config = request.dict(exclude={"location_id"}, exclude_none=True)
+        created_agent = create_voice_ai_agent(request.location_id, agent_config)
+        
+        if created_agent:
+            return {
+                "success": True,
+                "message": f"Voice AI agent '{request.name}' created successfully",
+                "data": created_agent
+            }
+        else:
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Failed to create Voice AI agent '{request.name}'"
+            )
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        log.error(f"Error creating Voice AI agent: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.patch("/voice-ai-agents/update/{location_id}/{agent_id}")
+def update_voice_ai_agent_endpoint(
+    location_id: str,
+    agent_id: str,
+    request: VoiceAIAgentUpdateRequest,
+    # _: str = Depends(authenticate_request)
+):
+    """
+    Update an existing Voice AI agent.
+    
+    API Documentation: https://marketplace.gohighlevel.com/docs/ghl/voice-ai/agents/patch-agent
+    """
+    try:
+        updates = request.dict(exclude_none=True)
+        updated_agent = patch_voice_ai_agent(agent_id, location_id, updates)
+        
+        if updated_agent:
+            return {
+                "success": True,
+                "message": f"Voice AI agent {agent_id} updated successfully",
+                "data": updated_agent
+            }
+        else:
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Failed to update Voice AI agent {agent_id}"
+            )
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        log.error(f"Error updating Voice AI agent: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.delete("/voice-ai-agents/delete/{location_id}/{agent_id}")
+def delete_voice_ai_agent_endpoint(
+    location_id: str,
+    agent_id: str,
+    # _: str = Depends(authenticate_request)
+):
+    """
+    Delete a Voice AI agent.
+    
+    API Documentation: https://marketplace.gohighlevel.com/docs/ghl/voice-ai/agents/delete-agent
+    """
+    try:
+        success = delete_voice_ai_agent(agent_id, location_id)
+        
+        if success:
+            return {
+                "success": True,
+                "message": f"Voice AI agent {agent_id} deleted successfully"
+            }
+        else:
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Failed to delete Voice AI agent {agent_id}"
+            )
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        log.error(f"Error deleting Voice AI agent: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/voice-ai-agents/summary/{location_id}")
+def get_voice_ai_agents_summary_endpoint(
+    location_id: str,
+    # _: str = Depends(authenticate_request)
+):
+    """
+    Get a summary of Voice AI agents for a location.
+    Shows agent counts and basic information.
+    """
+    try:
+        summary = get_voice_ai_agents_summary(location_id)
+        
+        return {
+            "success": True,
+            "data": summary
+        }
+    
+    except Exception as e:
+        log.error(f"Error getting Voice AI agents summary: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/voice-ai-agents/clone")
+def clone_voice_ai_agents_endpoint(
+    request: VoiceAIAgentsCloneRequest,
+    # _: str = Depends(authenticate_request)
+):
+    """
+    Clone Voice AI agents from one location to another.
+    
+    This endpoint will copy all Voice AI agent configurations including:
+    - Agent prompts and instructions
+    - Voice settings (voice ID, provider)
+    - Model configurations (GPT-4, temperature, etc.)
+    - Actions and tools
+    - All other agent settings
+    
+    Example:
+    {
+        "source_location_id": "source_location_id_here",
+        "target_location_id": "target_location_id_here",
+        "clone_all": true,
+        "specific_agent_ids": null
+    }
+    
+    API Documentation: https://marketplace.gohighlevel.com/docs/ghl/voice-ai/agents
+    """
+    try:
+        log.info(f"Cloning Voice AI agents from {request.source_location_id} to {request.target_location_id}")
+        
+        result = clone_voice_ai_agents(
+            source_location_id=request.source_location_id,
+            target_location_id=request.target_location_id,
+            clone_all=request.clone_all,
+            specific_agent_ids=request.specific_agent_ids
+        )
+        
+        return {
+            "success": result["success"],
+            "message": "Voice AI agents cloning completed",
+            "data": result
+        }
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        log.error(f"Error cloning Voice AI agents: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/voice-ai-agents/compare")
+def compare_voice_ai_agents_endpoint(
+    location_id_1: str = Query(..., description="First location ID to compare"),
+    location_id_2: str = Query(..., description="Second location ID to compare"),
+    # _: str = Depends(authenticate_request)
+):
+    """
+    Compare Voice AI agents between two locations.
+    Useful for verifying successful cloning or identifying differences.
+    """
+    try:
+        comparison = compare_voice_ai_agents(location_id_1, location_id_2)
+        
+        return {
+            "success": True,
+            "data": comparison
+        }
+    
+    except Exception as e:
+        log.error(f"Error comparing Voice AI agents: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ==================== Park Configuration Management Endpoints ====================
+
+@app.on_event("startup")
+async def startup_event():
+    """Initialize database tables on startup"""
+    log.info("Initializing database tables...")
+    create_park_configurations_table()
+
+
+@app.post("/park-config/create")
+def create_park_config_endpoint(
+    config: ParkConfigurationCreate,
+    # _: str = Depends(authenticate_request)
+):
+    """
+    Create a new park configuration.
+    This endpoint stores location-specific configurations including
+    Newbook API credentials and GHL pipeline/stage IDs.
+    """
+    try:
+        success = add_park_configuration(
+            location_id=config.location_id,
+            park_name=config.park_name,
+            newbook_api_token=config.newbook_api_token,
+            newbook_api_key=config.newbook_api_key,
+            newbook_region=config.newbook_region,
+            ghl_pipeline_id=config.ghl_pipeline_id,
+            stage_arriving_soon=config.stage_arriving_soon,
+            stage_arriving_today=config.stage_arriving_today,
+            stage_arrived=config.stage_arrived,
+            stage_departing_today=config.stage_departing_today,
+            stage_departed=config.stage_departed
+        )
+        
+        if success:
+            return {
+                "success": True,
+                "message": f"Park configuration created successfully for {config.park_name}"
+            }
+        else:
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Failed to create park configuration. Location ID {config.location_id} may already exist."
+            )
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        log.error(f"Error creating park configuration: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.put("/park-config/update/{location_id}")
+def update_park_config_endpoint(
+    location_id: str,
+    config: ParkConfigurationUpdate,
+    # _: str = Depends(authenticate_request)
+):
+    """
+    Update an existing park configuration.
+    Only provided fields will be updated.
+    """
+    try:
+        success = update_park_configuration(
+            location_id=location_id,
+            park_name=config.park_name,
+            newbook_api_token=config.newbook_api_token,
+            newbook_api_key=config.newbook_api_key,
+            newbook_region=config.newbook_region,
+            ghl_pipeline_id=config.ghl_pipeline_id,
+            stage_arriving_soon=config.stage_arriving_soon,
+            stage_arriving_today=config.stage_arriving_today,
+            stage_arrived=config.stage_arrived,
+            stage_departing_today=config.stage_departing_today,
+            stage_departed=config.stage_departed,
+            is_active=config.is_active
+        )
+        
+        if success:
+            return {
+                "success": True,
+                "message": f"Park configuration updated successfully for location {location_id}"
+            }
+        else:
+            raise HTTPException(
+                status_code=404, 
+                detail=f"Park configuration not found for location_id: {location_id}"
+            )
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        log.error(f"Error updating park configuration: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/park-config/get/{location_id}")
+def get_park_config_endpoint(
+    location_id: str,
+    # _: str = Depends(authenticate_request)
+):
+    """
+    Retrieve park configuration by location_id.
+    """
+    try:
+        config = get_park_configuration(location_id)
+        
+        if config:
+            return {
+                "success": True,
+                "data": config
+            }
+        else:
+            raise HTTPException(
+                status_code=404, 
+                detail=f"Park configuration not found for location_id: {location_id}"
+            )
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        log.error(f"Error retrieving park configuration: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/park-config/list")
+def list_park_configs_endpoint(
+    include_inactive: bool = Query(False, description="Include inactive configurations"),
+    # _: str = Depends(authenticate_request)
+):
+    """
+    List all park configurations.
+    """
+    try:
+        configs = get_all_park_configurations(include_inactive=include_inactive)
+        
+        return {
+            "success": True,
+            "count": len(configs),
+            "data": configs
+        }
+            
+    except Exception as e:
+        log.error(f"Error listing park configurations: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.delete("/park-config/delete/{location_id}")
+def delete_park_config_endpoint(
+    location_id: str,
+    soft_delete: bool = Query(True, description="If true, deactivates instead of deleting"),
+    # _: str = Depends(authenticate_request)
+):
+    """
+    Delete or deactivate a park configuration.
+    """
+    try:
+        success = delete_park_configuration(location_id, soft_delete=soft_delete)
+        
+        if success:
+            action = "deactivated" if soft_delete else "deleted"
+            return {
+                "success": True,
+                "message": f"Park configuration {action} successfully for location {location_id}"
+            }
+        else:
+            raise HTTPException(
+                status_code=404, 
+                detail=f"Park configuration not found for location_id: {location_id}"
+            )
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        log.error(f"Error deleting park configuration: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 

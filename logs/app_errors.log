@@ -1,3 +1,133 @@
-2025-11-05 11:14:18,959 - [ERROR] - AppLogger.GHLSubAccount - GHL_AGENCY_API_KEY not configured. Get it from Agency Dashboard → Settings → API Keys
-2025-11-05 11:15:10,421 - [ERROR] - AppLogger.GHLSubAccount - Failed to create sub-account: 422 - {"businessName":{"message":"The business name field is mandatory.","rule":"required"},"country":{"message":"The country value must be a 2 digit country code, refer : https://www.iban.com/country-codes.","rule":"country"},"timezone":{"message":"The timzone value is invalid.","rule":"timezone"}}
-2025-11-05 11:17:49,651 - [ERROR] - AppLogger.GHLSubAccount - Failed to create sub-account: 422 - {"businessName":{"message":"The business name field is mandatory.","rule":"required"},"timezone":{"message":"The timzone value is invalid.","rule":"timezone"}}
+2025-11-11 07:49:09,095 - [ERROR] - AppLogger.VoiceAIAgents - ❌ Authorization error: {"statusCode":401,"message":"Invalid JWT"}
+2025-11-11 07:49:09,101 - [ERROR] - AppLogger.VoiceAIAgents - ================================================================================
+2025-11-11 07:49:09,120 - [ERROR] - AppLogger.VoiceAIAgents - 🔐 AUTHENTICATION REQUIRED:
+2025-11-11 07:49:09,134 - [ERROR] - AppLogger.VoiceAIAgents - The Voice AI Agents API requires a Private Integration key with specific scopes.
+2025-11-11 07:49:09,135 - [ERROR] - AppLogger.VoiceAIAgents - 
+2025-11-11 07:49:09,137 - [ERROR] - AppLogger.VoiceAIAgents - 📋 TO FIX THIS:
+2025-11-11 07:49:09,156 - [ERROR] - AppLogger.VoiceAIAgents - 1. Go to GHL Settings → Company Settings → Integrations
+2025-11-11 07:49:09,160 - [ERROR] - AppLogger.VoiceAIAgents - 2. Create a new Private Integration
+2025-11-11 07:49:09,207 - [ERROR] - AppLogger.VoiceAIAgents - 3. Select these scopes:
+2025-11-11 07:49:09,225 - [ERROR] - AppLogger.VoiceAIAgents -    ✅ voiceai.agents.read
+2025-11-11 07:49:09,237 - [ERROR] - AppLogger.VoiceAIAgents -    ✅ voiceai.agents.write
+2025-11-11 07:49:09,247 - [ERROR] - AppLogger.VoiceAIAgents -    ✅ locations.readonly (optional)
+2025-11-11 07:49:09,254 - [ERROR] - AppLogger.VoiceAIAgents - 4. Copy the generated API key
+2025-11-11 07:49:09,259 - [ERROR] - AppLogger.VoiceAIAgents - 5. Update your .env file: GHL_AGENCY_API_KEY=your_private_integration_key
+2025-11-11 07:49:09,269 - [ERROR] - AppLogger.VoiceAIAgents - 6. Restart your backend server
+2025-11-11 07:49:09,273 - [ERROR] - AppLogger.VoiceAIAgents - 
+2025-11-11 07:49:09,294 - [ERROR] - AppLogger.VoiceAIAgents - 📖 See detailed guide: VOICE_AI_PRIVATE_INTEGRATION_SETUP.md
+2025-11-11 07:49:09,405 - [ERROR] - AppLogger.VoiceAIAgents - ================================================================================
+2025-11-11 08:10:06,229 - [ERROR] - AppLogger.VoiceAI - ❌ Authorization error with Agency API Key. Error: {"statusCode":401,"message":"Invalid JWT"}
+2025-11-11 08:10:06,240 - [ERROR] - AppLogger.VoiceAIAgents - ❌ Authorization error: {"statusCode":401,"message":"Invalid JWT"}
+2025-11-11 08:10:06,241 - [ERROR] - AppLogger.VoiceAIAgents - ================================================================================
+2025-11-11 08:10:06,242 - [ERROR] - AppLogger.VoiceAIAgents - 🔐 AUTHENTICATION REQUIRED:
+2025-11-11 08:10:06,242 - [ERROR] - AppLogger.VoiceAIAgents - The Voice AI Agents API requires a Private Integration key with specific scopes.
+2025-11-11 08:10:06,243 - [ERROR] - AppLogger.VoiceAIAgents - 
+2025-11-11 08:10:06,244 - [ERROR] - AppLogger.VoiceAIAgents - 📋 TO FIX THIS:
+2025-11-11 08:10:06,245 - [ERROR] - AppLogger.VoiceAIAgents - 1. Go to GHL Settings → Company Settings → Integrations
+2025-11-11 08:10:06,246 - [ERROR] - AppLogger.VoiceAIAgents - 2. Create a new Private Integration
+2025-11-11 08:10:06,247 - [ERROR] - AppLogger.VoiceAIAgents - 3. Select these scopes:
+2025-11-11 08:10:06,248 - [ERROR] - AppLogger.VoiceAIAgents -    ✅ voiceai.agents.read
+2025-11-11 08:10:06,249 - [ERROR] - AppLogger.VoiceAIAgents -    ✅ voiceai.agents.write
+2025-11-11 08:10:06,254 - [ERROR] - AppLogger.VoiceAIAgents -    ✅ locations.readonly (optional)
+2025-11-11 08:10:06,299 - [ERROR] - AppLogger.VoiceAIAgents - 4. Copy the generated API key
+2025-11-11 08:10:06,300 - [ERROR] - AppLogger.VoiceAIAgents - 5. Update your .env file: GHL_AGENCY_API_KEY=your_private_integration_key
+2025-11-11 08:10:06,305 - [ERROR] - AppLogger.VoiceAIAgents - 6. Restart your backend server
+2025-11-11 08:10:06,313 - [ERROR] - AppLogger.VoiceAIAgents - 
+2025-11-11 08:10:06,330 - [ERROR] - AppLogger.VoiceAIAgents - 📖 See detailed guide: VOICE_AI_PRIVATE_INTEGRATION_SETUP.md
+2025-11-11 08:10:06,334 - [ERROR] - AppLogger.VoiceAIAgents - ================================================================================
+2025-11-11 08:10:07,951 - [ERROR] - AppLogger.VoiceAI - ❌ Failed to fetch workflows: 404 - 
+2025-11-11 08:10:08,198 - [ERROR] - AppLogger.VoiceAIAgents - ❌ Authorization error: {"statusCode":401,"message":"Invalid JWT"}
+2025-11-11 08:10:08,203 - [ERROR] - AppLogger.VoiceAIAgents - ================================================================================
+2025-11-11 08:10:08,208 - [ERROR] - AppLogger.VoiceAIAgents - 🔐 AUTHENTICATION REQUIRED:
+2025-11-11 08:10:08,221 - [ERROR] - AppLogger.VoiceAIAgents - The Voice AI Agents API requires a Private Integration key with specific scopes.
+2025-11-11 08:10:08,222 - [ERROR] - AppLogger.VoiceAIAgents - 
+2025-11-11 08:10:08,223 - [ERROR] - AppLogger.VoiceAIAgents - 📋 TO FIX THIS:
+2025-11-11 08:10:08,224 - [ERROR] - AppLogger.VoiceAIAgents - 1. Go to GHL Settings → Company Settings → Integrations
+2025-11-11 08:10:08,224 - [ERROR] - AppLogger.VoiceAIAgents - 2. Create a new Private Integration
+2025-11-11 08:10:08,227 - [ERROR] - AppLogger.VoiceAIAgents - 3. Select these scopes:
+2025-11-11 08:10:08,229 - [ERROR] - AppLogger.VoiceAIAgents -    ✅ voiceai.agents.read
+2025-11-11 08:10:08,245 - [ERROR] - AppLogger.VoiceAIAgents -    ✅ voiceai.agents.write
+2025-11-11 08:10:08,275 - [ERROR] - AppLogger.VoiceAIAgents -    ✅ locations.readonly (optional)
+2025-11-11 08:10:08,278 - [ERROR] - AppLogger.VoiceAIAgents - 4. Copy the generated API key
+2025-11-11 08:10:08,281 - [ERROR] - AppLogger.VoiceAIAgents - 5. Update your .env file: GHL_AGENCY_API_KEY=your_private_integration_key
+2025-11-11 08:10:08,295 - [ERROR] - AppLogger.VoiceAIAgents - 6. Restart your backend server
+2025-11-11 08:10:08,297 - [ERROR] - AppLogger.VoiceAIAgents - 
+2025-11-11 08:10:08,362 - [ERROR] - AppLogger.VoiceAIAgents - 📖 See detailed guide: VOICE_AI_PRIVATE_INTEGRATION_SETUP.md
+2025-11-11 08:10:08,410 - [ERROR] - AppLogger.VoiceAIAgents - ================================================================================
+2025-11-11 08:10:09,756 - [ERROR] - AppLogger.VoiceAI - ❌ Authorization error with Agency API Key. Error: {"statusCode":401,"message":"Invalid JWT"}
+2025-11-11 08:10:11,191 - [ERROR] - AppLogger.VoiceAI - ❌ Failed to fetch workflows: 404 - 
+2025-11-11 08:14:28,654 - [ERROR] - AppLogger.VoiceAI - ❌ Authorization error with Agency API Key. Error: {"statusCode":401,"message":"Invalid JWT"}
+2025-11-11 08:14:30,042 - [ERROR] - AppLogger.VoiceAIAgents - ❌ Authorization error: {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-11 08:14:31,267 - [ERROR] - AppLogger.VoiceAI - ❌ Failed to fetch workflows: 404 - 
+2025-11-11 08:14:32,713 - [ERROR] - AppLogger.VoiceAIAgents - ================================================================================
+2025-11-11 08:14:32,743 - [ERROR] - AppLogger.VoiceAIAgents - 🔐 AUTHENTICATION REQUIRED:
+2025-11-11 08:14:32,751 - [ERROR] - AppLogger.VoiceAIAgents - The Voice AI Agents API requires authentication with specific scopes.
+2025-11-11 08:14:32,782 - [ERROR] - AppLogger.VoiceAIAgents - 
+2025-11-11 08:14:32,799 - [ERROR] - AppLogger.VoiceAIAgents - 📋 YOUR OAUTH TOKEN IS MISSING REQUIRED SCOPES
+2025-11-11 08:14:32,823 - [ERROR] - AppLogger.VoiceAIAgents - 
+2025-11-11 08:14:32,829 - [ERROR] - AppLogger.VoiceAIAgents - 🔧 HOW TO FIX:
+2025-11-11 08:14:32,840 - [ERROR] - AppLogger.VoiceAIAgents - 1. Go to GHL Marketplace → My Apps → Your OAuth App
+2025-11-11 08:14:32,847 - [ERROR] - AppLogger.VoiceAIAgents - 2. Edit your OAuth app settings
+2025-11-11 08:14:32,854 - [ERROR] - AppLogger.VoiceAIAgents - 3. In the 'Scopes' section, add these scopes:
+2025-11-11 08:14:32,856 - [ERROR] - AppLogger.VoiceAIAgents -    ✅ voiceai.agents.read
+2025-11-11 08:14:32,866 - [ERROR] - AppLogger.VoiceAIAgents -    ✅ voiceai.agents.write
+2025-11-11 08:14:32,875 - [ERROR] - AppLogger.VoiceAIAgents -    ✅ locations.readonly (optional)
+2025-11-11 08:14:32,883 - [ERROR] - AppLogger.VoiceAIAgents - 4. Save the changes
+2025-11-11 08:14:32,896 - [ERROR] - AppLogger.VoiceAIAgents - 5. Re-authorize your application:
+2025-11-11 08:14:32,901 - [ERROR] - AppLogger.VoiceAIAgents -    - Delete old tokens: DELETE FROM tokens WHERE id = 1;
+2025-11-11 08:14:32,916 - [ERROR] - AppLogger.VoiceAIAgents -    - Run: python test_ghl_auth.py
+2025-11-11 08:14:32,917 - [ERROR] - AppLogger.VoiceAIAgents -    - Complete the OAuth authorization flow
+2025-11-11 08:14:32,931 - [ERROR] - AppLogger.VoiceAIAgents - 6. Restart your backend server
+2025-11-11 08:14:32,931 - [ERROR] - AppLogger.VoiceAIAgents - 
+2025-11-11 08:14:32,947 - [ERROR] - AppLogger.VoiceAIAgents - 📖 See: VOICE_AI_AGENTS_CORRECT_SCOPES.md
+2025-11-11 08:14:32,948 - [ERROR] - AppLogger.VoiceAIAgents - ================================================================================
+2025-11-11 08:14:34,461 - [ERROR] - AppLogger.VoiceAI - ❌ Authorization error with Agency API Key. Error: {"statusCode":401,"message":"Invalid JWT"}
+2025-11-11 08:14:36,701 - [ERROR] - AppLogger.VoiceAI - ❌ Failed to fetch workflows: 404 - 
+2025-11-11 08:14:36,772 - [ERROR] - AppLogger.VoiceAIAgents - ❌ Authorization error: {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-11 08:14:37,146 - [ERROR] - AppLogger.VoiceAIAgents - ================================================================================
+2025-11-11 08:14:37,163 - [ERROR] - AppLogger.VoiceAIAgents - 🔐 AUTHENTICATION REQUIRED:
+2025-11-11 08:14:37,176 - [ERROR] - AppLogger.VoiceAIAgents - The Voice AI Agents API requires authentication with specific scopes.
+2025-11-11 08:14:37,179 - [ERROR] - AppLogger.VoiceAIAgents - 
+2025-11-11 08:14:37,180 - [ERROR] - AppLogger.VoiceAIAgents - 📋 YOUR OAUTH TOKEN IS MISSING REQUIRED SCOPES
+2025-11-11 08:14:37,212 - [ERROR] - AppLogger.VoiceAIAgents - 
+2025-11-11 08:14:37,229 - [ERROR] - AppLogger.VoiceAIAgents - 🔧 HOW TO FIX:
+2025-11-11 08:14:37,240 - [ERROR] - AppLogger.VoiceAIAgents - 1. Go to GHL Marketplace → My Apps → Your OAuth App
+2025-11-11 08:14:37,243 - [ERROR] - AppLogger.VoiceAIAgents - 2. Edit your OAuth app settings
+2025-11-11 08:14:37,245 - [ERROR] - AppLogger.VoiceAIAgents - 3. In the 'Scopes' section, add these scopes:
+2025-11-11 08:14:37,246 - [ERROR] - AppLogger.VoiceAIAgents -    ✅ voiceai.agents.read
+2025-11-11 08:14:37,246 - [ERROR] - AppLogger.VoiceAIAgents -    ✅ voiceai.agents.write
+2025-11-11 08:14:37,258 - [ERROR] - AppLogger.VoiceAIAgents -    ✅ locations.readonly (optional)
+2025-11-11 08:14:37,260 - [ERROR] - AppLogger.VoiceAIAgents - 4. Save the changes
+2025-11-11 08:14:37,261 - [ERROR] - AppLogger.VoiceAIAgents - 5. Re-authorize your application:
+2025-11-11 08:14:37,261 - [ERROR] - AppLogger.VoiceAIAgents -    - Delete old tokens: DELETE FROM tokens WHERE id = 1;
+2025-11-11 08:14:37,262 - [ERROR] - AppLogger.VoiceAIAgents -    - Run: python test_ghl_auth.py
+2025-11-11 08:14:37,263 - [ERROR] - AppLogger.VoiceAIAgents -    - Complete the OAuth authorization flow
+2025-11-11 08:14:37,270 - [ERROR] - AppLogger.VoiceAIAgents - 6. Restart your backend server
+2025-11-11 08:14:37,274 - [ERROR] - AppLogger.VoiceAIAgents - 
+2025-11-11 08:14:37,274 - [ERROR] - AppLogger.VoiceAIAgents - 📖 See: VOICE_AI_AGENTS_CORRECT_SCOPES.md
+2025-11-11 08:14:37,275 - [ERROR] - AppLogger.VoiceAIAgents - ================================================================================
+2025-11-11 08:14:44,710 - [ERROR] - AppLogger.VoiceAI - ❌ Authorization error with Agency API Key. Error: {"statusCode":401,"message":"Invalid JWT"}
+2025-11-11 08:14:46,545 - [ERROR] - AppLogger.VoiceAI - ❌ Failed to fetch workflows: 404 - 
+2025-11-11 08:14:46,704 - [ERROR] - AppLogger.VoiceAIAgents - ❌ Authorization error: {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-11 08:14:46,706 - [ERROR] - AppLogger.VoiceAIAgents - ================================================================================
+2025-11-11 08:14:46,708 - [ERROR] - AppLogger.VoiceAIAgents - 🔐 AUTHENTICATION REQUIRED:
+2025-11-11 08:14:46,709 - [ERROR] - AppLogger.VoiceAIAgents - The Voice AI Agents API requires authentication with specific scopes.
+2025-11-11 08:14:46,719 - [ERROR] - AppLogger.VoiceAIAgents - 
+2025-11-11 08:14:46,720 - [ERROR] - AppLogger.VoiceAIAgents - 📋 YOUR OAUTH TOKEN IS MISSING REQUIRED SCOPES
+2025-11-11 08:14:46,721 - [ERROR] - AppLogger.VoiceAIAgents - 
+2025-11-11 08:14:46,728 - [ERROR] - AppLogger.VoiceAIAgents - 🔧 HOW TO FIX:
+2025-11-11 08:14:46,729 - [ERROR] - AppLogger.VoiceAIAgents - 1. Go to GHL Marketplace → My Apps → Your OAuth App
+2025-11-11 08:14:46,731 - [ERROR] - AppLogger.VoiceAIAgents - 2. Edit your OAuth app settings
+2025-11-11 08:14:46,731 - [ERROR] - AppLogger.VoiceAIAgents - 3. In the 'Scopes' section, add these scopes:
+2025-11-11 08:14:46,732 - [ERROR] - AppLogger.VoiceAIAgents -    ✅ voiceai.agents.read
+2025-11-11 08:14:46,733 - [ERROR] - AppLogger.VoiceAIAgents -    ✅ voiceai.agents.write
+2025-11-11 08:14:46,734 - [ERROR] - AppLogger.VoiceAIAgents -    ✅ locations.readonly (optional)
+2025-11-11 08:14:46,734 - [ERROR] - AppLogger.VoiceAIAgents - 4. Save the changes
+2025-11-11 08:14:46,735 - [ERROR] - AppLogger.VoiceAIAgents - 5. Re-authorize your application:
+2025-11-11 08:14:46,736 - [ERROR] - AppLogger.VoiceAIAgents -    - Delete old tokens: DELETE FROM tokens WHERE id = 1;
+2025-11-11 08:14:46,737 - [ERROR] - AppLogger.VoiceAIAgents -    - Run: python test_ghl_auth.py
+2025-11-11 08:14:46,738 - [ERROR] - AppLogger.VoiceAIAgents -    - Complete the OAuth authorization flow
+2025-11-11 08:14:46,739 - [ERROR] - AppLogger.VoiceAIAgents - 6. Restart your backend server
+2025-11-11 08:14:46,746 - [ERROR] - AppLogger.VoiceAIAgents - 
+2025-11-11 08:14:46,747 - [ERROR] - AppLogger.VoiceAIAgents - 📖 See: VOICE_AI_AGENTS_CORRECT_SCOPES.md
+2025-11-11 08:14:46,748 - [ERROR] - AppLogger.VoiceAIAgents - ================================================================================

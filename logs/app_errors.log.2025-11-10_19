@@ -1,0 +1,50 @@
+2025-11-10 18:48:33,228 - [ERROR] - AppLogger.VoiceAI - Failed to fetch AI bots: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-10 18:48:37,070 - [ERROR] - AppLogger.VoiceAI - Failed to fetch workflows: 404 - 
+2025-11-10 18:48:40,003 - [ERROR] - AppLogger.VoiceAI - Failed to fetch AI bots: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-10 18:48:43,082 - [ERROR] - AppLogger.VoiceAI - Failed to fetch workflows: 404 - 
+2025-11-10 18:48:46,019 - [ERROR] - AppLogger.VoiceAI - Failed to fetch AI bots: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-10 18:48:49,439 - [ERROR] - AppLogger.VoiceAI - Failed to fetch workflows: 404 - 
+2025-11-10 18:49:00,036 - [ERROR] - AppLogger.VoiceAI - Failed to fetch AI bots: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-10 18:49:02,947 - [ERROR] - AppLogger.VoiceAI - Failed to fetch workflows: 404 - 
+2025-11-10 18:55:31,059 - [ERROR] - AppLogger.VoiceAI - ❌ Authorization error with Agency API Key. Error: {"statusCode":401,"message":"Invalid JWT"}
+2025-11-10 18:55:32,994 - [ERROR] - AppLogger.VoiceAI - ❌ Failed to fetch workflows: 404 - 
+2025-11-10 18:55:35,106 - [ERROR] - AppLogger.VoiceAI - ❌ Authorization error with Agency API Key. Error: {"statusCode":401,"message":"Invalid JWT"}
+2025-11-10 18:55:37,793 - [ERROR] - AppLogger.VoiceAI - ❌ Failed to fetch workflows: 404 - 
+2025-11-10 18:55:39,246 - [ERROR] - AppLogger.VoiceAI - ❌ Authorization error with Agency API Key. Error: {"statusCode":401,"message":"Invalid JWT"}
+2025-11-10 18:55:41,247 - [ERROR] - AppLogger.VoiceAI - ❌ Failed to fetch workflows: 404 - 
+2025-11-10 18:55:42,451 - [ERROR] - AppLogger.VoiceAI - ❌ Authorization error with Agency API Key. Error: {"statusCode":401,"message":"Invalid JWT"}
+2025-11-10 18:55:44,134 - [ERROR] - AppLogger.VoiceAI - ❌ Failed to fetch workflows: 404 - 
+2025-11-10 19:12:12,710 - [ERROR] - AppLogger.VoiceAI - ❌ Authorization error with Agency API Key. Error: {"statusCode":401,"message":"Invalid JWT"}
+2025-11-10 19:12:15,487 - [ERROR] - AppLogger.VoiceAI - ❌ Failed to fetch workflows: 404 - 
+2025-11-10 19:12:18,523 - [ERROR] - AppLogger.VoiceAI - ❌ Authorization error with Agency API Key. Error: {"statusCode":401,"message":"Invalid JWT"}
+2025-11-10 19:12:20,176 - [ERROR] - AppLogger.VoiceAI - ❌ Failed to fetch workflows: 404 - 
+2025-11-10 19:12:29,541 - [ERROR] - AppLogger.VoiceAI - ❌ Authorization error with Agency API Key. Error: {"statusCode":401,"message":"Invalid JWT"}
+2025-11-10 19:12:30,826 - [ERROR] - AppLogger.VoiceAI - ❌ Failed to fetch workflows: 404 - 
+2025-11-10 19:14:38,600 - [ERROR] - AppLogger.VoiceAI - ❌ Authorization error with Agency API Key. Error: {"statusCode":401,"message":"Invalid JWT"}
+2025-11-10 19:14:42,548 - [ERROR] - AppLogger.VoiceAI - ❌ Failed to fetch workflows: 404 - 
+2025-11-10 19:14:49,404 - [ERROR] - AppLogger.VoiceAI - ❌ Authorization error with Agency API Key. Error: {"statusCode":401,"message":"Invalid JWT"}
+2025-11-10 19:14:52,715 - [ERROR] - AppLogger.VoiceAI - ❌ Failed to fetch workflows: 404 - 
+2025-11-10 19:14:53,032 - [ERROR] - AppLogger.VoiceAIAgents - ❌ Authorization error. Please verify your GHL API credentials. Error: {"statusCode":401,"message":"Invalid JWT"}
+2025-11-10 19:14:58,614 - [ERROR] - AppLogger.VoiceAI - ❌ Authorization error with Agency API Key. Error: {"statusCode":401,"message":"Invalid JWT"}
+2025-11-10 19:15:00,826 - [ERROR] - AppLogger.VoiceAI - ❌ Failed to fetch workflows: 404 - 
+2025-11-10 19:15:07,703 - [ERROR] - AppLogger.VoiceAI - ❌ Authorization error with Agency API Key. Error: {"statusCode":401,"message":"Invalid JWT"}
+2025-11-10 19:15:09,795 - [ERROR] - AppLogger.VoiceAIAgents - ❌ Authorization error. Please verify your GHL API credentials. Error: {"statusCode":401,"message":"Invalid JWT"}
+2025-11-10 19:15:10,492 - [ERROR] - AppLogger.VoiceAI - ❌ Failed to fetch workflows: 404 - 
+2025-11-10 19:15:14,838 - [ERROR] - AppLogger.VoiceAIAgents - ❌ Authorization error. Please verify your GHL API credentials. Error: {"statusCode":401,"message":"Invalid JWT"}
+2025-11-10 19:15:14,850 - [ERROR] - AppLogger.VoiceAI - ❌ Authorization error with Agency API Key. Error: {"statusCode":401,"message":"Invalid JWT"}
+2025-11-10 19:15:16,181 - [ERROR] - AppLogger.VoiceAI - ❌ Failed to fetch workflows: 404 - 
+2025-11-10 19:15:47,130 - [ERROR] - AppLogger.VoiceAIAgents - ❌ Authorization error. Please verify your GHL API credentials. Error: {"statusCode":401,"message":"Invalid JWT"}
+2025-11-10 19:15:47,869 - [ERROR] - AppLogger.VoiceAI - ❌ Authorization error with Agency API Key. Error: {"statusCode":401,"message":"Invalid JWT"}
+2025-11-10 19:15:53,438 - [ERROR] - AppLogger.VoiceAI - ❌ Failed to fetch workflows: 404 - 
+2025-11-10 19:16:16,669 - [ERROR] - AppLogger.VoiceAI - ❌ Authorization error with Agency API Key. Error: {"statusCode":401,"message":"Invalid JWT"}
+2025-11-10 19:16:17,381 - [ERROR] - AppLogger.VoiceAIAgents - ❌ Authorization error. Please verify your GHL API credentials. Error: {"statusCode":401,"message":"Invalid JWT"}
+2025-11-10 19:16:28,840 - [ERROR] - AppLogger.VoiceAI - ❌ Failed to fetch workflows: 404 - 
+2025-11-10 19:16:29,021 - [ERROR] - AppLogger.VoiceAIAgents - ❌ Authorization error. Please verify your GHL API credentials. Error: {"statusCode":401,"message":"Invalid JWT"}
+2025-11-10 19:16:32,418 - [ERROR] - AppLogger.VoiceAI - ❌ Authorization error with Agency API Key. Error: {"statusCode":401,"message":"Invalid JWT"}
+2025-11-10 19:16:35,044 - [ERROR] - AppLogger.VoiceAI - ❌ Failed to fetch workflows: 404 - 
+2025-11-10 19:16:53,428 - [ERROR] - AppLogger.VoiceAIAgents - ❌ Authorization error. Please verify your GHL API credentials. Error: {"statusCode":401,"message":"Invalid JWT"}
+2025-11-10 19:17:18,792 - [ERROR] - AppLogger.VoiceAI - ❌ Authorization error with Agency API Key. Error: {"statusCode":401,"message":"Invalid JWT"}
+2025-11-10 19:17:18,793 - [ERROR] - AppLogger.VoiceAIAgents - ❌ Authorization error. Please verify your GHL API credentials. Error: {"statusCode":401,"message":"Invalid JWT"}
+2025-11-10 19:17:20,657 - [ERROR] - AppLogger.VoiceAI - ❌ Failed to fetch workflows: 404 - 
+2025-11-10 19:37:06,405 - [ERROR] - AppLogger.VoiceAIAgents - ❌ Authorization error. Please verify your GHL API credentials. Error: {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-10 19:40:13,619 - [ERROR] - AppLogger.VoiceAIAgents - ❌ Authorization error. Please verify your GHL API credentials. Error: {"statusCode":401,"message":"The token is not authorized for this scope."}

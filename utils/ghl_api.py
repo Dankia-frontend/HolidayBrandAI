@@ -9,6 +9,7 @@ from datetime import datetime, timedelta  # add this at the top
 from config.config import REGION, API_KEY, NEWBOOK_API_BASE, GHL_LOCATION_ID, GHL_PIPELINE_ID, GHL_CLIENT_ID, GHL_CLIENT_SECRET,  DBUSERNAME, DBPASSWORD, DBHOST, DATABASENAME, USERNAME, PASSWORD
 from .logger import get_logger
 from .ghl_bucketing import bucket_bookings
+from .db_park_config import get_all_park_configurations
 
 log = get_logger("GHLIntegration")
 
@@ -16,50 +17,46 @@ GHL_API_VERSION = "2021-07-28"
 GHL_OPPORTUNITY_URL = "https://services.leadconnectorhq.com/opportunities/"
 CACHE_FILE = "bookings_cache.json"
 
-def create_opportunities_from_newbook():
+def process_park_bookings(park_config_dict):
+    """
+    Process bookings for a single park using its specific configuration.
     
-    # delete_opportunities_in_stage('3aeae130-f411-4ac7-bcca-271291fdc3b9')
-    # delete_opportunities_in_stage('b429a8e9-e73e-4590-b4c5-8ea1d65e0daf')
-    # delete_opportunities_in_stage('99912993-0e69-48f9-9943-096ae68408d7')
-    # delete_opportunities_in_stage('fc60b2fa-8c2d-4202-9347-ac2dd32a0e43')
-    # delete_opportunities_in_stage('8b54e5e5-27f3-463a-9d81-890c6dfd27eb')
-    print("[TEST] Starting job to fetch completed bookings...")
-
+    Args:
+        park_config_dict: Dictionary containing park configuration from database
+    """
+    from .dynamic_config import ParkConfig
+    
+    park_config = ParkConfig(park_config_dict)
+    location_id = park_config.location_id
+    park_name = park_config.park_name
+    
+    print(f"\n[PARK: {park_name}] Starting job to fetch bookings...")
+    log.info(f"Processing bookings for park: {park_name} (Location ID: {location_id})")
+    
     try:
-        # --- Authentication ---
-        user_pass = f"{USERNAME}:{PASSWORD}"
-        encoded_credentials = base64.b64encode(user_pass.encode()).decode()
-        headers = {
-            "Content-Type": "application/json",
-            "Authorization": f"Basic {encoded_credentials}"
-        }
+        # Use park-specific Newbook credentials
+        headers = park_config.get_newbook_headers()
+        region = park_config.newbook_region
+        api_key = park_config.newbook_api_key
+        ghl_location_id = park_config.location_id
+        ghl_pipeline_id = park_config.ghl_pipeline_id
 
         # --- Date Range (Next 7 Days) ---
         today = datetime.now()
-        
-        
         period_from = today.strftime("%Y-%m-%d 00:00:00")
         period_to = (today + timedelta(days=7)).strftime("%Y-%m-%d 23:59:59")
 
         list_types = [
-            "arrived",
-            "arriving",
-            "cancelled",
-            "departed",
-            "departing",
-            "inhouse",
-            "placed",
-            "staying",
-            "no_show",
-            "all"
+            "arrived", "arriving", "cancelled", "departed", "departing",
+            "inhouse", "placed", "staying", "no_show", "all"
         ]
 
         all_bookings_by_type = {}
 
         for list_type in list_types:
             payload = {
-                "region": REGION,
-                "api_key": API_KEY,
+                "region": region,
+                "api_key": api_key,
                 "list_type": list_type
             }
             if list_type != "inhouse":
@@ -67,7 +64,7 @@ def create_opportunities_from_newbook():
                 payload["period_to"] = period_to
 
             try:
-                print(f"[INFO] Fetching bookings for list_type: {list_type}")
+                print(f"[{park_name}] Fetching bookings for list_type: {list_type}")
                 response = requests.post(
                     f"{NEWBOOK_API_BASE}/bookings_list",
                     json=payload,
@@ -78,18 +75,14 @@ def create_opportunities_from_newbook():
                 response.raise_for_status()
                 bookings = response.json().get("data", [])
                 all_bookings_by_type[list_type] = bookings
-                # Optionally save each type to its own file:
-                # filename = f"{list_type}_bookings.json"
-                # filepath = os.path.join(os.path.dirname(__file__), "..", filename)
-                # with open(filepath, "w") as f:
-                #     json.dump(bookings, f, indent=2)
-                # print(f"[INFO] Saved {len(bookings)} bookings for {list_type} to {filepath}")
+                print(f"[{park_name}] Found {len(bookings)} bookings for {list_type}")
             except Exception as e:
-                print(f"[ERROR] Failed to fetch bookings for {list_type}: {e}")
+                print(f"[{park_name}] ERROR: Failed to fetch bookings for {list_type}: {e}")
+                log.error(f"[{park_name}] Failed to fetch bookings for {list_type}: {e}")
 
     except Exception as e:
-        log.exception(f"Failed to fetch completed bookings: {e}")
-        print(f"[ERROR] Failed to fetch completed bookings: {e}")
+        log.exception(f"[{park_name}] Failed to fetch completed bookings: {e}")
+        print(f"[{park_name}] ERROR: Failed to fetch completed bookings: {e}")
         return
 
     # --- Use all bookings from all types for further processing ---
@@ -97,7 +90,8 @@ def create_opportunities_from_newbook():
     for bookings in all_bookings_by_type.values():
         completed_bookings.extend(bookings)
     if not completed_bookings:
-        print("[TEST] No completed bookings found.")
+        print(f"[{park_name}] No completed bookings found.")
+        log.info(f"[{park_name}] No bookings to process.")
         return
 
     # --- Deduplicate bookings by booking_id ---
@@ -106,9 +100,10 @@ def create_opportunities_from_newbook():
         deduped_bookings_dict[b["booking_id"]] = b
     completed_bookings = list(deduped_bookings_dict.values())
 
-    # --- Load Cache ---
-    if os.path.exists(CACHE_FILE):
-        with open(CACHE_FILE, "r") as f:
+    # --- Load Cache (park-specific) ---
+    cache_file = f"bookings_cache_{location_id}.json"
+    if os.path.exists(cache_file):
+        with open(cache_file, "r") as f:
             cached_data = json.load(f)
     else:
         cached_data = {}
@@ -138,19 +133,23 @@ def create_opportunities_from_newbook():
         guest_lastname = guest.get("lastname", "")
         site_name = b.get("site_name", "")
         booking_arrival = b.get("booking_arrival", "")
-        # Delete by booking_id (custom field) and by details (name match)
-        delete_opportunity_by_booking_id(
+        # Delete by booking_id (custom field) and by details (name match) with park-specific location
+        delete_opportunity_by_booking_id_for_location(
             booking_id,
+            ghl_location_id,
+            ghl_pipeline_id,
             guest_firstname=guest_firstname,
             guest_lastname=guest_lastname,
             site_name=site_name,
             booking_arrival=booking_arrival
         )
-        delete_opportunity_by_booking_details(
+        delete_opportunity_by_booking_details_for_location(
             guest_firstname,
             guest_lastname,
             site_name,
-            booking_arrival
+            booking_arrival,
+            ghl_location_id,
+            ghl_pipeline_id
         )
         deleted_booking_ids.add(booking_id)
 
@@ -170,19 +169,23 @@ def create_opportunities_from_newbook():
         guest_lastname = guest.get("lastname", "")
         site_name = b.get("site_name", "")
         booking_arrival = b.get("booking_arrival", "")
-        print(f"[CANCELLED] Booking {booking_id} is cancelled, deleting opportunity from GHL.")
-        delete_opportunity_by_booking_id(
+        print(f"[{park_name}] CANCELLED: Booking {booking_id} is cancelled, deleting opportunity from GHL.")
+        delete_opportunity_by_booking_id_for_location(
             booking_id,
+            ghl_location_id,
+            ghl_pipeline_id,
             guest_firstname=guest_firstname,
             guest_lastname=guest_lastname,
             site_name=site_name,
             booking_arrival=booking_arrival
         )
-        delete_opportunity_by_booking_details(
+        delete_opportunity_by_booking_details_for_location(
             guest_firstname,
             guest_lastname,
             site_name,
-            booking_arrival
+            booking_arrival,
+            ghl_location_id,
+            ghl_pipeline_id
         )
         deleted_booking_ids.add(booking_id)
 
@@ -197,11 +200,11 @@ def create_opportunities_from_newbook():
                 filtered_arriving_today.append(b)
                 arriving_today_ids.add(b["booking_id"])
             else:
-                print(f"[CLEANUP] Booking {b['booking_id']} in arriving_today is for previous/future day ({arrival_dt.date()}), deleting opportunity.")
-                delete_opportunity_by_booking_id(b["booking_id"])
+                print(f"[{park_name}] CLEANUP: Booking {b['booking_id']} in arriving_today is for previous/future day ({arrival_dt.date()}), deleting opportunity.")
+                delete_opportunity_by_booking_id_for_location(b["booking_id"], ghl_location_id, ghl_pipeline_id)
         else:
-            print(f"[CLEANUP] Booking {b['booking_id']} in arriving_today has no arrival date, deleting opportunity.")
-            delete_opportunity_by_booking_id(b["booking_id"])
+            print(f"[{park_name}] CLEANUP: Booking {b['booking_id']} in arriving_today has no arrival date, deleting opportunity.")
+            delete_opportunity_by_booking_id_for_location(b["booking_id"], ghl_location_id, ghl_pipeline_id)
     bucket_dict["arriving_today"] = filtered_arriving_today
 
     # --- Filter out bookings not for future in arriving_soon ---
@@ -215,17 +218,17 @@ def create_opportunities_from_newbook():
                 filtered_arriving_soon.append(b)
                 arriving_soon_ids.add(b["booking_id"])
             else:
-                print(f"[CLEANUP] Booking {b['booking_id']} in arriving_soon is for today/past ({arrival_dt.date()}), deleting opportunity.")
-                delete_opportunity_by_booking_id(b["booking_id"])
+                print(f"[{park_name}] CLEANUP: Booking {b['booking_id']} in arriving_soon is for today/past ({arrival_dt.date()}), deleting opportunity.")
+                delete_opportunity_by_booking_id_for_location(b["booking_id"], ghl_location_id, ghl_pipeline_id)
         else:
-            print(f"[CLEANUP] Booking {b['booking_id']} in arriving_soon has no arrival date, deleting opportunity.")
-            delete_opportunity_by_booking_id(b["booking_id"])
+            print(f"[{park_name}] CLEANUP: Booking {b['booking_id']} in arriving_soon has no arrival date, deleting opportunity.")
+            delete_opportunity_by_booking_id_for_location(b["booking_id"], ghl_location_id, ghl_pipeline_id)
     bucket_dict["arriving_soon"] = filtered_arriving_soon
 
     # --- Remove from arriving_soon if now in arriving_today ---
     for booking_id in arriving_soon_ids & arriving_today_ids:
-        print(f"[CLEANUP] Booking {booking_id} moved from arriving_soon to arriving_today, deleting from arriving_soon stage.")
-        delete_opportunity_by_booking_id(booking_id)
+        print(f"[{park_name}] CLEANUP: Booking {booking_id} moved from arriving_soon to arriving_today, deleting from arriving_soon stage.")
+        delete_opportunity_by_booking_id_for_location(booking_id, ghl_location_id, ghl_pipeline_id)
 
     # --- Remove from arriving_today if person was supposed to arrive yesterday but did not ---
     yesterday = today - timedelta(days=1)
@@ -234,12 +237,12 @@ def create_opportunities_from_newbook():
         if arrival_str:
             arrival_dt = datetime.strptime(arrival_str, "%Y-%m-%d %H:%M:%S")
             if arrival_dt.date() == yesterday.date() and b.get("booking_status", "").lower() != "arrived":
-                print(f"[CLEANUP] Booking {b['booking_id']} was supposed to arrive yesterday but did not, deleting from arriving_today stage.")
-                delete_opportunity_by_booking_id(b["booking_id"])
+                print(f"[{park_name}] CLEANUP: Booking {b['booking_id']} was supposed to arrive yesterday but did not, deleting from arriving_today stage.")
+                delete_opportunity_by_booking_id_for_location(b["booking_id"], ghl_location_id, ghl_pipeline_id)
 
     # --- Process Changes ---
     if not (added or updated):
-        print("[TEST] No new or updated bookings detected — cache is up to date.")
+        print(f"[{park_name}] No new or updated bookings detected — cache is up to date.")
     else:
         all_changes = added + updated
         bucket_dict_changes = bucket_bookings(all_changes)
@@ -255,29 +258,79 @@ def create_opportunities_from_newbook():
                         site_name = b.get("site_name", "")
                         booking_arrival = b.get("booking_arrival", "")
                         # Delete by booking_id (custom field) and by details (name match) before sending
-                        delete_opportunity_by_booking_id(
+                        delete_opportunity_by_booking_id_for_location(
                             b["booking_id"],
+                            ghl_location_id,
+                            ghl_pipeline_id,
                             guest_firstname=guest_firstname,
                             guest_lastname=guest_lastname,
                             site_name=site_name,
                             booking_arrival=booking_arrival
                         )
-                        delete_opportunity_by_booking_details(
+                        delete_opportunity_by_booking_details_for_location(
                             guest_firstname,
                             guest_lastname,
                             site_name,
-                            booking_arrival
+                            booking_arrival,
+                            ghl_location_id,
+                            ghl_pipeline_id
                         )
                         access_token = get_valid_access_token(GHL_CLIENT_ID, GHL_CLIENT_SECRET)
-                        send_to_ghl(b, access_token)
+                        send_to_ghl(b, access_token, park_config)
                     else:
                         print(f"[SKIP] Booking {b['booking_id']} is cancelled or no-show, skipping...")
 
-        # --- Update Cache ---
-        with open(CACHE_FILE, "w") as f:
+        # --- Update Cache (park-specific) ---
+        with open(cache_file, "w") as f:
             json.dump({"bookings": completed_bookings}, f, indent=2)
-        print("[TEST] Cache updated with latest data.")
-    print(f"[TEST] Total Bookings Fetched: {len(completed_bookings)}")
+        print(f"[{park_name}] Cache updated with latest data.")
+    
+    print(f"[{park_name}] Total Bookings Fetched: {len(completed_bookings)}")
+    log.info(f"[{park_name}] Completed processing {len(completed_bookings)} bookings")
+
+
+def create_opportunities_from_newbook():
+    """
+    Main function to process bookings from all active parks in the database.
+    This function iterates through all active park configurations and processes
+    bookings for each park independently.
+    """
+    print("\n" + "="*80)
+    print("🚀 STARTING MULTI-PARK BOOKING SYNC JOB")
+    print("="*80 + "\n")
+    log.info("Starting multi-park booking sync job")
+    
+    try:
+        # Get all active park configurations from database
+        all_parks = get_all_park_configurations(include_inactive=False)
+        
+        if not all_parks:
+            print("⚠️ No active park configurations found in database.")
+            log.warning("No active park configurations found")
+            return
+        
+        print(f"📊 Found {len(all_parks)} active park(s) to process\n")
+        log.info(f"Processing {len(all_parks)} active parks")
+        
+        # Process each park independently
+        for park_config in all_parks:
+            try:
+                process_park_bookings(park_config)
+            except Exception as e:
+                park_name = park_config.get('park_name', 'Unknown')
+                log.exception(f"Error processing park {park_name}: {e}")
+                print(f"\n❌ ERROR processing park {park_name}: {e}")
+                continue  # Continue with next park even if one fails
+        
+        print("\n" + "="*80)
+        print("✅ MULTI-PARK BOOKING SYNC JOB COMPLETED")
+        print("="*80 + "\n")
+        log.info("Multi-park booking sync job completed successfully")
+        
+    except Exception as e:
+        log.exception(f"Critical error in multi-park booking sync: {e}")
+        print(f"\n❌ CRITICAL ERROR in booking sync: {e}\n")
+        raise
 
 
 db_config = {
@@ -412,10 +465,23 @@ def get_contact_id(token, location_id, first=None, last=None, email=None, phone=
         print(f"[GHL CONTACT ERROR] Failed to create/get contact: {e}")
         return None
 # ✅ Helper function to send data to GHL (example)
-def send_to_ghl(booking, access_token):
-
+def send_to_ghl(booking, access_token, park_config=None):
+    """
+    Send booking data to GoHighLevel.
+    
+    Args:
+        booking: Booking data from Newbook
+        access_token: GHL access token
+        park_config: ParkConfig object with park-specific settings (optional, falls back to global config)
+    """
     try:
-        
+        # Use park-specific config if provided, otherwise use global config
+        if park_config:
+            location_id = park_config.location_id
+            pipeline_id = park_config.ghl_pipeline_id
+        else:
+            location_id = GHL_LOCATION_ID
+            pipeline_id = GHL_PIPELINE_ID
 
         guest = booking['guests'][0]
 
@@ -424,38 +490,55 @@ def send_to_ghl(booking, access_token):
         email = next((g.get("content") for g in guest.get("contact_details", []) if g["type"] == "email"), "")
         phone = next((g.get("content") for g in guest.get("contact_details", []) if g["type"] == "mobile"), "")
 
-
         # 🔹 Get or create contact in GHL
-        contact_id = get_contact_id(access_token, GHL_LOCATION_ID, first_name, last_name, email, phone)
+        contact_id = get_contact_id(access_token, location_id, first_name, last_name, email, phone)
+
+        # Determine stage ID using park config or fallback to hardcoded logic
         stage_id = None
         arrival = booking.get("booking_arrival")
         departure = booking.get("booking_departure")
         today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-        tomorrow = today + timedelta(days=1)
-        day_after = today + timedelta(days=2)
-        seven_days = today + timedelta(days=7)
-
         
-        if arrival:
-            arrival_dt = datetime.strptime(arrival, "%Y-%m-%d %H:%M:%S")
-            departure_dt = datetime.strptime(departure, "%Y-%m-%d %H:%M:%S") if departure else arrival_dt
-            if arrival_dt >= tomorrow and arrival_dt <= seven_days:
-                stage_id = '3aeae130-f411-4ac7-bcca-271291fdc3b9'
-            elif booking.get("booking_status", "").lower() == "arrived" and departure_dt >= tomorrow:
-                stage_id = '99912993-0e69-48f9-9943-096ae68408d7'
-            elif arrival_dt >= today and arrival_dt < tomorrow:
-                stage_id = 'b429a8e9-e73e-4590-b4c5-8ea1d65e0daf'
-            elif booking.get("booking_status", "").lower() == "arrived" and departure_dt >= today and departure_dt < day_after:
-                stage_id = 'fc60b2fa-8c2d-4202-9347-ac2dd32a0e43'
-            elif booking.get("booking_status", "").lower() == "departed":
-                stage_id = '8b54e5e5-27f3-463a-9d81-890c6dfd27eb'
-        print(f"Contact ID: {contact_id}, Stage ID: {stage_id}")
+        if park_config:
+            # Use dynamic stage determination from park config
+            arrival_dt = datetime.strptime(arrival, "%Y-%m-%d %H:%M:%S") if arrival else None
+            departure_dt = datetime.strptime(departure, "%Y-%m-%d %H:%M:%S") if departure else None
+            booking_status = booking.get("booking_status", "")
+            
+            stage_id = park_config.get_stage_id_by_booking_status(
+                booking_status=booking_status,
+                arrival_dt=arrival_dt,
+                departure_dt=departure_dt,
+                today=today
+            )
+        else:
+            # Fallback to hardcoded stage IDs for backwards compatibility
+            tomorrow = today + timedelta(days=1)
+            day_after = today + timedelta(days=2)
+            seven_days = today + timedelta(days=7)
+            
+            if arrival:
+                arrival_dt = datetime.strptime(arrival, "%Y-%m-%d %H:%M:%S")
+                departure_dt = datetime.strptime(departure, "%Y-%m-%d %H:%M:%S") if departure else arrival_dt
+                if arrival_dt >= tomorrow and arrival_dt <= seven_days:
+                    stage_id = '3aeae130-f411-4ac7-bcca-271291fdc3b9'
+                elif booking.get("booking_status", "").lower() == "arrived" and departure_dt >= tomorrow:
+                    stage_id = '99912993-0e69-48f9-9943-096ae68408d7'
+                elif arrival_dt >= today and arrival_dt < tomorrow:
+                    stage_id = 'b429a8e9-e73e-4590-b4c5-8ea1d65e0daf'
+                elif booking.get("booking_status", "").lower() == "arrived" and departure_dt >= today and departure_dt < day_after:
+                    stage_id = 'fc60b2fa-8c2d-4202-9347-ac2dd32a0e43'
+                elif booking.get("booking_status", "").lower() == "departed":
+                    stage_id = '8b54e5e5-27f3-463a-9d81-890c6dfd27eb'
+        
+        print(f"Contact ID: {contact_id}, Stage ID: {stage_id}, Location: {location_id}, Pipeline: {pipeline_id}")
+        
         ghl_payload = {
             "name": f"{guest.get('firstname', '').strip()} {guest.get('lastname', '').strip()} - {booking.get('site_name', '')} - {booking.get('booking_arrival', '').split(' ')[0]}",
             "status": "open",  # must be one of: open, won, lost, abandoned
             "contactId": contact_id,  # <-- must be a valid contact ID
-            "locationId": GHL_LOCATION_ID,
-            "pipelineId": GHL_PIPELINE_ID,
+            "locationId": location_id,
+            "pipelineId": pipeline_id,
             "pipelineStageId": stage_id,
             "monetaryValue": float(booking.get("booking_total", 0)),
 
@@ -567,9 +650,107 @@ def delete_opportunities_in_stage(stage_id):
             resp = requests.delete(del_url, headers=headers)
             print(f"Deleted {name} (ID: {opp_id}): {'Success' if resp.status_code == 200 else 'Failed'}")
 
+def delete_opportunity_by_booking_id_for_location(booking_id, location_id, pipeline_id, guest_firstname=None, guest_lastname=None, site_name=None, booking_arrival=None):
+    """
+    Deletes all opportunities in GHL that match the booking_id for a specific location and pipeline.
+    
+    Args:
+        booking_id: The booking ID to search for
+        location_id: GHL location ID
+        pipeline_id: GHL pipeline ID
+        guest_firstname, guest_lastname, site_name, booking_arrival: Optional details for exact matching
+    """
+    access_token = get_valid_access_token(GHL_CLIENT_ID, GHL_CLIENT_SECRET)
+    if not access_token:
+        print(f"No valid access token. Aborting opportunity deletion for booking_id: {booking_id}")
+        return
+
+    base_url = 'https://services.leadconnectorhq.com'
+    headers = {
+        'Authorization': f'Bearer {access_token}',
+        'Version': '2021-07-28'
+    }
+    url = f"{base_url}/opportunities/search?location_id={location_id}&pipeline_id={pipeline_id}&limit=100"
+    found = False
+
+    # Build expected name if all info provided
+    expected_name = None
+    if guest_firstname and guest_lastname and site_name and booking_arrival:
+        expected_name = f"{guest_firstname.strip()} {guest_lastname.strip()} - {site_name} - {booking_arrival.split(' ')[0]}"
+
+    while url:
+        resp = requests.get(url, headers=headers)
+        if resp.status_code != 200:
+            print(f"[GHL DELETE] Failed to fetch opportunities: {resp.status_code} {resp.text}")
+            break
+        data = resp.json()
+        for opp in data.get('opportunities', []):
+            name = opp.get('name', '')
+            # Match by expected name if possible, otherwise fallback to booking_id in custom fields
+            exact_name_match = expected_name and name == expected_name
+            custom_match = any(
+                (str(f.get('field_value')) == str(booking_id))
+                for f in opp.get('customFields', [])
+                if f.get('id') == 'site_id' or f.get('id') == 'booking_id'
+            )
+            if exact_name_match or custom_match:
+                opp_id = opp.get('id')
+                del_url = f"{base_url}/opportunities/{opp_id}"
+                del_resp = requests.delete(del_url, headers=headers)
+                print(f"Deleted opportunity for booking_id {booking_id} ({name}): {'Success' if del_resp.status_code == 200 else 'Failed'}")
+                found = True
+        url = data.get('meta', {}).get('nextPageUrl')
+    if not found:
+        print(f"No GHL opportunity found for booking_id {booking_id} in location {location_id}.")
+
+
+def delete_opportunity_by_booking_details_for_location(guest_firstname, guest_lastname, site_name, booking_arrival, location_id, pipeline_id):
+    """
+    Deletes all opportunities in GHL that match the exact opportunity name format for a specific location.
+    
+    Args:
+        guest_firstname, guest_lastname, site_name, booking_arrival: Details for matching
+        location_id: GHL location ID
+        pipeline_id: GHL pipeline ID
+    """
+    access_token = get_valid_access_token(GHL_CLIENT_ID, GHL_CLIENT_SECRET)
+    if not access_token:
+        print(f"No valid access token. Aborting opportunity deletion for: {guest_firstname} {guest_lastname}")
+        return
+
+    base_url = 'https://services.leadconnectorhq.com'
+    headers = {
+        'Authorization': f'Bearer {access_token}',
+        'Version': '2021-07-28'
+    }
+    url = f"{base_url}/opportunities/search?location_id={location_id}&pipeline_id={pipeline_id}&limit=100"
+    found = False
+
+    expected_name = f"{guest_firstname.strip()} {guest_lastname.strip()} - {site_name} - {booking_arrival.split(' ')[0]}"
+
+    while url:
+        resp = requests.get(url, headers=headers)
+        if resp.status_code != 200:
+            print(f"[GHL DELETE] Failed to fetch opportunities: {resp.status_code} {resp.text}")
+            break
+        data = resp.json()
+        for opp in data.get('opportunities', []):
+            name = opp.get('name', '')
+            if name == expected_name:
+                opp_id = opp.get('id')
+                del_url = f"{base_url}/opportunities/{opp_id}"
+                del_resp = requests.delete(del_url, headers=headers)
+                print(f"Deleted opportunity ({name}): {'Success' if del_resp.status_code == 200 else 'Failed'}")
+                found = True
+        url = data.get('meta', {}).get('nextPageUrl')
+    if not found:
+        print(f"No GHL opportunity found for name: {expected_name} in location {location_id}")
+
+
 def delete_opportunity_by_booking_id(booking_id, guest_firstname=None, guest_lastname=None, site_name=None, booking_arrival=None):
     """
     Deletes all opportunities in GHL that match the booking_id in name or custom fields.
+    Uses global GHL_LOCATION_ID and GHL_PIPELINE_ID (for backwards compatibility).
     If guest_firstname, guest_lastname, site_name, and booking_arrival are provided,
     will match the exact opportunity name format.
     """
@@ -661,3 +842,5 @@ def daily_cleanup():
     print("[DAILY CLEANUP] Removing all opportunities from arriving_soon and arriving_today stages.")
     delete_opportunities_in_stage('3aeae130-f411-4ac7-bcca-271291fdc3b9')  # arriving_soon
     delete_opportunities_in_stage('b429a8e9-e73e-4590-b4c5-8ea1d65e0daf')  # arriving_today
+
+
