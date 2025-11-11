@@ -304,13 +304,15 @@ def get_token_row():
 def update_tokens(tokens):
     conn = mysql.connector.connect(**db_config)
     cursor = conn.cursor()
+    # Use INSERT ... ON DUPLICATE KEY UPDATE to handle both insert and update
     query = """
-        UPDATE tokens
-        SET access_token = %s,
-            refresh_token = %s,
-            expire_in = %s,
+        INSERT INTO tokens (id, access_token, refresh_token, expire_in, created_at)
+        VALUES (1, %s, %s, %s, NOW())
+        ON DUPLICATE KEY UPDATE
+            access_token = VALUES(access_token),
+            refresh_token = VALUES(refresh_token),
+            expire_in = VALUES(expire_in),
             created_at = NOW()
-        WHERE id = 1
     """
     cursor.execute(query, (
         tokens.get("access_token"),

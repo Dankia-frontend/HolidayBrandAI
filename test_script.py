@@ -1,8 +1,9 @@
 # filepath: utils/create_ghl_subaccount.py
 import requests
 import json
-from config.config import GHL_AGENCY_API_KEY
+from config.config import GHL_AGENCY_API_KEY, GHL_API_KEY, GHL_CLIENT_ID, GHL_CLIENT_SECRET
 from utils.logger import get_logger
+from utils.ghl_api import get_valid_access_token
 
 log = get_logger("GHLSubAccount")
 
@@ -241,6 +242,8 @@ def list_ghl_locations():
         log.error("GHL_AGENCY_API_KEY not configured")
         print("❌ Error: GHL_AGENCY_API_KEY not configured")
         return None
+    
+    # access_token = get_valid_access_token(GHL_CLIENT_ID, GHL_CLIENT_SECRET)
     
     url = "https://rest.gohighlevel.com/v1/locations/"
     headers = {

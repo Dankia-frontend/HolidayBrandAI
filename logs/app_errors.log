@@ -1,3 +1,61 @@
-2025-11-05 11:14:18,959 - [ERROR] - AppLogger.GHLSubAccount - GHL_AGENCY_API_KEY not configured. Get it from Agency Dashboard → Settings → API Keys
-2025-11-05 11:15:10,421 - [ERROR] - AppLogger.GHLSubAccount - Failed to create sub-account: 422 - {"businessName":{"message":"The business name field is mandatory.","rule":"required"},"country":{"message":"The country value must be a 2 digit country code, refer : https://www.iban.com/country-codes.","rule":"country"},"timezone":{"message":"The timzone value is invalid.","rule":"timezone"}}
-2025-11-05 11:17:49,651 - [ERROR] - AppLogger.GHLSubAccount - Failed to create sub-account: 422 - {"businessName":{"message":"The business name field is mandatory.","rule":"required"},"timezone":{"message":"The timzone value is invalid.","rule":"timezone"}}
+2025-11-11 16:14:39,931 - [ERROR] - AppLogger.GHLSubAccount - Failed to list locations: 401 - {"msg":"Unauthorized, Switch to the new API token."}
+2025-11-11 16:14:40,512 - [ERROR] - AppLogger.GHLSubAccount - Failed to list locations: 401 - {"msg":"Unauthorized, Switch to the new API token."}
+2025-11-11 16:16:33,131 - [ERROR] - AppLogger.FastAPI - Error listing GHL locations: get_valid_access_token() missing 2 required positional arguments: 'client_id' and 'client_secret'
+2025-11-11 16:16:33,134 - [ERROR] - AppLogger.FastAPI - Error listing GHL locations: get_valid_access_token() missing 2 required positional arguments: 'client_id' and 'client_secret'
+2025-11-11 16:17:21,460 - [ERROR] - AppLogger.GHLSubAccount - Failed to list locations: 401 - {"msg":"Unauthorized, Switch to the new API token."}
+2025-11-11 16:17:24,172 - [ERROR] - AppLogger.GHLSubAccount - Failed to list locations: 401 - {"msg":"Unauthorized, Switch to the new API token."}
+2025-11-11 16:19:43,631 - [ERROR] - AppLogger.GHLSubAccount - Failed to list locations: 401 - {"msg":"Api key is invalid."}
+2025-11-11 16:19:44,256 - [ERROR] - AppLogger.GHLSubAccount - Failed to list locations: 401 - {"msg":"Api key is invalid."}
+2025-11-11 16:29:28,576 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI agent: 403 - {"message":"Forbidden resource","error":"Forbidden","statusCode":403}
+2025-11-11 16:29:28,578 - [ERROR] - AppLogger.VoiceAI - Failed to copy agent 6878bfc682a9d176533d7a8e to location BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:29:29,800 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI agent: 403 - {"message":"Forbidden resource","error":"Forbidden","statusCode":403}
+2025-11-11 16:29:29,801 - [ERROR] - AppLogger.VoiceAI - Failed to copy agent 68cb507c9de977440f6ed69f to location BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:29:30,998 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI agent: 403 - {"message":"Forbidden resource","error":"Forbidden","statusCode":403}
+2025-11-11 16:29:31,000 - [ERROR] - AppLogger.VoiceAI - Failed to copy agent 68e84af1efa28850152d5a6c to location BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:29:32,209 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI agent: 403 - {"message":"Forbidden resource","error":"Forbidden","statusCode":403}
+2025-11-11 16:29:32,211 - [ERROR] - AppLogger.VoiceAI - Failed to copy agent 68eeeefde796d04093e9e57b to location BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:29:33,475 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI agent: 403 - {"message":"Forbidden resource","error":"Forbidden","statusCode":403}
+2025-11-11 16:29:33,477 - [ERROR] - AppLogger.VoiceAI - Failed to copy agent 6903f5b3c533205b70e6ee8d to location BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:36:03,699 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI agent: 422 - {"message":["property actions should not exist","property traceId should not exist","property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"23da20a6-6482-48d0-8ddd-671700660908"}
+2025-11-11 16:36:03,701 - [ERROR] - AppLogger.VoiceAI - Failed to copy agent 6878bfc682a9d176533d7a8e to location BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:36:08,536 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI agent: 422 - {"message":["property actions should not exist","property traceId should not exist","property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"952886f5-5837-4ef2-a018-77059a0bee91"}
+2025-11-11 16:36:08,538 - [ERROR] - AppLogger.VoiceAI - Failed to copy agent 68cb507c9de977440f6ed69f to location BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:36:13,510 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI agent: 422 - {"message":["property actions should not exist","property traceId should not exist","property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"edbcba16-e191-43da-a734-cd88cc317777"}
+2025-11-11 16:36:13,513 - [ERROR] - AppLogger.VoiceAI - Failed to copy agent 68e84af1efa28850152d5a6c to location BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:36:18,478 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI agent: 422 - {"message":["property actions should not exist","property traceId should not exist","property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"d9ef2f7a-82ec-4af3-8a7b-72ad619f9698"}
+2025-11-11 16:36:18,480 - [ERROR] - AppLogger.VoiceAI - Failed to copy agent 68eeeefde796d04093e9e57b to location BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:36:23,523 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI agent: 422 - {"message":["property actions should not exist","property traceId should not exist","property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"111968af-3e43-4202-a294-3bd32028c123"}
+2025-11-11 16:36:23,525 - [ERROR] - AppLogger.VoiceAI - Failed to copy agent 6903f5b3c533205b70e6ee8d to location BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:38:41,270 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI agent: 400 - {"message":"LocationId is missing in body","error":"Bad Request","statusCode":400}
+2025-11-11 16:38:41,272 - [ERROR] - AppLogger.VoiceAI - Failed to copy agent 6878bfc682a9d176533d7a8e to location BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:38:46,450 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI agent: 400 - {"message":"LocationId is missing in body","error":"Bad Request","statusCode":400}
+2025-11-11 16:38:46,452 - [ERROR] - AppLogger.VoiceAI - Failed to copy agent 68cb507c9de977440f6ed69f to location BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:38:51,657 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI agent: 400 - {"message":"LocationId is missing in body","error":"Bad Request","statusCode":400}
+2025-11-11 16:38:51,660 - [ERROR] - AppLogger.VoiceAI - Failed to copy agent 68e84af1efa28850152d5a6c to location BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:38:56,853 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI agent: 400 - {"message":"LocationId is missing in body","error":"Bad Request","statusCode":400}
+2025-11-11 16:38:56,855 - [ERROR] - AppLogger.VoiceAI - Failed to copy agent 68eeeefde796d04093e9e57b to location BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:39:02,099 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI agent: 400 - {"message":"LocationId is missing in body","error":"Bad Request","statusCode":400}
+2025-11-11 16:39:02,103 - [ERROR] - AppLogger.VoiceAI - Failed to copy agent 6903f5b3c533205b70e6ee8d to location BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:40:34,489 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"4374171a-6721-4d01-963b-6f74bab1d822"}
+2025-11-11 16:40:41,101 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"01dfbd02-dc90-4af1-9f3b-93f98972be9d"}
+2025-11-11 16:40:46,516 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI agent: 400 - {"message":"The phone number is not registered with this location.","error":"Bad Request","statusCode":400,"traceId":"7014b00a-6733-400c-960e-15109e70ec19"}
+2025-11-11 16:40:46,518 - [ERROR] - AppLogger.VoiceAI - Failed to copy agent 68e84af1efa28850152d5a6c to location BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:40:52,021 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI agent: 400 - {"message":"The phone number is not registered with this location.","error":"Bad Request","statusCode":400,"traceId":"218580a6-7392-4b5a-a340-48a74ca9ec07"}
+2025-11-11 16:40:52,022 - [ERROR] - AppLogger.VoiceAI - Failed to copy agent 68eeeefde796d04093e9e57b to location BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:40:57,328 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI agent: 400 - {"message":"The phone number is not registered with this location.","error":"Bad Request","statusCode":400,"traceId":"da7a4d59-c6d5-41b2-8c5f-b58ec74d54f8"}
+2025-11-11 16:40:57,330 - [ERROR] - AppLogger.VoiceAI - Failed to copy agent 6903f5b3c533205b70e6ee8d to location BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:50:27,383 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"bef14d4f-6e54-4b6f-b738-d2806b0f14b6"}
+2025-11-11 16:50:34,564 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"d1930d1a-8891-4f0e-985a-deed44b6d00a"}
+2025-11-11 16:50:41,736 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"d35815f0-ff1f-41ce-9b67-cf9779f6a93a"}
+2025-11-11 16:50:48,342 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"ffd37be1-7010-47c1-8290-8e3b5468ba99"}
+2025-11-11 16:50:54,774 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"bbe1a2db-ebb6-42bc-b635-7a760338d554"}
+2025-11-11 17:12:43,611 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"a03a8122-b299-4471-96da-c35c871076e9"}
+2025-11-11 17:12:50,448 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"9676b27d-3550-4a42-863f-da9b5a73b96b"}
+2025-11-11 17:12:57,021 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"8a2a79ce-88b6-4bcd-a333-b213d3dfc6b9"}
+2025-11-11 17:13:04,330 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"63d7ebcf-0981-464c-8632-b19f62033394"}
+2025-11-11 17:13:10,920 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"33a0d634-61b7-47c6-87e6-5725ebae5d54"}
+2025-11-11 17:27:41,212 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"10a01363-5545-4553-a48f-d865e3dec169"}
+2025-11-11 17:27:47,854 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"7081ed07-40b9-43f7-8dbc-a3e6a1c662a2"}
+2025-11-11 17:27:54,743 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"7ae8640b-9c79-453d-b475-5b5dcd77211e"}
+2025-11-11 17:28:00,842 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"54ca0762-1bd3-4945-9c23-a1deda4e86b6"}
+2025-11-11 17:28:06,918 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"c5f731a3-eca5-4f74-8bb4-54b8ad62a0a3"}
