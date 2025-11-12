@@ -3,3 +3,202 @@
 2025-11-12 07:37:08,546 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"27186522-e27d-4625-8c70-ed38dead1601"}
 2025-11-12 07:37:16,567 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"e25e4038-7f0f-4484-a29d-6007b33c5108"}
 2025-11-12 07:37:24,405 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"b65a2c0e-8c2b-4f9a-872d-f52099e8d3bc"}
+2025-11-12 16:15:30,538 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist","property actions should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"d8df44d1-9f0f-4180-8893-54f8af23175c"}
+2025-11-12 16:15:37,249 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist","property actions should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"958db26a-0631-4892-a099-aeceb5d4986c"}
+2025-11-12 16:15:42,563 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist","property actions should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"3b79ec35-2818-4131-82cf-d22229911857"}
+2025-11-12 16:15:47,869 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist","property actions should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"3bdb0761-52bb-98e4-b0d5-62c29c825643"}
+2025-11-12 16:15:53,173 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist","property actions should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"1d514b86-0bc5-40a5-a995-1048d60250b7"}
+2025-11-12 16:21:09,580 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI agent: 422 - {"message":["property actions should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"0a31a76d-5640-4c94-a02b-4f0a81335844"}
+2025-11-12 16:21:09,582 - [ERROR] - AppLogger.VoiceAI - Failed to create agent in target location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:21:13,654 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI agent: 422 - {"message":["property actions should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"deb621d5-df55-4f47-94e1-7398ad801e6b"}
+2025-11-12 16:21:13,655 - [ERROR] - AppLogger.VoiceAI - Failed to create agent in target location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:21:17,714 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI agent: 422 - {"message":["property actions should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"b5e87d74-f31c-4367-880b-bb4864f7b338"}
+2025-11-12 16:21:17,717 - [ERROR] - AppLogger.VoiceAI - Failed to create agent in target location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:21:21,740 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI agent: 422 - {"message":["property actions should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"8df225bf-99eb-4fa8-8255-34f356264a95"}
+2025-11-12 16:21:21,741 - [ERROR] - AppLogger.VoiceAI - Failed to create agent in target location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:21:25,687 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI agent: 422 - {"message":["property actions should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"5aa86ecc-ff89-4f97-98f9-bc4e3f3fc8bd"}
+2025-11-12 16:21:25,688 - [ERROR] - AppLogger.VoiceAI - Failed to create agent in target location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:26:52,699 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"a6b55f0d-a5bf-455c-a261-e6408f983c22"}
+2025-11-12 16:26:53,334 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:26:53,861 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:26:54,361 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:26:55,084 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:26:55,625 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:26:56,240 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:26:56,243 - [ERROR] - AppLogger.VoiceAI - Failed to copy any actions for agent 69146efb6b2ef55149028792
+2025-11-12 16:27:02,232 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"dea0fc31-f026-4b37-95ef-598f17e47007"}
+2025-11-12 16:27:02,765 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:27:03,409 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:27:03,989 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:27:04,527 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:27:05,047 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:27:05,689 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:27:06,315 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:27:06,317 - [ERROR] - AppLogger.VoiceAI - Failed to copy any actions for agent 69146f046b2ef563e2028963
+2025-11-12 16:27:11,541 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"3cf298da-9f15-4646-bec0-c16adf73949f"}
+2025-11-12 16:27:12,071 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:27:12,627 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:27:13,257 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:27:14,403 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:27:15,024 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:27:15,562 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:27:16,083 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:27:16,638 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:27:17,246 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:27:17,769 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:27:17,771 - [ERROR] - AppLogger.VoiceAI - Failed to copy any actions for agent 69146f0ef341196c3f9402f4
+2025-11-12 16:27:23,095 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"6aca105f-43fb-49ce-bdc2-32a820ffd48c"}
+2025-11-12 16:27:23,699 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:27:24,613 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:27:25,132 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:27:25,134 - [ERROR] - AppLogger.VoiceAI - Failed to copy any actions for agent 69146f196eea0055d1349ef5
+2025-11-12 16:27:30,789 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"8865b5a4-a94a-4dfe-80ad-2afc87640591"}
+2025-11-12 16:27:31,295 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:27:31,809 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:27:32,330 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:27:32,863 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:27:33,393 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:27:33,895 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:27:34,429 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:27:35,013 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:27:35,605 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:27:36,461 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:27:36,463 - [ERROR] - AppLogger.VoiceAI - Failed to copy any actions for agent 69146f216b2ef54341028e22
+2025-11-12 16:40:45,175 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"727638fe-b100-43e9-8a49-fca944127278"}
+2025-11-12 16:40:45,693 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:40:46,242 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:40:46,849 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:40:47,405 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:40:48,027 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:40:48,674 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:40:48,677 - [ERROR] - AppLogger.VoiceAI - Failed to copy any actions for agent 6914723b8a8da04d4d1ad975
+2025-11-12 16:40:54,302 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"48d0abfa-bbdb-43e5-aaca-99a10498f226"}
+2025-11-12 16:40:55,168 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:40:55,716 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:40:56,306 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:40:56,905 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:40:57,487 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:40:58,065 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:40:58,579 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:40:58,583 - [ERROR] - AppLogger.VoiceAI - Failed to copy any actions for agent 691472448a8da0070e1adab4
+2025-11-12 16:41:04,276 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"b9c036a7-84bb-400d-8111-fd8f94f32034"}
+2025-11-12 16:41:04,818 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:41:05,368 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:41:05,970 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:41:06,488 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:41:07,391 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:41:07,945 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:41:08,794 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:41:09,362 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:41:09,866 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:41:10,384 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:41:10,388 - [ERROR] - AppLogger.VoiceAI - Failed to copy any actions for agent 6914724e8890f3472fe18ca9
+2025-11-12 16:41:15,416 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"7f75d03f-34fe-4dfa-84cd-ea08f33ea937"}
+2025-11-12 16:41:15,943 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:41:16,491 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:41:17,006 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:41:17,009 - [ERROR] - AppLogger.VoiceAI - Failed to copy any actions for agent 6914725a6eea000bb33511a8
+2025-11-12 16:41:22,207 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"35d7586e-2d11-43bc-95f2-c649e5d9695b"}
+2025-11-12 16:41:22,739 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:41:23,276 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:41:23,820 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:41:24,338 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:41:24,863 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:41:25,746 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:41:26,264 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:41:26,791 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:41:27,655 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:41:28,169 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:41:28,172 - [ERROR] - AppLogger.VoiceAI - Failed to copy any actions for agent 691472608890f34b13e18e6c
+2025-11-12 16:47:26,915 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"4c5e34e5-a38c-4099-ac7d-bb60b1a5731f"}
+2025-11-12 16:47:28,928 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:47:30,811 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:47:32,787 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:47:34,760 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:47:36,681 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:47:38,606 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:47:38,611 - [ERROR] - AppLogger.VoiceAI - Failed to copy any actions for agent 691473cd8890f3cb53e1b7a6
+2025-11-12 16:47:49,372 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"b9be6094-e49c-415f-bb73-85c42685aaaf"}
+2025-11-12 16:47:51,366 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:47:53,365 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:47:55,269 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:47:57,161 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:47:59,144 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:48:01,054 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:48:02,983 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:48:02,986 - [ERROR] - AppLogger.VoiceAI - Failed to copy any actions for agent 691473dee26f331b1700764f
+2025-11-12 16:48:08,043 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"03818d5c-c3cd-4697-b915-d14c6ab4f042"}
+2025-11-12 16:48:09,917 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:48:11,795 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:48:13,770 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:48:15,629 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:48:17,598 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:48:20,372 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:48:22,300 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:48:24,281 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:48:26,151 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:48:28,022 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:48:28,024 - [ERROR] - AppLogger.VoiceAI - Failed to copy any actions for agent 691473f62339cb4a5ebabf99
+2025-11-12 16:48:34,668 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"bea1c543-ae6d-4b18-8840-c655db521871"}
+2025-11-12 16:48:36,563 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:48:38,515 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:48:40,422 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:48:40,424 - [ERROR] - AppLogger.VoiceAI - Failed to copy any actions for agent 6914740f6eea00bc79353cdd
+2025-11-12 16:48:45,650 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"4d7fd99c-5907-4ccd-9a6b-69ee3fc173de"}
+2025-11-12 16:48:47,667 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:48:49,528 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:48:51,709 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:48:53,672 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:48:55,696 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:48:57,660 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:48:59,578 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:49:01,501 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:49:03,383 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:49:05,237 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:49:05,240 - [ERROR] - AppLogger.VoiceAI - Failed to copy any actions for agent 6914741c8890f332f6e1c00b
+2025-11-12 16:54:48,291 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"f59ecbaa-82ef-46fd-9b29-f101a15b2fd2"}
+2025-11-12 16:54:50,451 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"The workflow id is invalid.","error":"Bad Request","statusCode":400,"traceId":"0cd259d5-b1ad-4163-a50f-cbf43332fa6a"}
+2025-11-12 16:54:52,835 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"Custom field with id V3HyBEM5B2ccP33gecm9 not found","error":"Bad Request","statusCode":400,"traceId":"14e8768b-0c50-44d8-8324-12fa70abb707"}
+2025-11-12 16:54:57,582 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"The workflow id is invalid.","error":"Bad Request","statusCode":400,"traceId":"2891b045-5f62-4585-b701-f5b12c1e2b68"}
+2025-11-12 16:55:16,603 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"0b388ef7-8ed7-4d27-b07a-dd7d50494c3b"}
+2025-11-12 16:55:18,870 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"The knowledge base id is invalid.","error":"Bad Request","statusCode":400,"traceId":"06d6f215-227c-4243-93bb-0202ba21fb33"}
+2025-11-12 16:55:21,029 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"The workflow id is invalid.","error":"Bad Request","statusCode":400,"traceId":"8aabe0d1-9b30-9a81-a96f-18724239fd91"}
+2025-11-12 16:55:23,049 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"Custom field with id V3HyBEM5B2ccP33gecm9 not found","error":"Bad Request","statusCode":400,"traceId":"1eb8a7b0-b7c7-47dd-a742-385d4b2e93a0"}
+2025-11-12 16:55:27,312 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"The workflow id is invalid.","error":"Bad Request","statusCode":400,"traceId":"2eb827c2-6443-48f5-9abb-c341e0a844ff"}
+2025-11-12 16:55:31,489 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"The workflow id is invalid.","error":"Bad Request","statusCode":400,"traceId":"db383e73-168d-4943-b3f5-1aa3a70211d8"}
+2025-11-12 16:55:36,388 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"9b7bc629-59c6-4e83-a07a-7bad5029db29"}
+2025-11-12 16:55:39,782 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"The knowledge base id is invalid.","error":"Bad Request","statusCode":400,"traceId":"5fe14c6d-8f92-449c-80d4-5ccf0495251e"}
+2025-11-12 16:55:41,838 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"The workflow id is invalid.","error":"Bad Request","statusCode":400,"traceId":"717fcc9c-952e-44ed-91b3-feca8ad60cc2"}
+2025-11-12 16:55:43,876 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"Custom field with id V3HyBEM5B2ccP33gecm9 not found","error":"Bad Request","statusCode":400,"traceId":"655f8ff9-743d-4623-80fc-8ffa56791edd"}
+2025-11-12 16:55:50,622 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"The workflow id is invalid.","error":"Bad Request","statusCode":400,"traceId":"4e8850c2-a1e7-469d-8d8b-4f875e1b4078"}
+2025-11-12 16:56:03,372 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"The workflow id is invalid.","error":"Bad Request","statusCode":400,"traceId":"254eea3c-7c17-46e5-a7dd-7826519fe66c"}
+2025-11-12 16:56:08,332 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"1adeb75c-be1b-4e93-a1e4-ef9507f3fad8"}
+2025-11-12 16:56:20,655 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"b40ade65-5d16-4844-a0d6-70beec15c9db"}
+2025-11-12 16:56:22,790 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"The knowledge base id is invalid.","error":"Bad Request","statusCode":400,"traceId":"98d98163-d337-47ca-920a-eb61175f6d2f"}
+2025-11-12 16:56:24,816 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"The workflow id is invalid.","error":"Bad Request","statusCode":400,"traceId":"0f3a09dc-2c89-4ad0-b7c0-74322ccf6862"}
+2025-11-12 16:56:26,871 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"Custom field with id V3HyBEM5B2ccP33gecm9 not found","error":"Bad Request","statusCode":400,"traceId":"d56ae82c-f245-4b3f-b2ad-c67c7c89b180"}
+2025-11-12 16:56:31,058 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"The workflow id is invalid.","error":"Bad Request","statusCode":400,"traceId":"0fbd9692-5b58-4b67-aef8-b998bfc5c083"}
+2025-11-12 16:56:43,007 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"The workflow id is invalid.","error":"Bad Request","statusCode":400,"traceId":"91fe27d9-0342-440f-b966-5496b0f881a3"}
+2025-11-12 17:00:39,651 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"c3158a2e-3af2-42ed-8916-c2549c7e6b7b"}
+2025-11-12 17:00:40,348 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"The workflow id is invalid.","error":"Bad Request","statusCode":400,"traceId":"a1ae42a5-3149-4636-bcab-5e7ee698989f"}
+2025-11-12 17:00:40,963 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"Custom field with id V3HyBEM5B2ccP33gecm9 not found","error":"Bad Request","statusCode":400,"traceId":"be110109-bb09-4d18-a3c6-2d89e1a4a9fe"}
+2025-11-12 17:00:42,427 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"The workflow id is invalid.","error":"Bad Request","statusCode":400,"traceId":"ae337821-a571-4cfe-bfb3-c28cfc03d482"}
+2025-11-12 17:00:49,025 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"2488ba00-bcf9-4428-b6ca-a4ca35ff1175"}
+2025-11-12 17:00:49,807 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"The knowledge base id is invalid.","error":"Bad Request","statusCode":400,"traceId":"2f02a00b-52b0-4b0c-92f8-df2f5e63e765"}
+2025-11-12 17:00:50,396 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"The workflow id is invalid.","error":"Bad Request","statusCode":400,"traceId":"9c6e5452-52cf-4702-8575-7ed18e11f6ee"}
+2025-11-12 17:00:51,345 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"Custom field with id V3HyBEM5B2ccP33gecm9 not found","error":"Bad Request","statusCode":400,"traceId":"54d19182-e352-4fd0-bc00-4425480b7853"}
+2025-11-12 17:00:53,139 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"The workflow id is invalid.","error":"Bad Request","statusCode":400,"traceId":"0458369b-690f-982a-a0f2-51715f997651"}
+2025-11-12 17:00:57,436 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"The workflow id is invalid.","error":"Bad Request","statusCode":400,"traceId":"d0365543-6e1d-43bb-8c42-e71e84bf9f6b"}
+2025-11-12 17:01:02,522 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"cfb4c6eb-61ef-4a4d-b0db-a1c6d063c143"}
+2025-11-12 17:01:03,275 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"The knowledge base id is invalid.","error":"Bad Request","statusCode":400,"traceId":"2e7581a6-152a-43a6-8d4e-17c7fabd7890"}
+2025-11-12 17:01:03,878 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"The workflow id is invalid.","error":"Bad Request","statusCode":400,"traceId":"41ccd1c4-897b-44d6-bf20-d682fe8b85e6"}
+2025-11-12 17:01:04,523 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"Custom field with id V3HyBEM5B2ccP33gecm9 not found","error":"Bad Request","statusCode":400,"traceId":"4604c231-78c0-4c61-bbf1-7ffd66cd8367"}
+2025-11-12 17:01:05,995 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"The workflow id is invalid.","error":"Bad Request","statusCode":400,"traceId":"8bc8a37c-0df2-4d21-9377-a8f9f877e696"}
+2025-11-12 17:01:10,196 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"The workflow id is invalid.","error":"Bad Request","statusCode":400,"traceId":"d1d30bc4-003f-4489-9c1f-64c85f01292f"}
+2025-11-12 17:01:15,047 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"fb7706a7-167a-4fc4-8f77-7aa27cf1b3d7"}
+2025-11-12 17:01:26,446 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"d796d5e4-6379-4147-b5f9-6dbde3743ecb"}
+2025-11-12 17:01:27,170 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"The knowledge base id is invalid.","error":"Bad Request","statusCode":400,"traceId":"31e36966-6de8-4aae-8965-937e7f64e843"}
+2025-11-12 17:01:28,093 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"The workflow id is invalid.","error":"Bad Request","statusCode":400,"traceId":"8de9e486-b052-4fe9-a544-43cd924bdade"}
+2025-11-12 17:01:28,714 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"Custom field with id V3HyBEM5B2ccP33gecm9 not found","error":"Bad Request","statusCode":400,"traceId":"713fb5d3-7258-4255-882f-f5a10bbfc886"}
+2025-11-12 17:01:30,151 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"The workflow id is invalid.","error":"Bad Request","statusCode":400,"traceId":"92586a67-1ea2-4065-9146-015412a24666"}
+2025-11-12 17:01:35,626 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"The workflow id is invalid.","error":"Bad Request","statusCode":400,"traceId":"406059e6-88cb-43f3-865a-bed9e8c7dae9"}

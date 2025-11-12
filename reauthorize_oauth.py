@@ -31,6 +31,8 @@ try:
         # "conversations/message.write",
         "voice-ai-agents.readonly",    # 🎯 Voice AI scope
         "voice-ai-agents.write",       # 🎯 Voice AI scope
+        "voice-ai-agent-goals.readonly", # 🎯 Voice AI scope
+        "voice-ai-agent-goals.write", # 🎯 Voice AI scope
     ]
 
     REDIRECT_URI = "https://oauth.pstmn.io/v1/callback"

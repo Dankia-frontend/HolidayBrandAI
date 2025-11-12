@@ -117,3 +117,1031 @@
 2025-11-12 07:40:20,451 - [INFO] - AppLogger.GHLSubAccount - Found 88 location(s)
 2025-11-12 07:40:20,657 - [INFO] - AppLogger.GHLSubAccount - Fetching all GHL locations
 2025-11-12 07:40:22,512 - [INFO] - AppLogger.GHLSubAccount - Found 88 location(s)
+2025-11-12 16:08:30,840 - [WARNING] - AppLogger.MultiLocationTokens - No token found for location UTkbqQXAR7A3UsirpOje
+2025-11-12 16:08:32,202 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agents for location: UTkbqQXAR7A3UsirpOje
+2025-11-12 16:08:33,172 - [INFO] - AppLogger.VoiceAI - Found 5 Voice AI agent(s)
+2025-11-12 16:13:41,545 - [INFO] - AppLogger.GHLSubAccount - Fetching all GHL locations
+2025-11-12 16:13:43,312 - [INFO] - AppLogger.GHLSubAccount - Found 88 location(s)
+2025-11-12 16:13:43,329 - [INFO] - AppLogger.GHLSubAccount - Fetching all GHL locations
+2025-11-12 16:13:44,278 - [INFO] - AppLogger.GHLSubAccount - Found 88 location(s)
+2025-11-12 16:15:21,101 - [INFO] - AppLogger.MultiLocationTokens - Token stored for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:15:21,101 - [INFO] - AppLogger.MultiLocationTokens - Token refreshed for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:15:21,104 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agents for location: UTkbqQXAR7A3UsirpOje
+2025-11-12 16:15:21,969 - [INFO] - AppLogger.VoiceAI - Found 5 Voice AI agent(s)
+2025-11-12 16:15:24,794 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 6878bfc682a9d176533d7a8e from location: UTkbqQXAR7A3UsirpOje
+2025-11-12 16:15:24,795 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 6878bfc682a9d176533d7a8e
+2025-11-12 16:15:25,339 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-12 16:15:25,350 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:15:25,351 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-12 16:15:25,351 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:15:29,972 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI agent: N/A (ID: 69146c4d6eea002586343e72)
+2025-11-12 16:15:29,975 - [INFO] - AppLogger.VoiceAI - Step 4: Updating agent with name and custom actions
+2025-11-12 16:15:29,976 - [INFO] - AppLogger.VoiceAI - Updating Voice AI agent: 69146c4d6eea002586343e72 in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:15:30,538 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist","property actions should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"d8df44d1-9f0f-4180-8893-54f8af23175c"}
+2025-11-12 16:15:30,541 - [INFO] - AppLogger.VoiceAI - Successfully copied agent 6878bfc682a9d176533d7a8e to location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:15:33,418 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 68cb507c9de977440f6ed69f from location: UTkbqQXAR7A3UsirpOje
+2025-11-12 16:15:33,419 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 68cb507c9de977440f6ed69f
+2025-11-12 16:15:34,295 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-12 16:15:34,299 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:15:34,299 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-12 16:15:34,300 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:15:36,621 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI agent: N/A (ID: 69146c566b2ef5eb7f022a73)
+2025-11-12 16:15:36,624 - [INFO] - AppLogger.VoiceAI - Step 4: Updating agent with name and custom actions
+2025-11-12 16:15:36,625 - [INFO] - AppLogger.VoiceAI - Updating Voice AI agent: 69146c566b2ef5eb7f022a73 in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:15:37,249 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist","property actions should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"958db26a-0631-4892-a099-aeceb5d4986c"}
+2025-11-12 16:15:37,251 - [INFO] - AppLogger.VoiceAI - Successfully copied agent 68cb507c9de977440f6ed69f to location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:15:40,014 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 68e84af1efa28850152d5a6c from location: UTkbqQXAR7A3UsirpOje
+2025-11-12 16:15:40,015 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 68e84af1efa28850152d5a6c
+2025-11-12 16:15:40,611 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-12 16:15:40,617 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:15:40,617 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-12 16:15:40,618 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:15:41,881 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI agent: N/A (ID: 69146c5d8a8da036171a0de0)
+2025-11-12 16:15:41,883 - [INFO] - AppLogger.VoiceAI - Step 4: Updating agent with name and custom actions
+2025-11-12 16:15:41,884 - [INFO] - AppLogger.VoiceAI - Updating Voice AI agent: 69146c5d8a8da036171a0de0 in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:15:42,563 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist","property actions should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"3b79ec35-2818-4131-82cf-d22229911857"}
+2025-11-12 16:15:42,567 - [INFO] - AppLogger.VoiceAI - Successfully copied agent 68e84af1efa28850152d5a6c to location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:15:45,354 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 68eeeefde796d04093e9e57b from location: UTkbqQXAR7A3UsirpOje
+2025-11-12 16:15:45,354 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 68eeeefde796d04093e9e57b
+2025-11-12 16:15:45,911 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-12 16:15:45,914 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:15:45,915 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-12 16:15:45,916 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:15:46,964 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI agent: N/A (ID: 69146c626eea00e99734415c)
+2025-11-12 16:15:46,967 - [INFO] - AppLogger.VoiceAI - Step 4: Updating agent with name and custom actions
+2025-11-12 16:15:46,967 - [INFO] - AppLogger.VoiceAI - Updating Voice AI agent: 69146c626eea00e99734415c in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:15:47,869 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist","property actions should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"3bdb0761-52bb-98e4-b0d5-62c29c825643"}
+2025-11-12 16:15:47,872 - [INFO] - AppLogger.VoiceAI - Successfully copied agent 68eeeefde796d04093e9e57b to location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:15:50,740 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 6903f5b3c533205b70e6ee8d from location: UTkbqQXAR7A3UsirpOje
+2025-11-12 16:15:50,740 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 6903f5b3c533205b70e6ee8d
+2025-11-12 16:15:51,373 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-12 16:15:51,377 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:15:51,378 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-12 16:15:51,379 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:15:52,561 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI agent: N/A (ID: 69146c678a8da0e31f1a0f8c)
+2025-11-12 16:15:52,563 - [INFO] - AppLogger.VoiceAI - Step 4: Updating agent with name and custom actions
+2025-11-12 16:15:52,563 - [INFO] - AppLogger.VoiceAI - Updating Voice AI agent: 69146c678a8da0e31f1a0f8c in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:15:53,173 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist","property actions should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"1d514b86-0bc5-40a5-a995-1048d60250b7"}
+2025-11-12 16:15:53,175 - [INFO] - AppLogger.VoiceAI - Successfully copied agent 6903f5b3c533205b70e6ee8d to location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:15:53,176 - [INFO] - AppLogger.VoiceAI - Bulk copy completed: 5/5 agents copied
+2025-11-12 16:21:04,851 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agents for location: UTkbqQXAR7A3UsirpOje
+2025-11-12 16:21:05,689 - [INFO] - AppLogger.VoiceAI - Found 5 Voice AI agent(s)
+2025-11-12 16:21:08,414 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 6878bfc682a9d176533d7a8e from location: UTkbqQXAR7A3UsirpOje
+2025-11-12 16:21:08,415 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 6878bfc682a9d176533d7a8e
+2025-11-12 16:21:09,001 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-12 16:21:09,006 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:21:09,007 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location with all configurations
+2025-11-12 16:21:09,008 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:21:09,580 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI agent: 422 - {"message":["property actions should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"0a31a76d-5640-4c94-a02b-4f0a81335844"}
+2025-11-12 16:21:09,582 - [ERROR] - AppLogger.VoiceAI - Failed to create agent in target location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:21:12,366 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 68cb507c9de977440f6ed69f from location: UTkbqQXAR7A3UsirpOje
+2025-11-12 16:21:12,366 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 68cb507c9de977440f6ed69f
+2025-11-12 16:21:13,024 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-12 16:21:13,027 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:21:13,028 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location with all configurations
+2025-11-12 16:21:13,029 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:21:13,654 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI agent: 422 - {"message":["property actions should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"deb621d5-df55-4f47-94e1-7398ad801e6b"}
+2025-11-12 16:21:13,655 - [ERROR] - AppLogger.VoiceAI - Failed to create agent in target location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:21:16,484 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 68e84af1efa28850152d5a6c from location: UTkbqQXAR7A3UsirpOje
+2025-11-12 16:21:16,485 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 68e84af1efa28850152d5a6c
+2025-11-12 16:21:17,078 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-12 16:21:17,083 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:21:17,084 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location with all configurations
+2025-11-12 16:21:17,084 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:21:17,714 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI agent: 422 - {"message":["property actions should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"b5e87d74-f31c-4367-880b-bb4864f7b338"}
+2025-11-12 16:21:17,717 - [ERROR] - AppLogger.VoiceAI - Failed to create agent in target location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:21:20,494 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 68eeeefde796d04093e9e57b from location: UTkbqQXAR7A3UsirpOje
+2025-11-12 16:21:20,495 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 68eeeefde796d04093e9e57b
+2025-11-12 16:21:21,123 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-12 16:21:21,126 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:21:21,127 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location with all configurations
+2025-11-12 16:21:21,127 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:21:21,740 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI agent: 422 - {"message":["property actions should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"8df225bf-99eb-4fa8-8255-34f356264a95"}
+2025-11-12 16:21:21,741 - [ERROR] - AppLogger.VoiceAI - Failed to create agent in target location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:21:24,493 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 6903f5b3c533205b70e6ee8d from location: UTkbqQXAR7A3UsirpOje
+2025-11-12 16:21:24,494 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 6903f5b3c533205b70e6ee8d
+2025-11-12 16:21:25,088 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-12 16:21:25,092 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:21:25,093 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location with all configurations
+2025-11-12 16:21:25,093 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:21:25,687 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI agent: 422 - {"message":["property actions should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"5aa86ecc-ff89-4f97-98f9-bc4e3f3fc8bd"}
+2025-11-12 16:21:25,688 - [ERROR] - AppLogger.VoiceAI - Failed to create agent in target location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:21:25,689 - [INFO] - AppLogger.VoiceAI - Bulk copy completed: 0/5 agents copied
+2025-11-12 16:26:46,818 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agents for location: UTkbqQXAR7A3UsirpOje
+2025-11-12 16:26:47,666 - [INFO] - AppLogger.VoiceAI - Found 5 Voice AI agent(s)
+2025-11-12 16:26:50,369 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 6878bfc682a9d176533d7a8e from location: UTkbqQXAR7A3UsirpOje
+2025-11-12 16:26:50,370 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 6878bfc682a9d176533d7a8e
+2025-11-12 16:26:51,161 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-12 16:26:51,165 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:26:51,166 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-12 16:26:51,166 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:26:52,141 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI agent: N/A (ID: 69146efb6b2ef55149028792)
+2025-11-12 16:26:52,145 - [INFO] - AppLogger.VoiceAI - Step 4: Updating agent name if needed
+2025-11-12 16:26:52,146 - [INFO] - AppLogger.VoiceAI - Updating Voice AI agent: 69146efb6b2ef55149028792 in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:26:52,699 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"a6b55f0d-a5bf-455c-a261-e6408f983c22"}
+2025-11-12 16:26:52,703 - [INFO] - AppLogger.VoiceAI - Step 5: Creating custom actions via Actions API
+2025-11-12 16:26:52,703 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 69146efb6b2ef55149028792
+2025-11-12 16:26:53,334 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:26:53,336 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Firepit' for agent 69146efb6b2ef55149028792
+2025-11-12 16:26:53,337 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 69146efb6b2ef55149028792
+2025-11-12 16:26:53,861 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:26:53,863 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Site number' for agent 69146efb6b2ef55149028792
+2025-11-12 16:26:53,863 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 69146efb6b2ef55149028792
+2025-11-12 16:26:54,361 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:26:54,363 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'SPEAK TO HUMAN' for agent 69146efb6b2ef55149028792
+2025-11-12 16:26:54,363 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 69146efb6b2ef55149028792
+2025-11-12 16:26:55,084 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:26:55,086 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'After Hours HELP' for agent 69146efb6b2ef55149028792
+2025-11-12 16:26:55,087 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 69146efb6b2ef55149028792
+2025-11-12 16:26:55,625 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:26:55,627 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Check Availability' for agent 69146efb6b2ef55149028792
+2025-11-12 16:26:55,627 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 69146efb6b2ef55149028792
+2025-11-12 16:26:56,240 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:26:56,242 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Confirm Booking' for agent 69146efb6b2ef55149028792
+2025-11-12 16:26:56,243 - [ERROR] - AppLogger.VoiceAI - Failed to copy any actions for agent 69146efb6b2ef55149028792
+2025-11-12 16:26:56,244 - [INFO] - AppLogger.VoiceAI - Successfully copied agent 6878bfc682a9d176533d7a8e to location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:26:59,735 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 68cb507c9de977440f6ed69f from location: UTkbqQXAR7A3UsirpOje
+2025-11-12 16:26:59,735 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 68cb507c9de977440f6ed69f
+2025-11-12 16:27:00,396 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-12 16:27:00,399 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:27:00,400 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-12 16:27:00,401 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:27:01,555 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI agent: N/A (ID: 69146f046b2ef563e2028963)
+2025-11-12 16:27:01,559 - [INFO] - AppLogger.VoiceAI - Step 4: Updating agent name if needed
+2025-11-12 16:27:01,560 - [INFO] - AppLogger.VoiceAI - Updating Voice AI agent: 69146f046b2ef563e2028963 in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:27:02,232 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"dea0fc31-f026-4b37-95ef-598f17e47007"}
+2025-11-12 16:27:02,234 - [INFO] - AppLogger.VoiceAI - Step 5: Creating custom actions via Actions API
+2025-11-12 16:27:02,235 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 69146f046b2ef563e2028963
+2025-11-12 16:27:02,765 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:27:02,767 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'ghl_knowledge_base' for agent 69146f046b2ef563e2028963
+2025-11-12 16:27:02,767 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 69146f046b2ef563e2028963
+2025-11-12 16:27:03,409 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:27:03,411 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Firepit' for agent 69146f046b2ef563e2028963
+2025-11-12 16:27:03,412 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 69146f046b2ef563e2028963
+2025-11-12 16:27:03,989 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:27:03,990 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Site number' for agent 69146f046b2ef563e2028963
+2025-11-12 16:27:03,991 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 69146f046b2ef563e2028963
+2025-11-12 16:27:04,527 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:27:04,529 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'SPEAK TO HUMAN' for agent 69146f046b2ef563e2028963
+2025-11-12 16:27:04,529 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 69146f046b2ef563e2028963
+2025-11-12 16:27:05,047 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:27:05,049 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'After Hours HELP' for agent 69146f046b2ef563e2028963
+2025-11-12 16:27:05,049 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 69146f046b2ef563e2028963
+2025-11-12 16:27:05,689 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:27:05,692 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'BATH HAUS SAUNA' for agent 69146f046b2ef563e2028963
+2025-11-12 16:27:05,692 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 69146f046b2ef563e2028963
+2025-11-12 16:27:06,315 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:27:06,317 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'BOOKING MADE NOTIFICATION' for agent 69146f046b2ef563e2028963
+2025-11-12 16:27:06,317 - [ERROR] - AppLogger.VoiceAI - Failed to copy any actions for agent 69146f046b2ef563e2028963
+2025-11-12 16:27:06,318 - [INFO] - AppLogger.VoiceAI - Successfully copied agent 68cb507c9de977440f6ed69f to location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:27:09,251 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 68e84af1efa28850152d5a6c from location: UTkbqQXAR7A3UsirpOje
+2025-11-12 16:27:09,252 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 68e84af1efa28850152d5a6c
+2025-11-12 16:27:09,826 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-12 16:27:09,831 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:27:09,832 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-12 16:27:09,833 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:27:11,006 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI agent: N/A (ID: 69146f0ef341196c3f9402f4)
+2025-11-12 16:27:11,009 - [INFO] - AppLogger.VoiceAI - Step 4: Updating agent name if needed
+2025-11-12 16:27:11,009 - [INFO] - AppLogger.VoiceAI - Updating Voice AI agent: 69146f0ef341196c3f9402f4 in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:27:11,541 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"3cf298da-9f15-4646-bec0-c16adf73949f"}
+2025-11-12 16:27:11,543 - [INFO] - AppLogger.VoiceAI - Step 5: Creating custom actions via Actions API
+2025-11-12 16:27:11,543 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 69146f0ef341196c3f9402f4
+2025-11-12 16:27:12,071 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:27:12,073 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'ghl_knowledge_base' for agent 69146f0ef341196c3f9402f4
+2025-11-12 16:27:12,074 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 69146f0ef341196c3f9402f4
+2025-11-12 16:27:12,627 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:27:12,629 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Firepit' for agent 69146f0ef341196c3f9402f4
+2025-11-12 16:27:12,629 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 69146f0ef341196c3f9402f4
+2025-11-12 16:27:13,257 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:27:13,259 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Site number' for agent 69146f0ef341196c3f9402f4
+2025-11-12 16:27:13,259 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 69146f0ef341196c3f9402f4
+2025-11-12 16:27:14,403 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:27:14,405 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'SPEAK TO HUMAN' for agent 69146f0ef341196c3f9402f4
+2025-11-12 16:27:14,406 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 69146f0ef341196c3f9402f4
+2025-11-12 16:27:15,024 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:27:15,025 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'After Hours HELP' for agent 69146f0ef341196c3f9402f4
+2025-11-12 16:27:15,025 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 69146f0ef341196c3f9402f4
+2025-11-12 16:27:15,562 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:27:15,563 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Check Availability' for agent 69146f0ef341196c3f9402f4
+2025-11-12 16:27:15,563 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 69146f0ef341196c3f9402f4
+2025-11-12 16:27:16,083 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:27:16,086 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Confirm Booking' for agent 69146f0ef341196c3f9402f4
+2025-11-12 16:27:16,086 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 69146f0ef341196c3f9402f4
+2025-11-12 16:27:16,638 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:27:16,640 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'BATH HAUS SAUNA' for agent 69146f0ef341196c3f9402f4
+2025-11-12 16:27:16,640 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 69146f0ef341196c3f9402f4
+2025-11-12 16:27:17,246 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:27:17,248 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Check Booking' for agent 69146f0ef341196c3f9402f4
+2025-11-12 16:27:17,248 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 69146f0ef341196c3f9402f4
+2025-11-12 16:27:17,769 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:27:17,771 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'BOOKING MADE NOTIFICATION' for agent 69146f0ef341196c3f9402f4
+2025-11-12 16:27:17,771 - [ERROR] - AppLogger.VoiceAI - Failed to copy any actions for agent 69146f0ef341196c3f9402f4
+2025-11-12 16:27:17,772 - [INFO] - AppLogger.VoiceAI - Successfully copied agent 68e84af1efa28850152d5a6c to location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:27:20,765 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 68eeeefde796d04093e9e57b from location: UTkbqQXAR7A3UsirpOje
+2025-11-12 16:27:20,766 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 68eeeefde796d04093e9e57b
+2025-11-12 16:27:21,393 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-12 16:27:21,396 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:27:21,397 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-12 16:27:21,398 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:27:22,517 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI agent: N/A (ID: 69146f196eea0055d1349ef5)
+2025-11-12 16:27:22,520 - [INFO] - AppLogger.VoiceAI - Step 4: Updating agent name if needed
+2025-11-12 16:27:22,521 - [INFO] - AppLogger.VoiceAI - Updating Voice AI agent: 69146f196eea0055d1349ef5 in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:27:23,095 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"6aca105f-43fb-49ce-bdc2-32a820ffd48c"}
+2025-11-12 16:27:23,099 - [INFO] - AppLogger.VoiceAI - Step 5: Creating custom actions via Actions API
+2025-11-12 16:27:23,100 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 69146f196eea0055d1349ef5
+2025-11-12 16:27:23,699 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:27:23,702 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'SPEAK TO HUMAN' for agent 69146f196eea0055d1349ef5
+2025-11-12 16:27:23,702 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 69146f196eea0055d1349ef5
+2025-11-12 16:27:24,613 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:27:24,615 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'BATH HAUS SAUNA' for agent 69146f196eea0055d1349ef5
+2025-11-12 16:27:24,615 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 69146f196eea0055d1349ef5
+2025-11-12 16:27:25,132 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:27:25,134 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'AFTER CALL SALES' for agent 69146f196eea0055d1349ef5
+2025-11-12 16:27:25,134 - [ERROR] - AppLogger.VoiceAI - Failed to copy any actions for agent 69146f196eea0055d1349ef5
+2025-11-12 16:27:25,135 - [INFO] - AppLogger.VoiceAI - Successfully copied agent 68eeeefde796d04093e9e57b to location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:27:27,794 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 6903f5b3c533205b70e6ee8d from location: UTkbqQXAR7A3UsirpOje
+2025-11-12 16:27:27,794 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 6903f5b3c533205b70e6ee8d
+2025-11-12 16:27:28,388 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-12 16:27:28,393 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:27:28,394 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-12 16:27:28,394 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:27:30,200 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI agent: N/A (ID: 69146f216b2ef54341028e22)
+2025-11-12 16:27:30,204 - [INFO] - AppLogger.VoiceAI - Step 4: Updating agent name if needed
+2025-11-12 16:27:30,204 - [INFO] - AppLogger.VoiceAI - Updating Voice AI agent: 69146f216b2ef54341028e22 in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:27:30,789 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"8865b5a4-a94a-4dfe-80ad-2afc87640591"}
+2025-11-12 16:27:30,791 - [INFO] - AppLogger.VoiceAI - Step 5: Creating custom actions via Actions API
+2025-11-12 16:27:30,791 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 69146f216b2ef54341028e22
+2025-11-12 16:27:31,295 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:27:31,297 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'ghl_knowledge_base' for agent 69146f216b2ef54341028e22
+2025-11-12 16:27:31,298 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 69146f216b2ef54341028e22
+2025-11-12 16:27:31,809 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:27:31,812 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Firepit' for agent 69146f216b2ef54341028e22
+2025-11-12 16:27:31,813 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 69146f216b2ef54341028e22
+2025-11-12 16:27:32,330 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:27:32,332 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Site number' for agent 69146f216b2ef54341028e22
+2025-11-12 16:27:32,332 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 69146f216b2ef54341028e22
+2025-11-12 16:27:32,863 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:27:32,864 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'SPEAK TO HUMAN' for agent 69146f216b2ef54341028e22
+2025-11-12 16:27:32,865 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 69146f216b2ef54341028e22
+2025-11-12 16:27:33,393 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:27:33,394 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'After Hours HELP' for agent 69146f216b2ef54341028e22
+2025-11-12 16:27:33,395 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 69146f216b2ef54341028e22
+2025-11-12 16:27:33,895 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:27:33,898 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Check Availability' for agent 69146f216b2ef54341028e22
+2025-11-12 16:27:33,898 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 69146f216b2ef54341028e22
+2025-11-12 16:27:34,429 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:27:34,432 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Confirm Booking' for agent 69146f216b2ef54341028e22
+2025-11-12 16:27:34,433 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 69146f216b2ef54341028e22
+2025-11-12 16:27:35,013 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:27:35,015 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'BATH HAUS SAUNA' for agent 69146f216b2ef54341028e22
+2025-11-12 16:27:35,015 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 69146f216b2ef54341028e22
+2025-11-12 16:27:35,605 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:27:35,606 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Check Booking' for agent 69146f216b2ef54341028e22
+2025-11-12 16:27:35,607 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 69146f216b2ef54341028e22
+2025-11-12 16:27:36,461 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:27:36,462 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'BOOKING MADE NOTIFICATION' for agent 69146f216b2ef54341028e22
+2025-11-12 16:27:36,463 - [ERROR] - AppLogger.VoiceAI - Failed to copy any actions for agent 69146f216b2ef54341028e22
+2025-11-12 16:27:36,464 - [INFO] - AppLogger.VoiceAI - Successfully copied agent 6903f5b3c533205b70e6ee8d to location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:27:36,465 - [INFO] - AppLogger.VoiceAI - Bulk copy completed: 5/5 agents copied
+2025-11-12 16:39:10,045 - [INFO] - AppLogger.GHLSubAccount - Fetching all GHL locations
+2025-11-12 16:39:11,772 - [INFO] - AppLogger.GHLSubAccount - Found 88 location(s)
+2025-11-12 16:39:11,790 - [INFO] - AppLogger.GHLSubAccount - Fetching all GHL locations
+2025-11-12 16:39:12,829 - [INFO] - AppLogger.GHLSubAccount - Found 88 location(s)
+2025-11-12 16:39:51,604 - [INFO] - AppLogger.GHLSubAccount - Fetching all GHL locations
+2025-11-12 16:39:52,905 - [INFO] - AppLogger.GHLSubAccount - Found 88 location(s)
+2025-11-12 16:39:52,922 - [INFO] - AppLogger.GHLSubAccount - Fetching all GHL locations
+2025-11-12 16:39:54,681 - [INFO] - AppLogger.GHLSubAccount - Found 88 location(s)
+2025-11-12 16:40:28,010 - [INFO] - AppLogger.MultiLocationTokens - Token stored for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:40:28,010 - [INFO] - AppLogger.FastAPI - Successfully authorized location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:40:39,527 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agents for location: UTkbqQXAR7A3UsirpOje
+2025-11-12 16:40:40,294 - [INFO] - AppLogger.VoiceAI - Found 5 Voice AI agent(s)
+2025-11-12 16:40:43,001 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 6878bfc682a9d176533d7a8e from location: UTkbqQXAR7A3UsirpOje
+2025-11-12 16:40:43,001 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 6878bfc682a9d176533d7a8e
+2025-11-12 16:40:43,603 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-12 16:40:43,606 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:40:43,607 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-12 16:40:43,607 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:40:44,560 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI agent: N/A (ID: 6914723b8a8da04d4d1ad975)
+2025-11-12 16:40:44,563 - [INFO] - AppLogger.VoiceAI - Step 4: Updating agent name if needed
+2025-11-12 16:40:44,563 - [INFO] - AppLogger.VoiceAI - Updating Voice AI agent: 6914723b8a8da04d4d1ad975 in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:40:45,175 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"727638fe-b100-43e9-8a49-fca944127278"}
+2025-11-12 16:40:45,178 - [INFO] - AppLogger.VoiceAI - Step 5: Creating custom actions via Actions API
+2025-11-12 16:40:45,178 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 6914723b8a8da04d4d1ad975
+2025-11-12 16:40:45,693 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:40:45,695 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Firepit' for agent 6914723b8a8da04d4d1ad975
+2025-11-12 16:40:45,696 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 6914723b8a8da04d4d1ad975
+2025-11-12 16:40:46,242 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:40:46,244 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Site number' for agent 6914723b8a8da04d4d1ad975
+2025-11-12 16:40:46,245 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 6914723b8a8da04d4d1ad975
+2025-11-12 16:40:46,849 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:40:46,851 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'SPEAK TO HUMAN' for agent 6914723b8a8da04d4d1ad975
+2025-11-12 16:40:46,851 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 6914723b8a8da04d4d1ad975
+2025-11-12 16:40:47,405 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:40:47,406 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'After Hours HELP' for agent 6914723b8a8da04d4d1ad975
+2025-11-12 16:40:47,407 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 6914723b8a8da04d4d1ad975
+2025-11-12 16:40:48,027 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:40:48,029 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Check Availability' for agent 6914723b8a8da04d4d1ad975
+2025-11-12 16:40:48,029 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 6914723b8a8da04d4d1ad975
+2025-11-12 16:40:48,674 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:40:48,677 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Confirm Booking' for agent 6914723b8a8da04d4d1ad975
+2025-11-12 16:40:48,677 - [ERROR] - AppLogger.VoiceAI - Failed to copy any actions for agent 6914723b8a8da04d4d1ad975
+2025-11-12 16:40:48,678 - [INFO] - AppLogger.VoiceAI - Successfully copied agent 6878bfc682a9d176533d7a8e to location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:40:51,532 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 68cb507c9de977440f6ed69f from location: UTkbqQXAR7A3UsirpOje
+2025-11-12 16:40:51,533 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 68cb507c9de977440f6ed69f
+2025-11-12 16:40:52,123 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-12 16:40:52,127 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:40:52,128 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-12 16:40:52,128 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:40:53,418 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI agent: N/A (ID: 691472448a8da0070e1adab4)
+2025-11-12 16:40:53,421 - [INFO] - AppLogger.VoiceAI - Step 4: Updating agent name if needed
+2025-11-12 16:40:53,422 - [INFO] - AppLogger.VoiceAI - Updating Voice AI agent: 691472448a8da0070e1adab4 in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:40:54,302 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"48d0abfa-bbdb-43e5-aaca-99a10498f226"}
+2025-11-12 16:40:54,303 - [INFO] - AppLogger.VoiceAI - Step 5: Creating custom actions via Actions API
+2025-11-12 16:40:54,304 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691472448a8da0070e1adab4
+2025-11-12 16:40:55,168 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:40:55,170 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'ghl_knowledge_base' for agent 691472448a8da0070e1adab4
+2025-11-12 16:40:55,170 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691472448a8da0070e1adab4
+2025-11-12 16:40:55,716 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:40:55,722 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Firepit' for agent 691472448a8da0070e1adab4
+2025-11-12 16:40:55,723 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691472448a8da0070e1adab4
+2025-11-12 16:40:56,306 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:40:56,308 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Site number' for agent 691472448a8da0070e1adab4
+2025-11-12 16:40:56,309 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691472448a8da0070e1adab4
+2025-11-12 16:40:56,905 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:40:56,907 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'SPEAK TO HUMAN' for agent 691472448a8da0070e1adab4
+2025-11-12 16:40:56,907 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691472448a8da0070e1adab4
+2025-11-12 16:40:57,487 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:40:57,489 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'After Hours HELP' for agent 691472448a8da0070e1adab4
+2025-11-12 16:40:57,489 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691472448a8da0070e1adab4
+2025-11-12 16:40:58,065 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:40:58,067 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'BATH HAUS SAUNA' for agent 691472448a8da0070e1adab4
+2025-11-12 16:40:58,067 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691472448a8da0070e1adab4
+2025-11-12 16:40:58,579 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:40:58,582 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'BOOKING MADE NOTIFICATION' for agent 691472448a8da0070e1adab4
+2025-11-12 16:40:58,583 - [ERROR] - AppLogger.VoiceAI - Failed to copy any actions for agent 691472448a8da0070e1adab4
+2025-11-12 16:40:58,584 - [INFO] - AppLogger.VoiceAI - Successfully copied agent 68cb507c9de977440f6ed69f to location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:41:01,287 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 68e84af1efa28850152d5a6c from location: UTkbqQXAR7A3UsirpOje
+2025-11-12 16:41:01,288 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 68e84af1efa28850152d5a6c
+2025-11-12 16:41:01,940 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-12 16:41:01,945 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:41:01,946 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-12 16:41:01,947 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:41:03,616 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI agent: N/A (ID: 6914724e8890f3472fe18ca9)
+2025-11-12 16:41:03,619 - [INFO] - AppLogger.VoiceAI - Step 4: Updating agent name if needed
+2025-11-12 16:41:03,619 - [INFO] - AppLogger.VoiceAI - Updating Voice AI agent: 6914724e8890f3472fe18ca9 in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:41:04,276 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"b9c036a7-84bb-400d-8111-fd8f94f32034"}
+2025-11-12 16:41:04,278 - [INFO] - AppLogger.VoiceAI - Step 5: Creating custom actions via Actions API
+2025-11-12 16:41:04,279 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 6914724e8890f3472fe18ca9
+2025-11-12 16:41:04,818 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:41:04,820 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'ghl_knowledge_base' for agent 6914724e8890f3472fe18ca9
+2025-11-12 16:41:04,820 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 6914724e8890f3472fe18ca9
+2025-11-12 16:41:05,368 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:41:05,370 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Firepit' for agent 6914724e8890f3472fe18ca9
+2025-11-12 16:41:05,370 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 6914724e8890f3472fe18ca9
+2025-11-12 16:41:05,970 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:41:05,972 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Site number' for agent 6914724e8890f3472fe18ca9
+2025-11-12 16:41:05,972 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 6914724e8890f3472fe18ca9
+2025-11-12 16:41:06,488 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:41:06,489 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'SPEAK TO HUMAN' for agent 6914724e8890f3472fe18ca9
+2025-11-12 16:41:06,489 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 6914724e8890f3472fe18ca9
+2025-11-12 16:41:07,391 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:41:07,395 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'After Hours HELP' for agent 6914724e8890f3472fe18ca9
+2025-11-12 16:41:07,395 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 6914724e8890f3472fe18ca9
+2025-11-12 16:41:07,945 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:41:07,947 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Check Availability' for agent 6914724e8890f3472fe18ca9
+2025-11-12 16:41:07,947 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 6914724e8890f3472fe18ca9
+2025-11-12 16:41:08,794 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:41:08,796 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Confirm Booking' for agent 6914724e8890f3472fe18ca9
+2025-11-12 16:41:08,796 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 6914724e8890f3472fe18ca9
+2025-11-12 16:41:09,362 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:41:09,364 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'BATH HAUS SAUNA' for agent 6914724e8890f3472fe18ca9
+2025-11-12 16:41:09,365 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 6914724e8890f3472fe18ca9
+2025-11-12 16:41:09,866 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:41:09,869 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Check Booking' for agent 6914724e8890f3472fe18ca9
+2025-11-12 16:41:09,869 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 6914724e8890f3472fe18ca9
+2025-11-12 16:41:10,384 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:41:10,387 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'BOOKING MADE NOTIFICATION' for agent 6914724e8890f3472fe18ca9
+2025-11-12 16:41:10,388 - [ERROR] - AppLogger.VoiceAI - Failed to copy any actions for agent 6914724e8890f3472fe18ca9
+2025-11-12 16:41:10,390 - [INFO] - AppLogger.VoiceAI - Successfully copied agent 68e84af1efa28850152d5a6c to location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:41:13,309 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 68eeeefde796d04093e9e57b from location: UTkbqQXAR7A3UsirpOje
+2025-11-12 16:41:13,310 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 68eeeefde796d04093e9e57b
+2025-11-12 16:41:13,843 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-12 16:41:13,848 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:41:13,848 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-12 16:41:13,849 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:41:14,854 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI agent: N/A (ID: 6914725a6eea000bb33511a8)
+2025-11-12 16:41:14,857 - [INFO] - AppLogger.VoiceAI - Step 4: Updating agent name if needed
+2025-11-12 16:41:14,858 - [INFO] - AppLogger.VoiceAI - Updating Voice AI agent: 6914725a6eea000bb33511a8 in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:41:15,416 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"7f75d03f-34fe-4dfa-84cd-ea08f33ea937"}
+2025-11-12 16:41:15,420 - [INFO] - AppLogger.VoiceAI - Step 5: Creating custom actions via Actions API
+2025-11-12 16:41:15,421 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 6914725a6eea000bb33511a8
+2025-11-12 16:41:15,943 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:41:15,947 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'SPEAK TO HUMAN' for agent 6914725a6eea000bb33511a8
+2025-11-12 16:41:15,947 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 6914725a6eea000bb33511a8
+2025-11-12 16:41:16,491 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:41:16,493 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'BATH HAUS SAUNA' for agent 6914725a6eea000bb33511a8
+2025-11-12 16:41:16,494 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 6914725a6eea000bb33511a8
+2025-11-12 16:41:17,006 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:41:17,008 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'AFTER CALL SALES' for agent 6914725a6eea000bb33511a8
+2025-11-12 16:41:17,009 - [ERROR] - AppLogger.VoiceAI - Failed to copy any actions for agent 6914725a6eea000bb33511a8
+2025-11-12 16:41:17,010 - [INFO] - AppLogger.VoiceAI - Successfully copied agent 68eeeefde796d04093e9e57b to location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:41:19,817 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 6903f5b3c533205b70e6ee8d from location: UTkbqQXAR7A3UsirpOje
+2025-11-12 16:41:19,818 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 6903f5b3c533205b70e6ee8d
+2025-11-12 16:41:20,497 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-12 16:41:20,502 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:41:20,502 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-12 16:41:20,503 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:41:21,652 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI agent: N/A (ID: 691472608890f34b13e18e6c)
+2025-11-12 16:41:21,655 - [INFO] - AppLogger.VoiceAI - Step 4: Updating agent name if needed
+2025-11-12 16:41:21,656 - [INFO] - AppLogger.VoiceAI - Updating Voice AI agent: 691472608890f34b13e18e6c in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:41:22,207 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"35d7586e-2d11-43bc-95f2-c649e5d9695b"}
+2025-11-12 16:41:22,210 - [INFO] - AppLogger.VoiceAI - Step 5: Creating custom actions via Actions API
+2025-11-12 16:41:22,211 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691472608890f34b13e18e6c
+2025-11-12 16:41:22,739 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:41:22,743 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'ghl_knowledge_base' for agent 691472608890f34b13e18e6c
+2025-11-12 16:41:22,743 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691472608890f34b13e18e6c
+2025-11-12 16:41:23,276 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:41:23,279 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Firepit' for agent 691472608890f34b13e18e6c
+2025-11-12 16:41:23,280 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691472608890f34b13e18e6c
+2025-11-12 16:41:23,820 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:41:23,822 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Site number' for agent 691472608890f34b13e18e6c
+2025-11-12 16:41:23,823 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691472608890f34b13e18e6c
+2025-11-12 16:41:24,338 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:41:24,340 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'SPEAK TO HUMAN' for agent 691472608890f34b13e18e6c
+2025-11-12 16:41:24,341 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691472608890f34b13e18e6c
+2025-11-12 16:41:24,863 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:41:24,865 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'After Hours HELP' for agent 691472608890f34b13e18e6c
+2025-11-12 16:41:24,866 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691472608890f34b13e18e6c
+2025-11-12 16:41:25,746 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:41:25,749 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Check Availability' for agent 691472608890f34b13e18e6c
+2025-11-12 16:41:25,749 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691472608890f34b13e18e6c
+2025-11-12 16:41:26,264 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:41:26,267 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Confirm Booking' for agent 691472608890f34b13e18e6c
+2025-11-12 16:41:26,267 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691472608890f34b13e18e6c
+2025-11-12 16:41:26,791 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:41:26,793 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'BATH HAUS SAUNA' for agent 691472608890f34b13e18e6c
+2025-11-12 16:41:26,793 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691472608890f34b13e18e6c
+2025-11-12 16:41:27,655 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:41:27,657 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Check Booking' for agent 691472608890f34b13e18e6c
+2025-11-12 16:41:27,657 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691472608890f34b13e18e6c
+2025-11-12 16:41:28,169 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:41:28,171 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'BOOKING MADE NOTIFICATION' for agent 691472608890f34b13e18e6c
+2025-11-12 16:41:28,172 - [ERROR] - AppLogger.VoiceAI - Failed to copy any actions for agent 691472608890f34b13e18e6c
+2025-11-12 16:41:28,172 - [INFO] - AppLogger.VoiceAI - Successfully copied agent 6903f5b3c533205b70e6ee8d to location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:41:28,173 - [INFO] - AppLogger.VoiceAI - Bulk copy completed: 5/5 agents copied
+2025-11-12 16:47:21,032 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agents for location: UTkbqQXAR7A3UsirpOje
+2025-11-12 16:47:21,931 - [INFO] - AppLogger.VoiceAI - Found 5 Voice AI agent(s)
+2025-11-12 16:47:24,759 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 6878bfc682a9d176533d7a8e from location: UTkbqQXAR7A3UsirpOje
+2025-11-12 16:47:24,760 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 6878bfc682a9d176533d7a8e
+2025-11-12 16:47:25,359 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-12 16:47:25,362 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:47:25,363 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-12 16:47:25,363 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:47:26,372 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI agent: N/A (ID: 691473cd8890f3cb53e1b7a6)
+2025-11-12 16:47:26,374 - [INFO] - AppLogger.VoiceAI - Step 4: Updating agent name if needed
+2025-11-12 16:47:26,375 - [INFO] - AppLogger.VoiceAI - Updating Voice AI agent: 691473cd8890f3cb53e1b7a6 in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:47:26,915 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"4c5e34e5-a38c-4099-ac7d-bb60b1a5731f"}
+2025-11-12 16:47:26,917 - [INFO] - AppLogger.VoiceAI - Step 5: Creating custom actions via Actions API
+2025-11-12 16:47:28,311 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:47:28,311 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691473cd8890f3cb53e1b7a6
+2025-11-12 16:47:28,928 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:47:28,931 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Firepit' for agent 691473cd8890f3cb53e1b7a6
+2025-11-12 16:47:30,307 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:47:30,308 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691473cd8890f3cb53e1b7a6
+2025-11-12 16:47:30,811 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:47:30,814 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Site number' for agent 691473cd8890f3cb53e1b7a6
+2025-11-12 16:47:32,252 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:47:32,253 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691473cd8890f3cb53e1b7a6
+2025-11-12 16:47:32,787 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:47:32,789 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'SPEAK TO HUMAN' for agent 691473cd8890f3cb53e1b7a6
+2025-11-12 16:47:34,235 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:47:34,236 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691473cd8890f3cb53e1b7a6
+2025-11-12 16:47:34,760 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:47:34,763 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'After Hours HELP' for agent 691473cd8890f3cb53e1b7a6
+2025-11-12 16:47:36,158 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:47:36,158 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691473cd8890f3cb53e1b7a6
+2025-11-12 16:47:36,681 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:47:36,683 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Check Availability' for agent 691473cd8890f3cb53e1b7a6
+2025-11-12 16:47:38,014 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:47:38,014 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691473cd8890f3cb53e1b7a6
+2025-11-12 16:47:38,606 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:47:38,610 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Confirm Booking' for agent 691473cd8890f3cb53e1b7a6
+2025-11-12 16:47:38,611 - [ERROR] - AppLogger.VoiceAI - Failed to copy any actions for agent 691473cd8890f3cb53e1b7a6
+2025-11-12 16:47:38,611 - [INFO] - AppLogger.VoiceAI - Successfully copied agent 6878bfc682a9d176533d7a8e to location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:47:41,391 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 68cb507c9de977440f6ed69f from location: UTkbqQXAR7A3UsirpOje
+2025-11-12 16:47:41,391 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 68cb507c9de977440f6ed69f
+2025-11-12 16:47:42,039 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-12 16:47:42,043 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:47:42,044 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-12 16:47:42,044 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:47:48,763 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI agent: N/A (ID: 691473dee26f331b1700764f)
+2025-11-12 16:47:48,767 - [INFO] - AppLogger.VoiceAI - Step 4: Updating agent name if needed
+2025-11-12 16:47:48,768 - [INFO] - AppLogger.VoiceAI - Updating Voice AI agent: 691473dee26f331b1700764f in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:47:49,372 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"b9be6094-e49c-415f-bb73-85c42685aaaf"}
+2025-11-12 16:47:49,374 - [INFO] - AppLogger.VoiceAI - Step 5: Creating custom actions via Actions API
+2025-11-12 16:47:50,777 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:47:50,777 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691473dee26f331b1700764f
+2025-11-12 16:47:51,366 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:47:51,368 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'ghl_knowledge_base' for agent 691473dee26f331b1700764f
+2025-11-12 16:47:52,758 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:47:52,758 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691473dee26f331b1700764f
+2025-11-12 16:47:53,365 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:47:53,368 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Firepit' for agent 691473dee26f331b1700764f
+2025-11-12 16:47:54,756 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:47:54,756 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691473dee26f331b1700764f
+2025-11-12 16:47:55,269 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:47:55,271 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Site number' for agent 691473dee26f331b1700764f
+2025-11-12 16:47:56,616 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:47:56,616 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691473dee26f331b1700764f
+2025-11-12 16:47:57,161 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:47:57,163 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'SPEAK TO HUMAN' for agent 691473dee26f331b1700764f
+2025-11-12 16:47:58,612 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:47:58,612 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691473dee26f331b1700764f
+2025-11-12 16:47:59,144 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:47:59,147 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'After Hours HELP' for agent 691473dee26f331b1700764f
+2025-11-12 16:48:00,510 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:48:00,510 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691473dee26f331b1700764f
+2025-11-12 16:48:01,054 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:48:01,056 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'BATH HAUS SAUNA' for agent 691473dee26f331b1700764f
+2025-11-12 16:48:02,457 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:48:02,458 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691473dee26f331b1700764f
+2025-11-12 16:48:02,983 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:48:02,985 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'BOOKING MADE NOTIFICATION' for agent 691473dee26f331b1700764f
+2025-11-12 16:48:02,986 - [ERROR] - AppLogger.VoiceAI - Failed to copy any actions for agent 691473dee26f331b1700764f
+2025-11-12 16:48:02,987 - [INFO] - AppLogger.VoiceAI - Successfully copied agent 68cb507c9de977440f6ed69f to location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:48:05,697 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 68e84af1efa28850152d5a6c from location: UTkbqQXAR7A3UsirpOje
+2025-11-12 16:48:05,698 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 68e84af1efa28850152d5a6c
+2025-11-12 16:48:06,278 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-12 16:48:06,285 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:48:06,286 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-12 16:48:06,286 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:48:07,514 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI agent: N/A (ID: 691473f62339cb4a5ebabf99)
+2025-11-12 16:48:07,519 - [INFO] - AppLogger.VoiceAI - Step 4: Updating agent name if needed
+2025-11-12 16:48:07,520 - [INFO] - AppLogger.VoiceAI - Updating Voice AI agent: 691473f62339cb4a5ebabf99 in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:48:08,043 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"03818d5c-c3cd-4697-b915-d14c6ab4f042"}
+2025-11-12 16:48:08,045 - [INFO] - AppLogger.VoiceAI - Step 5: Creating custom actions via Actions API
+2025-11-12 16:48:09,387 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:48:09,387 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691473f62339cb4a5ebabf99
+2025-11-12 16:48:09,917 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:48:09,919 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'ghl_knowledge_base' for agent 691473f62339cb4a5ebabf99
+2025-11-12 16:48:11,275 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:48:11,276 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691473f62339cb4a5ebabf99
+2025-11-12 16:48:11,795 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:48:11,798 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Firepit' for agent 691473f62339cb4a5ebabf99
+2025-11-12 16:48:13,205 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:48:13,205 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691473f62339cb4a5ebabf99
+2025-11-12 16:48:13,770 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:48:13,771 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Site number' for agent 691473f62339cb4a5ebabf99
+2025-11-12 16:48:15,089 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:48:15,090 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691473f62339cb4a5ebabf99
+2025-11-12 16:48:15,629 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:48:15,633 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'SPEAK TO HUMAN' for agent 691473f62339cb4a5ebabf99
+2025-11-12 16:48:17,070 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:48:17,071 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691473f62339cb4a5ebabf99
+2025-11-12 16:48:17,598 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:48:17,600 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'After Hours HELP' for agent 691473f62339cb4a5ebabf99
+2025-11-12 16:48:19,035 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:48:19,036 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691473f62339cb4a5ebabf99
+2025-11-12 16:48:20,372 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:48:20,375 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Check Availability' for agent 691473f62339cb4a5ebabf99
+2025-11-12 16:48:21,789 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:48:21,789 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691473f62339cb4a5ebabf99
+2025-11-12 16:48:22,300 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:48:22,301 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Confirm Booking' for agent 691473f62339cb4a5ebabf99
+2025-11-12 16:48:23,764 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:48:23,765 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691473f62339cb4a5ebabf99
+2025-11-12 16:48:24,281 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:48:24,283 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'BATH HAUS SAUNA' for agent 691473f62339cb4a5ebabf99
+2025-11-12 16:48:25,654 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:48:25,655 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691473f62339cb4a5ebabf99
+2025-11-12 16:48:26,151 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:48:26,153 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Check Booking' for agent 691473f62339cb4a5ebabf99
+2025-11-12 16:48:27,508 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:48:27,509 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691473f62339cb4a5ebabf99
+2025-11-12 16:48:28,022 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:48:28,024 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'BOOKING MADE NOTIFICATION' for agent 691473f62339cb4a5ebabf99
+2025-11-12 16:48:28,024 - [ERROR] - AppLogger.VoiceAI - Failed to copy any actions for agent 691473f62339cb4a5ebabf99
+2025-11-12 16:48:28,025 - [INFO] - AppLogger.VoiceAI - Successfully copied agent 68e84af1efa28850152d5a6c to location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:48:30,719 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 68eeeefde796d04093e9e57b from location: UTkbqQXAR7A3UsirpOje
+2025-11-12 16:48:30,719 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 68eeeefde796d04093e9e57b
+2025-11-12 16:48:31,248 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-12 16:48:31,251 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:48:31,252 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-12 16:48:31,253 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:48:34,071 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI agent: N/A (ID: 6914740f6eea00bc79353cdd)
+2025-11-12 16:48:34,074 - [INFO] - AppLogger.VoiceAI - Step 4: Updating agent name if needed
+2025-11-12 16:48:34,075 - [INFO] - AppLogger.VoiceAI - Updating Voice AI agent: 6914740f6eea00bc79353cdd in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:48:34,668 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"bea1c543-ae6d-4b18-8840-c655db521871"}
+2025-11-12 16:48:34,670 - [INFO] - AppLogger.VoiceAI - Step 5: Creating custom actions via Actions API
+2025-11-12 16:48:36,044 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:48:36,045 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 6914740f6eea00bc79353cdd
+2025-11-12 16:48:36,563 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:48:36,565 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'SPEAK TO HUMAN' for agent 6914740f6eea00bc79353cdd
+2025-11-12 16:48:38,007 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:48:38,007 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 6914740f6eea00bc79353cdd
+2025-11-12 16:48:38,515 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:48:38,518 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'BATH HAUS SAUNA' for agent 6914740f6eea00bc79353cdd
+2025-11-12 16:48:39,881 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:48:39,882 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 6914740f6eea00bc79353cdd
+2025-11-12 16:48:40,422 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:48:40,423 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'AFTER CALL SALES' for agent 6914740f6eea00bc79353cdd
+2025-11-12 16:48:40,424 - [ERROR] - AppLogger.VoiceAI - Failed to copy any actions for agent 6914740f6eea00bc79353cdd
+2025-11-12 16:48:40,425 - [INFO] - AppLogger.VoiceAI - Successfully copied agent 68eeeefde796d04093e9e57b to location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:48:43,249 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 6903f5b3c533205b70e6ee8d from location: UTkbqQXAR7A3UsirpOje
+2025-11-12 16:48:43,250 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 6903f5b3c533205b70e6ee8d
+2025-11-12 16:48:43,811 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-12 16:48:43,816 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:48:43,817 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-12 16:48:43,817 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:48:45,105 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI agent: N/A (ID: 6914741c8890f332f6e1c00b)
+2025-11-12 16:48:45,108 - [INFO] - AppLogger.VoiceAI - Step 4: Updating agent name if needed
+2025-11-12 16:48:45,109 - [INFO] - AppLogger.VoiceAI - Updating Voice AI agent: 6914741c8890f332f6e1c00b in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:48:45,650 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"4d7fd99c-5907-4ccd-9a6b-69ee3fc173de"}
+2025-11-12 16:48:45,652 - [INFO] - AppLogger.VoiceAI - Step 5: Creating custom actions via Actions API
+2025-11-12 16:48:47,092 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:48:47,093 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 6914741c8890f332f6e1c00b
+2025-11-12 16:48:47,667 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:48:47,670 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'ghl_knowledge_base' for agent 6914741c8890f332f6e1c00b
+2025-11-12 16:48:48,996 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:48:48,996 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 6914741c8890f332f6e1c00b
+2025-11-12 16:48:49,528 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:48:49,530 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Firepit' for agent 6914741c8890f332f6e1c00b
+2025-11-12 16:48:50,854 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:48:50,854 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 6914741c8890f332f6e1c00b
+2025-11-12 16:48:51,709 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:48:51,711 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Site number' for agent 6914741c8890f332f6e1c00b
+2025-11-12 16:48:53,153 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:48:53,153 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 6914741c8890f332f6e1c00b
+2025-11-12 16:48:53,672 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:48:53,674 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'SPEAK TO HUMAN' for agent 6914741c8890f332f6e1c00b
+2025-11-12 16:48:55,140 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:48:55,141 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 6914741c8890f332f6e1c00b
+2025-11-12 16:48:55,696 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:48:55,699 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'After Hours HELP' for agent 6914741c8890f332f6e1c00b
+2025-11-12 16:48:57,090 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:48:57,091 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 6914741c8890f332f6e1c00b
+2025-11-12 16:48:57,660 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:48:57,663 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Check Availability' for agent 6914741c8890f332f6e1c00b
+2025-11-12 16:48:59,055 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:48:59,056 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 6914741c8890f332f6e1c00b
+2025-11-12 16:48:59,578 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:48:59,580 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Confirm Booking' for agent 6914741c8890f332f6e1c00b
+2025-11-12 16:49:00,942 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:49:00,942 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 6914741c8890f332f6e1c00b
+2025-11-12 16:49:01,501 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:49:01,504 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'BATH HAUS SAUNA' for agent 6914741c8890f332f6e1c00b
+2025-11-12 16:49:02,865 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:49:02,866 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 6914741c8890f332f6e1c00b
+2025-11-12 16:49:03,383 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:49:03,384 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Check Booking' for agent 6914741c8890f332f6e1c00b
+2025-11-12 16:49:04,703 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:49:04,703 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 6914741c8890f332f6e1c00b
+2025-11-12 16:49:05,237 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 401 - {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-12 16:49:05,239 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'BOOKING MADE NOTIFICATION' for agent 6914741c8890f332f6e1c00b
+2025-11-12 16:49:05,240 - [ERROR] - AppLogger.VoiceAI - Failed to copy any actions for agent 6914741c8890f332f6e1c00b
+2025-11-12 16:49:05,240 - [INFO] - AppLogger.VoiceAI - Successfully copied agent 6903f5b3c533205b70e6ee8d to location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:49:05,242 - [INFO] - AppLogger.VoiceAI - Bulk copy completed: 5/5 agents copied
+2025-11-12 16:54:02,059 - [INFO] - AppLogger.MultiLocationTokens - Token stored for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:54:02,060 - [INFO] - AppLogger.FastAPI - Successfully authorized location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:54:42,358 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agents for location: UTkbqQXAR7A3UsirpOje
+2025-11-12 16:54:43,238 - [INFO] - AppLogger.VoiceAI - Found 5 Voice AI agent(s)
+2025-11-12 16:54:46,058 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 6878bfc682a9d176533d7a8e from location: UTkbqQXAR7A3UsirpOje
+2025-11-12 16:54:46,058 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 6878bfc682a9d176533d7a8e
+2025-11-12 16:54:46,617 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-12 16:54:46,623 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:54:46,624 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-12 16:54:46,624 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:54:47,703 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI agent: N/A (ID: 691475876eea00a0c33575ce)
+2025-11-12 16:54:47,705 - [INFO] - AppLogger.VoiceAI - Step 4: Updating agent name if needed
+2025-11-12 16:54:47,705 - [INFO] - AppLogger.VoiceAI - Updating Voice AI agent: 691475876eea00a0c33575ce in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:54:48,291 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"f59ecbaa-82ef-46fd-9b29-f101a15b2fd2"}
+2025-11-12 16:54:48,293 - [INFO] - AppLogger.VoiceAI - Step 5: Creating custom actions via Actions API
+2025-11-12 16:54:49,736 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:54:49,736 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691475876eea00a0c33575ce
+2025-11-12 16:54:50,451 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"The workflow id is invalid.","error":"Bad Request","statusCode":400,"traceId":"0cd259d5-b1ad-4163-a50f-cbf43332fa6a"}
+2025-11-12 16:54:50,453 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Firepit' for agent 691475876eea00a0c33575ce
+2025-11-12 16:54:51,858 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:54:51,859 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691475876eea00a0c33575ce
+2025-11-12 16:54:52,835 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"Custom field with id V3HyBEM5B2ccP33gecm9 not found","error":"Bad Request","statusCode":400,"traceId":"14e8768b-0c50-44d8-8324-12fa70abb707"}
+2025-11-12 16:54:52,837 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Site number' for agent 691475876eea00a0c33575ce
+2025-11-12 16:54:54,191 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:54:54,192 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691475876eea00a0c33575ce
+2025-11-12 16:54:55,529 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI action: SPEAK TO HUMAN (ID: 6914758f8a8da07c801b44c9)
+2025-11-12 16:54:56,879 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:54:56,879 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691475876eea00a0c33575ce
+2025-11-12 16:54:57,582 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"The workflow id is invalid.","error":"Bad Request","statusCode":400,"traceId":"2891b045-5f62-4585-b701-f5b12c1e2b68"}
+2025-11-12 16:54:57,584 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'After Hours HELP' for agent 691475876eea00a0c33575ce
+2025-11-12 16:54:58,951 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:54:58,952 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691475876eea00a0c33575ce
+2025-11-12 16:55:05,353 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI action: Check Availability (ID: 691475938a8da016831b45fe)
+2025-11-12 16:55:06,720 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:55:06,720 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691475876eea00a0c33575ce
+2025-11-12 16:55:07,546 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI action: Confirm Booking (ID: 6914759ae26f33dc7f00bce8)
+2025-11-12 16:55:07,549 - [INFO] - AppLogger.VoiceAI - Successfully copied agent 6878bfc682a9d176533d7a8e to location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:55:10,359 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 68cb507c9de977440f6ed69f from location: UTkbqQXAR7A3UsirpOje
+2025-11-12 16:55:10,360 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 68cb507c9de977440f6ed69f
+2025-11-12 16:55:10,968 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-12 16:55:10,971 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:55:10,972 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-12 16:55:10,972 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:55:15,958 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI agent: N/A (ID: 6914759fd5a3542c09cc8cf9)
+2025-11-12 16:55:15,960 - [INFO] - AppLogger.VoiceAI - Step 4: Updating agent name if needed
+2025-11-12 16:55:15,961 - [INFO] - AppLogger.VoiceAI - Updating Voice AI agent: 6914759fd5a3542c09cc8cf9 in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:55:16,603 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"0b388ef7-8ed7-4d27-b07a-dd7d50494c3b"}
+2025-11-12 16:55:16,605 - [INFO] - AppLogger.VoiceAI - Step 5: Creating custom actions via Actions API
+2025-11-12 16:55:18,006 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:55:18,007 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 6914759fd5a3542c09cc8cf9
+2025-11-12 16:55:18,870 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"The knowledge base id is invalid.","error":"Bad Request","statusCode":400,"traceId":"06d6f215-227c-4243-93bb-0202ba21fb33"}
+2025-11-12 16:55:18,874 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'ghl_knowledge_base' for agent 6914759fd5a3542c09cc8cf9
+2025-11-12 16:55:20,336 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:55:20,336 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 6914759fd5a3542c09cc8cf9
+2025-11-12 16:55:21,029 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"The workflow id is invalid.","error":"Bad Request","statusCode":400,"traceId":"8aabe0d1-9b30-9a81-a96f-18724239fd91"}
+2025-11-12 16:55:21,031 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Firepit' for agent 6914759fd5a3542c09cc8cf9
+2025-11-12 16:55:22,433 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:55:22,433 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 6914759fd5a3542c09cc8cf9
+2025-11-12 16:55:23,049 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"Custom field with id V3HyBEM5B2ccP33gecm9 not found","error":"Bad Request","statusCode":400,"traceId":"1eb8a7b0-b7c7-47dd-a742-385d4b2e93a0"}
+2025-11-12 16:55:23,051 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Site number' for agent 6914759fd5a3542c09cc8cf9
+2025-11-12 16:55:24,398 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:55:24,399 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 6914759fd5a3542c09cc8cf9
+2025-11-12 16:55:25,206 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI action: SPEAK TO HUMAN (ID: 691475ac8a8da0a7451b49e7)
+2025-11-12 16:55:26,675 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:55:26,675 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 6914759fd5a3542c09cc8cf9
+2025-11-12 16:55:27,312 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"The workflow id is invalid.","error":"Bad Request","statusCode":400,"traceId":"2eb827c2-6443-48f5-9abb-c341e0a844ff"}
+2025-11-12 16:55:27,314 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'After Hours HELP' for agent 6914759fd5a3542c09cc8cf9
+2025-11-12 16:55:28,678 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:55:28,678 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 6914759fd5a3542c09cc8cf9
+2025-11-12 16:55:29,502 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI action: BATH HAUS SAUNA (ID: 691475b0e26f33b63600c14f)
+2025-11-12 16:55:30,872 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:55:30,872 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 6914759fd5a3542c09cc8cf9
+2025-11-12 16:55:31,489 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"The workflow id is invalid.","error":"Bad Request","statusCode":400,"traceId":"db383e73-168d-4943-b3f5-1aa3a70211d8"}
+2025-11-12 16:55:31,490 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'BOOKING MADE NOTIFICATION' for agent 6914759fd5a3542c09cc8cf9
+2025-11-12 16:55:31,491 - [INFO] - AppLogger.VoiceAI - Successfully copied agent 68cb507c9de977440f6ed69f to location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:55:34,151 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 68e84af1efa28850152d5a6c from location: UTkbqQXAR7A3UsirpOje
+2025-11-12 16:55:34,152 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 68e84af1efa28850152d5a6c
+2025-11-12 16:55:34,732 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-12 16:55:34,737 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:55:34,738 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-12 16:55:34,738 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:55:35,825 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI agent: N/A (ID: 691475b7d5a35430eccc9079)
+2025-11-12 16:55:35,828 - [INFO] - AppLogger.VoiceAI - Step 4: Updating agent name if needed
+2025-11-12 16:55:35,829 - [INFO] - AppLogger.VoiceAI - Updating Voice AI agent: 691475b7d5a35430eccc9079 in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:55:36,388 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"9b7bc629-59c6-4e83-a07a-7bad5029db29"}
+2025-11-12 16:55:36,391 - [INFO] - AppLogger.VoiceAI - Step 5: Creating custom actions via Actions API
+2025-11-12 16:55:37,763 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:55:37,764 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691475b7d5a35430eccc9079
+2025-11-12 16:55:39,782 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"The knowledge base id is invalid.","error":"Bad Request","statusCode":400,"traceId":"5fe14c6d-8f92-449c-80d4-5ccf0495251e"}
+2025-11-12 16:55:39,785 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'ghl_knowledge_base' for agent 691475b7d5a35430eccc9079
+2025-11-12 16:55:41,161 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:55:41,161 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691475b7d5a35430eccc9079
+2025-11-12 16:55:41,838 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"The workflow id is invalid.","error":"Bad Request","statusCode":400,"traceId":"717fcc9c-952e-44ed-91b3-feca8ad60cc2"}
+2025-11-12 16:55:41,840 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Firepit' for agent 691475b7d5a35430eccc9079
+2025-11-12 16:55:43,316 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:55:43,316 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691475b7d5a35430eccc9079
+2025-11-12 16:55:43,876 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"Custom field with id V3HyBEM5B2ccP33gecm9 not found","error":"Bad Request","statusCode":400,"traceId":"655f8ff9-743d-4623-80fc-8ffa56791edd"}
+2025-11-12 16:55:43,878 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Site number' for agent 691475b7d5a35430eccc9079
+2025-11-12 16:55:45,230 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:55:45,231 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691475b7d5a35430eccc9079
+2025-11-12 16:55:48,528 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI action: SPEAK TO HUMAN (ID: 691475c1d5a354b18ecc922a)
+2025-11-12 16:55:49,998 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:55:49,998 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691475b7d5a35430eccc9079
+2025-11-12 16:55:50,622 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"The workflow id is invalid.","error":"Bad Request","statusCode":400,"traceId":"4e8850c2-a1e7-469d-8d8b-4f875e1b4078"}
+2025-11-12 16:55:50,623 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'After Hours HELP' for agent 691475b7d5a35430eccc9079
+2025-11-12 16:55:51,975 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:55:51,976 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691475b7d5a35430eccc9079
+2025-11-12 16:55:52,789 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI action: Check Availability (ID: 691475c8d5a3546c41cc93bd)
+2025-11-12 16:55:54,123 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:55:54,124 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691475b7d5a35430eccc9079
+2025-11-12 16:55:56,294 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI action: Confirm Booking (ID: 691475cae26f33ec6d00c5ad)
+2025-11-12 16:55:57,774 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:55:57,774 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691475b7d5a35430eccc9079
+2025-11-12 16:55:59,005 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI action: BATH HAUS SAUNA (ID: 691475ced5a354495dcc94a8)
+2025-11-12 16:56:00,391 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:56:00,391 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691475b7d5a35430eccc9079
+2025-11-12 16:56:01,255 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI action: Check Booking (ID: 691475d06eea00e639358023)
+2025-11-12 16:56:02,671 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:56:02,672 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691475b7d5a35430eccc9079
+2025-11-12 16:56:03,372 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"The workflow id is invalid.","error":"Bad Request","statusCode":400,"traceId":"254eea3c-7c17-46e5-a7dd-7826519fe66c"}
+2025-11-12 16:56:03,374 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'BOOKING MADE NOTIFICATION' for agent 691475b7d5a35430eccc9079
+2025-11-12 16:56:03,375 - [INFO] - AppLogger.VoiceAI - Successfully copied agent 68e84af1efa28850152d5a6c to location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:56:06,128 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 68eeeefde796d04093e9e57b from location: UTkbqQXAR7A3UsirpOje
+2025-11-12 16:56:06,130 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 68eeeefde796d04093e9e57b
+2025-11-12 16:56:06,678 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-12 16:56:06,684 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:56:06,685 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-12 16:56:06,686 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:56:07,775 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI agent: N/A (ID: 691475d76eea001e1f358168)
+2025-11-12 16:56:07,778 - [INFO] - AppLogger.VoiceAI - Step 4: Updating agent name if needed
+2025-11-12 16:56:07,779 - [INFO] - AppLogger.VoiceAI - Updating Voice AI agent: 691475d76eea001e1f358168 in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:56:08,332 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"1adeb75c-be1b-4e93-a1e4-ef9507f3fad8"}
+2025-11-12 16:56:08,334 - [INFO] - AppLogger.VoiceAI - Step 5: Creating custom actions via Actions API
+2025-11-12 16:56:09,695 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:56:09,695 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691475d76eea001e1f358168
+2025-11-12 16:56:10,478 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI action: SPEAK TO HUMAN (ID: 691475d96eea0031d23581ff)
+2025-11-12 16:56:11,810 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:56:11,810 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691475d76eea001e1f358168
+2025-11-12 16:56:13,299 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI action: BATH HAUS SAUNA (ID: 691475dcd5a3541c0ecc966b)
+2025-11-12 16:56:14,691 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:56:14,692 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691475d76eea001e1f358168
+2025-11-12 16:56:15,553 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI action: AFTER CALL SALES (ID: 691475de8a8da061d81b5119)
+2025-11-12 16:56:15,556 - [INFO] - AppLogger.VoiceAI - Successfully copied agent 68eeeefde796d04093e9e57b to location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:56:18,278 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 6903f5b3c533205b70e6ee8d from location: UTkbqQXAR7A3UsirpOje
+2025-11-12 16:56:18,278 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 6903f5b3c533205b70e6ee8d
+2025-11-12 16:56:18,861 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-12 16:56:18,866 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:56:18,867 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-12 16:56:18,868 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:56:20,087 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI agent: N/A (ID: 691475e3f341194a7594ec9e)
+2025-11-12 16:56:20,090 - [INFO] - AppLogger.VoiceAI - Step 4: Updating agent name if needed
+2025-11-12 16:56:20,091 - [INFO] - AppLogger.VoiceAI - Updating Voice AI agent: 691475e3f341194a7594ec9e in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:56:20,655 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"b40ade65-5d16-4844-a0d6-70beec15c9db"}
+2025-11-12 16:56:20,658 - [INFO] - AppLogger.VoiceAI - Step 5: Creating custom actions via Actions API
+2025-11-12 16:56:22,002 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:56:22,003 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691475e3f341194a7594ec9e
+2025-11-12 16:56:22,790 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"The knowledge base id is invalid.","error":"Bad Request","statusCode":400,"traceId":"98d98163-d337-47ca-920a-eb61175f6d2f"}
+2025-11-12 16:56:22,792 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'ghl_knowledge_base' for agent 691475e3f341194a7594ec9e
+2025-11-12 16:56:24,205 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:56:24,205 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691475e3f341194a7594ec9e
+2025-11-12 16:56:24,816 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"The workflow id is invalid.","error":"Bad Request","statusCode":400,"traceId":"0f3a09dc-2c89-4ad0-b7c0-74322ccf6862"}
+2025-11-12 16:56:24,819 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Firepit' for agent 691475e3f341194a7594ec9e
+2025-11-12 16:56:26,261 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:56:26,262 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691475e3f341194a7594ec9e
+2025-11-12 16:56:26,871 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"Custom field with id V3HyBEM5B2ccP33gecm9 not found","error":"Bad Request","statusCode":400,"traceId":"d56ae82c-f245-4b3f-b2ad-c67c7c89b180"}
+2025-11-12 16:56:26,873 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Site number' for agent 691475e3f341194a7594ec9e
+2025-11-12 16:56:28,264 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:56:28,265 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691475e3f341194a7594ec9e
+2025-11-12 16:56:29,008 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI action: SPEAK TO HUMAN (ID: 691475ec8a8da02e481b5321)
+2025-11-12 16:56:30,461 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:56:30,462 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691475e3f341194a7594ec9e
+2025-11-12 16:56:31,058 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"The workflow id is invalid.","error":"Bad Request","statusCode":400,"traceId":"0fbd9692-5b58-4b67-aef8-b998bfc5c083"}
+2025-11-12 16:56:31,060 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'After Hours HELP' for agent 691475e3f341194a7594ec9e
+2025-11-12 16:56:32,392 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:56:32,393 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691475e3f341194a7594ec9e
+2025-11-12 16:56:33,548 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI action: Check Availability (ID: 691475f08a8da08b481b53e2)
+2025-11-12 16:56:35,013 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:56:35,014 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691475e3f341194a7594ec9e
+2025-11-12 16:56:35,859 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI action: Confirm Booking (ID: 691475f3e26f3324a000cc68)
+2025-11-12 16:56:37,219 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:56:37,219 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691475e3f341194a7594ec9e
+2025-11-12 16:56:37,988 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI action: BATH HAUS SAUNA (ID: 691475f5d5a3544ac2cc9add)
+2025-11-12 16:56:39,336 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:56:39,336 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691475e3f341194a7594ec9e
+2025-11-12 16:56:40,999 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI action: Check Booking (ID: 691475f78a8da057061b5527)
+2025-11-12 16:56:42,378 - [INFO] - AppLogger.VoiceAI - Using location-specific token for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:56:42,379 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691475e3f341194a7594ec9e
+2025-11-12 16:56:43,007 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"The workflow id is invalid.","error":"Bad Request","statusCode":400,"traceId":"91fe27d9-0342-440f-b966-5496b0f881a3"}
+2025-11-12 16:56:43,009 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'BOOKING MADE NOTIFICATION' for agent 691475e3f341194a7594ec9e
+2025-11-12 16:56:43,011 - [INFO] - AppLogger.VoiceAI - Successfully copied agent 6903f5b3c533205b70e6ee8d to location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 16:56:43,011 - [INFO] - AppLogger.VoiceAI - Bulk copy completed: 5/5 agents copied
+2025-11-12 17:00:30,692 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agents for location: UTkbqQXAR7A3UsirpOje
+2025-11-12 17:00:31,550 - [INFO] - AppLogger.VoiceAI - Found 5 Voice AI agent(s)
+2025-11-12 17:00:34,379 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 6878bfc682a9d176533d7a8e from location: UTkbqQXAR7A3UsirpOje
+2025-11-12 17:00:34,381 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 6878bfc682a9d176533d7a8e
+2025-11-12 17:00:35,018 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-12 17:00:35,022 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 17:00:35,023 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-12 17:00:35,023 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 17:00:39,097 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI agent: N/A (ID: 691476e3e26f33545600f27d)
+2025-11-12 17:00:39,102 - [INFO] - AppLogger.VoiceAI - Step 4: Updating agent name if needed
+2025-11-12 17:00:39,103 - [INFO] - AppLogger.VoiceAI - Updating Voice AI agent: 691476e3e26f33545600f27d in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 17:00:39,651 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"c3158a2e-3af2-42ed-8916-c2549c7e6b7b"}
+2025-11-12 17:00:39,652 - [INFO] - AppLogger.VoiceAI - Step 5: Creating custom actions via Actions API
+2025-11-12 17:00:39,653 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691476e3e26f33545600f27d
+2025-11-12 17:00:40,348 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"The workflow id is invalid.","error":"Bad Request","statusCode":400,"traceId":"a1ae42a5-3149-4636-bcab-5e7ee698989f"}
+2025-11-12 17:00:40,352 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Firepit' for agent 691476e3e26f33545600f27d
+2025-11-12 17:00:40,353 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691476e3e26f33545600f27d
+2025-11-12 17:00:40,963 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"Custom field with id V3HyBEM5B2ccP33gecm9 not found","error":"Bad Request","statusCode":400,"traceId":"be110109-bb09-4d18-a3c6-2d89e1a4a9fe"}
+2025-11-12 17:00:40,966 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Site number' for agent 691476e3e26f33545600f27d
+2025-11-12 17:00:40,966 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691476e3e26f33545600f27d
+2025-11-12 17:00:41,756 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI action: SPEAK TO HUMAN (ID: 691476e9e26f337ba700f3a4)
+2025-11-12 17:00:41,759 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691476e3e26f33545600f27d
+2025-11-12 17:00:42,427 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"The workflow id is invalid.","error":"Bad Request","statusCode":400,"traceId":"ae337821-a571-4cfe-bfb3-c28cfc03d482"}
+2025-11-12 17:00:42,429 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'After Hours HELP' for agent 691476e3e26f33545600f27d
+2025-11-12 17:00:42,429 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691476e3e26f33545600f27d
+2025-11-12 17:00:43,277 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI action: Check Availability (ID: 691476ead5a354112cccbfc6)
+2025-11-12 17:00:43,278 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691476e3e26f33545600f27d
+2025-11-12 17:00:44,108 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI action: Confirm Booking (ID: 691476ebe26f33789b00f465)
+2025-11-12 17:00:44,111 - [INFO] - AppLogger.VoiceAI - Successfully copied agent 6878bfc682a9d176533d7a8e to location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 17:00:46,818 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 68cb507c9de977440f6ed69f from location: UTkbqQXAR7A3UsirpOje
+2025-11-12 17:00:46,818 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 68cb507c9de977440f6ed69f
+2025-11-12 17:00:47,389 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-12 17:00:47,394 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 17:00:47,395 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-12 17:00:47,395 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 17:00:48,474 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI agent: N/A (ID: 691476ef8a8da076341b7a3d)
+2025-11-12 17:00:48,477 - [INFO] - AppLogger.VoiceAI - Step 4: Updating agent name if needed
+2025-11-12 17:00:48,478 - [INFO] - AppLogger.VoiceAI - Updating Voice AI agent: 691476ef8a8da076341b7a3d in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 17:00:49,025 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"2488ba00-bcf9-4428-b6ca-a4ca35ff1175"}
+2025-11-12 17:00:49,027 - [INFO] - AppLogger.VoiceAI - Step 5: Creating custom actions via Actions API
+2025-11-12 17:00:49,028 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691476ef8a8da076341b7a3d
+2025-11-12 17:00:49,807 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"The knowledge base id is invalid.","error":"Bad Request","statusCode":400,"traceId":"2f02a00b-52b0-4b0c-92f8-df2f5e63e765"}
+2025-11-12 17:00:49,809 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'ghl_knowledge_base' for agent 691476ef8a8da076341b7a3d
+2025-11-12 17:00:49,809 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691476ef8a8da076341b7a3d
+2025-11-12 17:00:50,396 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"The workflow id is invalid.","error":"Bad Request","statusCode":400,"traceId":"9c6e5452-52cf-4702-8575-7ed18e11f6ee"}
+2025-11-12 17:00:50,398 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Firepit' for agent 691476ef8a8da076341b7a3d
+2025-11-12 17:00:50,398 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691476ef8a8da076341b7a3d
+2025-11-12 17:00:51,345 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"Custom field with id V3HyBEM5B2ccP33gecm9 not found","error":"Bad Request","statusCode":400,"traceId":"54d19182-e352-4fd0-bc00-4425480b7853"}
+2025-11-12 17:00:51,349 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Site number' for agent 691476ef8a8da076341b7a3d
+2025-11-12 17:00:51,350 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691476ef8a8da076341b7a3d
+2025-11-12 17:00:52,492 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI action: SPEAK TO HUMAN (ID: 691476f3e26f33d82f00f69b)
+2025-11-12 17:00:52,495 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691476ef8a8da076341b7a3d
+2025-11-12 17:00:53,139 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"The workflow id is invalid.","error":"Bad Request","statusCode":400,"traceId":"0458369b-690f-982a-a0f2-51715f997651"}
+2025-11-12 17:00:53,140 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'After Hours HELP' for agent 691476ef8a8da076341b7a3d
+2025-11-12 17:00:53,140 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691476ef8a8da076341b7a3d
+2025-11-12 17:00:56,831 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI action: BATH HAUS SAUNA (ID: 691476f56eea00dfef35ae6b)
+2025-11-12 17:00:56,835 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691476ef8a8da076341b7a3d
+2025-11-12 17:00:57,436 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"The workflow id is invalid.","error":"Bad Request","statusCode":400,"traceId":"d0365543-6e1d-43bb-8c42-e71e84bf9f6b"}
+2025-11-12 17:00:57,438 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'BOOKING MADE NOTIFICATION' for agent 691476ef8a8da076341b7a3d
+2025-11-12 17:00:57,439 - [INFO] - AppLogger.VoiceAI - Successfully copied agent 68cb507c9de977440f6ed69f to location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 17:01:00,168 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 68e84af1efa28850152d5a6c from location: UTkbqQXAR7A3UsirpOje
+2025-11-12 17:01:00,168 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 68e84af1efa28850152d5a6c
+2025-11-12 17:01:00,786 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-12 17:01:00,794 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 17:01:00,795 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-12 17:01:00,795 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 17:01:01,973 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI agent: N/A (ID: 691476fdf341194c3d951622)
+2025-11-12 17:01:01,976 - [INFO] - AppLogger.VoiceAI - Step 4: Updating agent name if needed
+2025-11-12 17:01:01,978 - [INFO] - AppLogger.VoiceAI - Updating Voice AI agent: 691476fdf341194c3d951622 in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 17:01:02,522 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"cfb4c6eb-61ef-4a4d-b0db-a1c6d063c143"}
+2025-11-12 17:01:02,525 - [INFO] - AppLogger.VoiceAI - Step 5: Creating custom actions via Actions API
+2025-11-12 17:01:02,526 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691476fdf341194c3d951622
+2025-11-12 17:01:03,275 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"The knowledge base id is invalid.","error":"Bad Request","statusCode":400,"traceId":"2e7581a6-152a-43a6-8d4e-17c7fabd7890"}
+2025-11-12 17:01:03,277 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'ghl_knowledge_base' for agent 691476fdf341194c3d951622
+2025-11-12 17:01:03,277 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691476fdf341194c3d951622
+2025-11-12 17:01:03,878 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"The workflow id is invalid.","error":"Bad Request","statusCode":400,"traceId":"41ccd1c4-897b-44d6-bf20-d682fe8b85e6"}
+2025-11-12 17:01:03,882 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Firepit' for agent 691476fdf341194c3d951622
+2025-11-12 17:01:03,882 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691476fdf341194c3d951622
+2025-11-12 17:01:04,523 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"Custom field with id V3HyBEM5B2ccP33gecm9 not found","error":"Bad Request","statusCode":400,"traceId":"4604c231-78c0-4c61-bbf1-7ffd66cd8367"}
+2025-11-12 17:01:04,525 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Site number' for agent 691476fdf341194c3d951622
+2025-11-12 17:01:04,525 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691476fdf341194c3d951622
+2025-11-12 17:01:05,398 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI action: SPEAK TO HUMAN (ID: 691477008a8da011cb1b7cae)
+2025-11-12 17:01:05,400 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691476fdf341194c3d951622
+2025-11-12 17:01:05,995 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"The workflow id is invalid.","error":"Bad Request","statusCode":400,"traceId":"8bc8a37c-0df2-4d21-9377-a8f9f877e696"}
+2025-11-12 17:01:05,998 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'After Hours HELP' for agent 691476fdf341194c3d951622
+2025-11-12 17:01:05,999 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691476fdf341194c3d951622
+2025-11-12 17:01:06,850 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI action: Check Availability (ID: 691477026eea00e28b35b13e)
+2025-11-12 17:01:06,852 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691476fdf341194c3d951622
+2025-11-12 17:01:07,796 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI action: Confirm Booking (ID: 69147703d5a35430eaccc4e0)
+2025-11-12 17:01:07,799 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691476fdf341194c3d951622
+2025-11-12 17:01:08,558 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI action: BATH HAUS SAUNA (ID: 69147704d5a3549884ccc559)
+2025-11-12 17:01:08,562 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691476fdf341194c3d951622
+2025-11-12 17:01:09,502 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI action: Check Booking (ID: 69147704e26f33195900f978)
+2025-11-12 17:01:09,504 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691476fdf341194c3d951622
+2025-11-12 17:01:10,196 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"The workflow id is invalid.","error":"Bad Request","statusCode":400,"traceId":"d1d30bc4-003f-4489-9c1f-64c85f01292f"}
+2025-11-12 17:01:10,198 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'BOOKING MADE NOTIFICATION' for agent 691476fdf341194c3d951622
+2025-11-12 17:01:10,199 - [INFO] - AppLogger.VoiceAI - Successfully copied agent 68e84af1efa28850152d5a6c to location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 17:01:12,916 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 68eeeefde796d04093e9e57b from location: UTkbqQXAR7A3UsirpOje
+2025-11-12 17:01:12,917 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 68eeeefde796d04093e9e57b
+2025-11-12 17:01:13,502 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-12 17:01:13,505 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 17:01:13,506 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-12 17:01:13,506 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 17:01:14,480 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI agent: N/A (ID: 691477098a8da05a3d1b7e74)
+2025-11-12 17:01:14,482 - [INFO] - AppLogger.VoiceAI - Step 4: Updating agent name if needed
+2025-11-12 17:01:14,482 - [INFO] - AppLogger.VoiceAI - Updating Voice AI agent: 691477098a8da05a3d1b7e74 in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 17:01:15,047 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"fb7706a7-167a-4fc4-8f77-7aa27cf1b3d7"}
+2025-11-12 17:01:15,048 - [INFO] - AppLogger.VoiceAI - Step 5: Creating custom actions via Actions API
+2025-11-12 17:01:15,049 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691477098a8da05a3d1b7e74
+2025-11-12 17:01:16,053 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI action: SPEAK TO HUMAN (ID: 6914770bf341196413951851)
+2025-11-12 17:01:16,055 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691477098a8da05a3d1b7e74
+2025-11-12 17:01:16,826 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI action: BATH HAUS SAUNA (ID: 6914770cf34119784f9518be)
+2025-11-12 17:01:16,827 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 691477098a8da05a3d1b7e74
+2025-11-12 17:01:21,243 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI action: AFTER CALL SALES (ID: 6914770de26f33037a00fadb)
+2025-11-12 17:01:21,247 - [INFO] - AppLogger.VoiceAI - Successfully copied agent 68eeeefde796d04093e9e57b to location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 17:01:24,046 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 6903f5b3c533205b70e6ee8d from location: UTkbqQXAR7A3UsirpOje
+2025-11-12 17:01:24,047 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 6903f5b3c533205b70e6ee8d
+2025-11-12 17:01:24,674 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-12 17:01:24,678 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 17:01:24,679 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-12 17:01:24,680 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 17:01:25,857 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI agent: N/A (ID: 69147715d5a3545197ccc833)
+2025-11-12 17:01:25,863 - [INFO] - AppLogger.VoiceAI - Step 4: Updating agent name if needed
+2025-11-12 17:01:25,865 - [INFO] - AppLogger.VoiceAI - Updating Voice AI agent: 69147715d5a3545197ccc833 in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 17:01:26,446 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"d796d5e4-6379-4147-b5f9-6dbde3743ecb"}
+2025-11-12 17:01:26,447 - [INFO] - AppLogger.VoiceAI - Step 5: Creating custom actions via Actions API
+2025-11-12 17:01:26,448 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 69147715d5a3545197ccc833
+2025-11-12 17:01:27,170 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"The knowledge base id is invalid.","error":"Bad Request","statusCode":400,"traceId":"31e36966-6de8-4aae-8965-937e7f64e843"}
+2025-11-12 17:01:27,173 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'ghl_knowledge_base' for agent 69147715d5a3545197ccc833
+2025-11-12 17:01:27,173 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 69147715d5a3545197ccc833
+2025-11-12 17:01:28,093 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"The workflow id is invalid.","error":"Bad Request","statusCode":400,"traceId":"8de9e486-b052-4fe9-a544-43cd924bdade"}
+2025-11-12 17:01:28,095 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Firepit' for agent 69147715d5a3545197ccc833
+2025-11-12 17:01:28,095 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 69147715d5a3545197ccc833
+2025-11-12 17:01:28,714 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"Custom field with id V3HyBEM5B2ccP33gecm9 not found","error":"Bad Request","statusCode":400,"traceId":"713fb5d3-7258-4255-882f-f5a10bbfc886"}
+2025-11-12 17:01:28,718 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'Site number' for agent 69147715d5a3545197ccc833
+2025-11-12 17:01:28,719 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 69147715d5a3545197ccc833
+2025-11-12 17:01:29,529 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI action: SPEAK TO HUMAN (ID: 691477186eea0036d835b578)
+2025-11-12 17:01:29,532 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 69147715d5a3545197ccc833
+2025-11-12 17:01:30,151 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"The workflow id is invalid.","error":"Bad Request","statusCode":400,"traceId":"92586a67-1ea2-4065-9146-015412a24666"}
+2025-11-12 17:01:30,156 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'After Hours HELP' for agent 69147715d5a3545197ccc833
+2025-11-12 17:01:30,156 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 69147715d5a3545197ccc833
+2025-11-12 17:01:31,083 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI action: Check Availability (ID: 6914771a8a8da04ad81b811b)
+2025-11-12 17:01:31,086 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 69147715d5a3545197ccc833
+2025-11-12 17:01:32,059 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI action: Confirm Booking (ID: 6914771bd5a3542900ccc942)
+2025-11-12 17:01:32,061 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 69147715d5a3545197ccc833
+2025-11-12 17:01:34,040 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI action: BATH HAUS SAUNA (ID: 6914771c8a8da050a91b8194)
+2025-11-12 17:01:34,042 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 69147715d5a3545197ccc833
+2025-11-12 17:01:35,011 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI action: Check Booking (ID: 6914771ee26f33941800fd9b)
+2025-11-12 17:01:35,012 - [INFO] - AppLogger.VoiceAI - Creating Voice AI action for agent: 69147715d5a3545197ccc833
+2025-11-12 17:01:35,626 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI action: 400 - {"message":"The workflow id is invalid.","error":"Bad Request","statusCode":400,"traceId":"406059e6-88cb-43f3-865a-bed9e8c7dae9"}
+2025-11-12 17:01:35,630 - [WARNING] - AppLogger.VoiceAI - Failed to create action 'BOOKING MADE NOTIFICATION' for agent 69147715d5a3545197ccc833
+2025-11-12 17:01:35,632 - [INFO] - AppLogger.VoiceAI - Successfully copied agent 6903f5b3c533205b70e6ee8d to location 7GnLfRPOVTnLeWxCaSHD
+2025-11-12 17:01:35,633 - [INFO] - AppLogger.VoiceAI - Bulk copy completed: 5/5 agents copied

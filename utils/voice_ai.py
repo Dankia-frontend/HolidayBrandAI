@@ -192,7 +192,7 @@ def get_voice_ai_agent(agent_id: str, location_id: str = None, access_token: Opt
         return None
 
 
-def create_voice_ai_agent(location_id: str, agent_config: Dict, access_token: Optional[str] = None, use_agency_key: bool = None) -> Optional[Dict]:
+def create_voice_ai_agent(location_id: str, agent_config: Dict, access_token: Optional[str] = None, use_agency_key: bool = None, include_actions: bool = False) -> Optional[Dict]:
     """
     Creates a new Voice AI agent in the specified location.
     
@@ -200,6 +200,8 @@ def create_voice_ai_agent(location_id: str, agent_config: Dict, access_token: Op
         location_id: The target GHL location/sub-account ID
         agent_config: Dictionary containing agent configuration
         access_token: Optional OAuth access token. If not provided, will fetch from DB.
+        use_agency_key: Optional override to use Agency API Key (True) or OAuth token (False).
+        include_actions: If True, allows actions to be included in the create request (for copying custom actions)
     
     Returns:
         dict: Created agent details, or None on error
@@ -222,13 +224,19 @@ def create_voice_ai_agent(location_id: str, agent_config: Dict, access_token: Op
     headers = get_voice_ai_headers(access_token, location_id)
     
     # Create a clean payload - remove fields that shouldn't be in the request
-    # The API rejects: actions, traceId, name (and possibly others)
+    # The API rejects: traceId, name, actions (and possibly others) during creation
     # But locationId IS required in the body
     # inboundNumber must be removed - phone numbers are location-specific
-    clean_config = {k: v for k, v in agent_config.items() if k not in [
-        "actions", "traceId", "name", "id", "inboundNumber",
+    # Actions CANNOT be included in create - they must be created separately via Actions API
+    fields_to_remove = [
+        "traceId", "id", "inboundNumber", "name", "actions",  # name and actions are rejected by API in create
         "createdAt", "updatedAt", "createdBy", "updatedBy", "_id"
-    ]}
+    ]
+    
+    # Note: include_actions parameter is kept for backward compatibility but actions are always removed
+    # Actions must be created separately using create_voice_ai_action()
+    
+    clean_config = {k: v for k, v in agent_config.items() if k not in fields_to_remove}
     
     # locationId is REQUIRED in the body (API error says "LocationId is missing in body")
     clean_config["locationId"] = location_id
@@ -241,6 +249,7 @@ def create_voice_ai_agent(location_id: str, agent_config: Dict, access_token: Op
         agent_name = agent_config.get('name', 'N/A')
         print(f"[Voice AI] Creating agent: {agent_name}")
         print(f"[Voice AI] Payload fields: {list(clean_config.keys())}")
+        # Note: Actions are never included in create - they must be created separately via Actions API
         
         response = requests.post(url, headers=headers, params=params, json=clean_config, timeout=30)
         
@@ -320,7 +329,90 @@ def delete_voice_ai_agent(agent_id: str, access_token: Optional[str] = None, use
         return False
 
 
-def update_voice_ai_agent(agent_id: str, location_id: str = None, agent_config: Dict = None, access_token: Optional[str] = None, use_agency_key: bool = None) -> Optional[Dict]:
+def create_voice_ai_action(agent_id: str, location_id: str, action_config: Dict, access_token: Optional[str] = None, use_agency_key: bool = None) -> Optional[Dict]:
+    """
+    Creates a custom action for a Voice AI agent using the Actions API.
+    
+    Args:
+        agent_id: The Voice AI agent ID to add the action to
+        location_id: The location ID where the agent exists (required for Voice AI API)
+        action_config: Dictionary containing action configuration
+        access_token: Optional OAuth access token. If not provided, will fetch from DB.
+        use_agency_key: Optional override to use Agency API Key (True) or OAuth token (False).
+    
+    Returns:
+        dict: Created action details, or None on error
+    """
+    if use_agency_key is None:
+        use_agency_key = USE_AGENCY_API_KEY
+    
+    if not access_token:
+        # Try multi-location token first
+        if MULTI_LOCATION_ENABLED:
+            access_token = get_valid_location_token(location_id)
+            if access_token:
+                print(f"[Voice AI Actions] Using location-specific token for {location_id}")
+        
+        # Fallback to Agency API Key or global OAuth token
+        if not access_token:
+            if use_agency_key and GHL_AGENCY_API_KEY:
+                access_token = GHL_AGENCY_API_KEY
+            else:
+                access_token = get_valid_access_token(GHL_CLIENT_ID, GHL_CLIENT_SECRET)
+        
+        if not access_token:
+            log.error(f"No valid access token for location {location_id}")
+            print(f"❌ Error: No token found for location {location_id}")
+            return None
+    
+    url = f"{VOICE_AI_BASE_URL}/actions"
+    headers = get_voice_ai_headers(access_token, location_id)
+    
+    # Prepare action payload - include agentId and locationId
+    action_payload = action_config.copy()
+    action_payload["agentId"] = agent_id
+    action_payload["locationId"] = location_id
+    
+    # Remove fields that shouldn't be in the request
+    fields_to_remove = [
+        "id", "_id", "traceId",
+        "createdAt", "updatedAt", "createdBy", "updatedBy"
+    ]
+    
+    clean_payload = {k: v for k, v in action_payload.items() if k not in fields_to_remove}
+    
+    # Add locationId as query parameter
+    params = {"locationId": location_id}
+    
+    try:
+        log.info(f"Creating Voice AI action for agent: {agent_id}")
+        action_name = action_config.get("name", action_config.get("actionName", "N/A"))
+        print(f"[Voice AI Actions] Creating action: {action_name} for agent: {agent_id}")
+        
+        response = requests.post(url, headers=headers, params=params, json=clean_payload, timeout=30)
+        
+        if response.status_code in [200, 201]:
+            result = response.json()
+            action_id = result.get("id")
+            
+            log.info(f"Successfully created Voice AI action: {action_name} (ID: {action_id})")
+            print(f"✅ Successfully created action: {action_name}")
+            
+            return result
+        else:
+            error_msg = f"Failed to create Voice AI action: {response.status_code} - {response.text}"
+            log.error(error_msg)
+            print(f"❌ {error_msg}")
+            return None
+            
+    except Exception as e:
+        error_msg = f"Exception while creating Voice AI action: {str(e)}"
+        log.exception(error_msg)
+        print(f"❌ {error_msg}")
+        return None
+
+
+def update_voice_ai_agent(agent_id: str, location_id: str = None, agent_config: Dict = None, access_token: Optional[str] = None, use_agency_key: bool = None, include_actions: bool = False) -> Optional[Dict]:
     """
     Updates an existing Voice AI agent (PATCH).
     
@@ -330,6 +422,7 @@ def update_voice_ai_agent(agent_id: str, location_id: str = None, agent_config: 
         agent_config: Dictionary containing agent configuration updates
         access_token: Optional OAuth access token or Agency API Key. If not provided, will fetch based on USE_AGENCY_API_KEY setting.
         use_agency_key: Optional override to use Agency API Key (True) or OAuth token (False).
+        include_actions: If True, allows actions to be included in the update (for copying custom actions)
     
     Returns:
         dict: Updated agent details, or None on error
@@ -355,10 +448,16 @@ def update_voice_ai_agent(agent_id: str, location_id: str = None, agent_config: 
     headers = get_voice_ai_headers(access_token, location_id)
     
     # Clean the config - remove fields that shouldn't be in update request
-    clean_config = {k: v for k, v in agent_config.items() if k not in [
-        "actions", "traceId", "id", "locationId", 
+    # Allow actions if include_actions is True (for copying custom actions)
+    fields_to_remove = [
+        "traceId", "id", "locationId", 
         "createdAt", "updatedAt", "createdBy", "updatedBy", "_id"
-    ]}
+    ]
+    
+    if not include_actions:
+        fields_to_remove.append("actions")
+    
+    clean_config = {k: v for k, v in agent_config.items() if k not in fields_to_remove}
     
     # Add locationId as query parameter if provided
     params = {}
@@ -489,7 +588,21 @@ def copy_voice_ai_agent(
     log.info(f"Step 2: Preparing configuration for target location: {target_location_id}")
     print(f"\n[Voice AI Copy] Step 2: Preparing configuration...")
     
+    # Check for actions - they need to be created separately via Actions API
+    source_actions = source_agent.get("actions")
+    has_actions = source_actions is not None and (
+        (isinstance(source_actions, list) and len(source_actions) > 0) or 
+        (not isinstance(source_actions, list) and source_actions)
+    )
+    
+    if has_actions:
+        actions_count = len(source_actions) if isinstance(source_actions, list) else 1
+        print(f"   Found {actions_count} custom action(s) to create via Actions API")
+    else:
+        print(f"   No custom actions found in source agent")
+    
     # Remove fields that shouldn't be copied or sent to create endpoint
+    # Actions must be created separately via Actions API, not in agent create
     fields_to_remove = [
         "id",
         "locationId", 
@@ -498,9 +611,9 @@ def copy_voice_ai_agent(
         "createdBy",
         "updatedBy",
         "_id",
-        "actions",      # Read-only field from GET response
+        "actions",      # Must be created separately via Actions API
         "traceId",      # Response-only field
-        "name",         # Will be set separately if needed
+        "name",         # Will be set separately if needed (API may reject it in create)
         "inboundNumber" # Phone numbers are location-specific, must be assigned manually in target location
     ]
     
@@ -513,36 +626,102 @@ def copy_voice_ai_agent(
     print(f"   Configuration prepared with {len(agent_config)} fields")
     print(f"   Removed fields: {', '.join(fields_to_remove)}")
     
-    # Step 3: Create agent in target location
+    # Step 3: Create agent in target location (without actions)
     log.info(f"Step 3: Creating agent in target location")
     print(f"\n[Voice AI Copy] Step 3: Creating agent in target location...")
     
-    # Note: The API doesn't accept 'name' in the create body, so we'll create without it
-    # and update the name after if needed
-    result = create_voice_ai_agent(target_location_id, agent_config, target_token, use_agency_key)
+    # Do NOT include actions in create request - they must be created separately
+    result = create_voice_ai_agent(
+        target_location_id, 
+        agent_config, 
+        target_token, 
+        use_agency_key,
+        include_actions=False  # Actions cannot be included in create
+    )
     
-    # If creation succeeded, try to update the name if needed
-    # Note: Some APIs don't accept name in create, but might accept it in update
-    if result and new_name:
-        current_name = result.get("name", "")
-        if current_name != new_name:
-            print(f"[Voice AI Copy] Attempting to update agent name from '{current_name}' to '{new_name}'")
+    if not result:
+        print(f"\n❌ Failed to create agent in target location")
+        log.error(f"Failed to create agent in target location {target_location_id}")
+        return None
+    
+    new_agent_id = result.get("id")
+    print(f"✅ Agent created successfully: {new_agent_id}")
+    
+    # Step 4: Update agent name if needed
+    log.info(f"Step 4: Updating agent name if needed")
+    print(f"\n[Voice AI Copy] Step 4: Updating agent name if needed...")
+    
+    current_name = result.get("name", "")
+    if new_name and current_name != new_name:
+        print(f"   Attempting to update agent name from '{current_name}' to '{new_name}'")
+        try:
+            update_config = {"name": new_name}
+            updated = update_voice_ai_agent(
+                new_agent_id,
+                target_location_id,
+                update_config,
+                target_token,
+                use_agency_key,
+                include_actions=False
+            )
+            if updated:
+                result["name"] = new_name
+                print(f"✅ Agent name updated to: {new_name}")
+            else:
+                print(f"⚠️  Could not update agent name. Agent created with name: {current_name}")
+        except Exception as e:
+            print(f"⚠️  Could not update agent name: {str(e)}. Agent created with name: {current_name}")
+            log.warning(f"Error updating agent name: {str(e)}")
+    else:
+        print(f"   Agent name is correct: {current_name}")
+    
+    # Step 5: Create custom actions via Actions API
+    if has_actions:
+        log.info(f"Step 5: Creating custom actions via Actions API")
+        print(f"\n[Voice AI Copy] Step 5: Creating custom actions via Actions API...")
+        
+        # Ensure source_actions is a list
+        actions_list = source_actions if isinstance(source_actions, list) else [source_actions]
+        
+        created_actions = 0
+        failed_actions = 0
+        
+        for idx, action in enumerate(actions_list, 1):
+            action_name = action.get("name") or action.get("actionName") or f"Action {idx}"
+            print(f"   [{idx}/{len(actions_list)}] Creating action: {action_name}")
+            
             try:
-                update_config = {"name": new_name}
-                updated = update_voice_ai_agent(
-                    result.get("id"),
-                    target_location_id,
-                    update_config,
-                    target_token,
-                    use_agency_key
+                created_action = create_voice_ai_action(
+                    agent_id=new_agent_id,
+                    location_id=target_location_id,
+                    action_config=action,
+                    access_token=target_token,
+                    use_agency_key=use_agency_key
                 )
-                if updated:
-                    result["name"] = new_name
-                    print(f"✅ Agent name updated to: {new_name}")
+                
+                if created_action:
+                    created_actions += 1
+                    print(f"      ✅ Action '{action_name}' created successfully")
                 else:
-                    print(f"⚠️  Could not update agent name (API may not support it). Current name: {current_name}")
+                    failed_actions += 1
+                    print(f"      ❌ Failed to create action '{action_name}'")
+                    log.warning(f"Failed to create action '{action_name}' for agent {new_agent_id}")
             except Exception as e:
-                print(f"⚠️  Could not update agent name: {str(e)}. Agent created with name: {current_name}")
+                failed_actions += 1
+                error_msg = f"Exception creating action '{action_name}': {str(e)}"
+                print(f"      ❌ {error_msg}")
+                log.exception(error_msg)
+        
+        print(f"\n   Actions Summary: {created_actions} created, {failed_actions} failed")
+        if created_actions == len(actions_list):
+            print(f"✅ All {created_actions} custom action(s) copied successfully")
+        elif created_actions > 0:
+            print(f"⚠️  Partially successful: {created_actions}/{len(actions_list)} actions copied")
+        else:
+            print(f"❌ Failed to copy any actions")
+            log.error(f"Failed to copy any actions for agent {new_agent_id}")
+    else:
+        print(f"\n[Voice AI Copy] Step 5: No actions to copy")
     
     if result:
         print(f"\n✅ Successfully copied Voice AI agent!")
