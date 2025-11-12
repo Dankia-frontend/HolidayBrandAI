@@ -1,0 +1,411 @@
+2025-11-11 16:14:39,242 - [INFO] - AppLogger.GHLSubAccount - Fetching all GHL locations
+2025-11-11 16:14:39,931 - [ERROR] - AppLogger.GHLSubAccount - Failed to list locations: 401 - {"msg":"Unauthorized, Switch to the new API token."}
+2025-11-11 16:14:39,937 - [INFO] - AppLogger.GHLSubAccount - Fetching all GHL locations
+2025-11-11 16:14:40,512 - [ERROR] - AppLogger.GHLSubAccount - Failed to list locations: 401 - {"msg":"Unauthorized, Switch to the new API token."}
+2025-11-11 16:16:33,131 - [ERROR] - AppLogger.FastAPI - Error listing GHL locations: get_valid_access_token() missing 2 required positional arguments: 'client_id' and 'client_secret'
+2025-11-11 16:16:33,134 - [ERROR] - AppLogger.FastAPI - Error listing GHL locations: get_valid_access_token() missing 2 required positional arguments: 'client_id' and 'client_secret'
+2025-11-11 16:17:20,886 - [INFO] - AppLogger.GHLSubAccount - Fetching all GHL locations
+2025-11-11 16:17:21,460 - [ERROR] - AppLogger.GHLSubAccount - Failed to list locations: 401 - {"msg":"Unauthorized, Switch to the new API token."}
+2025-11-11 16:17:23,380 - [INFO] - AppLogger.GHLSubAccount - Fetching all GHL locations
+2025-11-11 16:17:24,172 - [ERROR] - AppLogger.GHLSubAccount - Failed to list locations: 401 - {"msg":"Unauthorized, Switch to the new API token."}
+2025-11-11 16:19:42,445 - [INFO] - AppLogger.GHLSubAccount - Fetching all GHL locations
+2025-11-11 16:19:43,631 - [ERROR] - AppLogger.GHLSubAccount - Failed to list locations: 401 - {"msg":"Api key is invalid."}
+2025-11-11 16:19:43,636 - [INFO] - AppLogger.GHLSubAccount - Fetching all GHL locations
+2025-11-11 16:19:44,256 - [ERROR] - AppLogger.GHLSubAccount - Failed to list locations: 401 - {"msg":"Api key is invalid."}
+2025-11-11 16:21:59,513 - [INFO] - AppLogger.GHLSubAccount - Fetching all GHL locations
+2025-11-11 16:22:00,787 - [INFO] - AppLogger.GHLSubAccount - Found 88 location(s)
+2025-11-11 16:22:00,804 - [INFO] - AppLogger.GHLSubAccount - Fetching all GHL locations
+2025-11-11 16:22:02,229 - [INFO] - AppLogger.GHLSubAccount - Found 88 location(s)
+2025-11-11 16:25:10,037 - [INFO] - AppLogger.GHLSubAccount - Fetching all GHL locations
+2025-11-11 16:25:11,409 - [INFO] - AppLogger.GHLSubAccount - Found 88 location(s)
+2025-11-11 16:26:18,824 - [INFO] - AppLogger.GHLSubAccount - Fetching all GHL locations
+2025-11-11 16:26:20,147 - [INFO] - AppLogger.GHLSubAccount - Found 88 location(s)
+2025-11-11 16:29:11,558 - [INFO] - AppLogger.GHLSubAccount - Fetching all GHL locations
+2025-11-11 16:29:12,805 - [INFO] - AppLogger.GHLSubAccount - Found 88 location(s)
+2025-11-11 16:29:12,821 - [INFO] - AppLogger.GHLSubAccount - Fetching all GHL locations
+2025-11-11 16:29:14,077 - [INFO] - AppLogger.GHLSubAccount - Found 88 location(s)
+2025-11-11 16:29:26,615 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agents for location: UTkbqQXAR7A3UsirpOje
+2025-11-11 16:29:27,349 - [INFO] - AppLogger.VoiceAI - Found 5 Voice AI agent(s)
+2025-11-11 16:29:27,352 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 6878bfc682a9d176533d7a8e from location: UTkbqQXAR7A3UsirpOje
+2025-11-11 16:29:27,352 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 6878bfc682a9d176533d7a8e
+2025-11-11 16:29:27,981 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-11 16:29:27,987 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:29:27,988 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-11 16:29:27,988 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:29:28,576 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI agent: 403 - {"message":"Forbidden resource","error":"Forbidden","statusCode":403}
+2025-11-11 16:29:28,578 - [ERROR] - AppLogger.VoiceAI - Failed to copy agent 6878bfc682a9d176533d7a8e to location BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:29:28,579 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 68cb507c9de977440f6ed69f from location: UTkbqQXAR7A3UsirpOje
+2025-11-11 16:29:28,579 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 68cb507c9de977440f6ed69f
+2025-11-11 16:29:29,256 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-11 16:29:29,260 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:29:29,261 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-11 16:29:29,261 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:29:29,800 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI agent: 403 - {"message":"Forbidden resource","error":"Forbidden","statusCode":403}
+2025-11-11 16:29:29,801 - [ERROR] - AppLogger.VoiceAI - Failed to copy agent 68cb507c9de977440f6ed69f to location BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:29:29,802 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 68e84af1efa28850152d5a6c from location: UTkbqQXAR7A3UsirpOje
+2025-11-11 16:29:29,802 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 68e84af1efa28850152d5a6c
+2025-11-11 16:29:30,400 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-11 16:29:30,405 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:29:30,406 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-11 16:29:30,406 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:29:30,998 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI agent: 403 - {"message":"Forbidden resource","error":"Forbidden","statusCode":403}
+2025-11-11 16:29:31,000 - [ERROR] - AppLogger.VoiceAI - Failed to copy agent 68e84af1efa28850152d5a6c to location BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:29:31,001 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 68eeeefde796d04093e9e57b from location: UTkbqQXAR7A3UsirpOje
+2025-11-11 16:29:31,001 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 68eeeefde796d04093e9e57b
+2025-11-11 16:29:31,607 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-11 16:29:31,611 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:29:31,612 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-11 16:29:31,612 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:29:32,209 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI agent: 403 - {"message":"Forbidden resource","error":"Forbidden","statusCode":403}
+2025-11-11 16:29:32,211 - [ERROR] - AppLogger.VoiceAI - Failed to copy agent 68eeeefde796d04093e9e57b to location BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:29:32,211 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 6903f5b3c533205b70e6ee8d from location: UTkbqQXAR7A3UsirpOje
+2025-11-11 16:29:32,212 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 6903f5b3c533205b70e6ee8d
+2025-11-11 16:29:32,825 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-11 16:29:32,850 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:29:32,851 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-11 16:29:32,852 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:29:33,475 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI agent: 403 - {"message":"Forbidden resource","error":"Forbidden","statusCode":403}
+2025-11-11 16:29:33,477 - [ERROR] - AppLogger.VoiceAI - Failed to copy agent 6903f5b3c533205b70e6ee8d to location BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:29:33,478 - [INFO] - AppLogger.VoiceAI - Bulk copy completed: 0/5 agents copied
+2025-11-11 16:34:03,262 - [INFO] - AppLogger.GHLSubAccount - Fetching all GHL locations
+2025-11-11 16:34:04,780 - [INFO] - AppLogger.GHLSubAccount - Found 88 location(s)
+2025-11-11 16:35:42,872 - [INFO] - AppLogger.GHLSubAccount - Fetching all GHL locations
+2025-11-11 16:35:44,143 - [INFO] - AppLogger.GHLSubAccount - Found 88 location(s)
+2025-11-11 16:35:44,164 - [INFO] - AppLogger.GHLSubAccount - Fetching all GHL locations
+2025-11-11 16:35:46,232 - [INFO] - AppLogger.GHLSubAccount - Found 88 location(s)
+2025-11-11 16:35:58,065 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agents for location: UTkbqQXAR7A3UsirpOje
+2025-11-11 16:35:58,687 - [INFO] - AppLogger.VoiceAI - Found 5 Voice AI agent(s)
+2025-11-11 16:36:02,345 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 6878bfc682a9d176533d7a8e from location: UTkbqQXAR7A3UsirpOje
+2025-11-11 16:36:02,345 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 6878bfc682a9d176533d7a8e
+2025-11-11 16:36:02,938 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-11 16:36:02,941 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:36:02,942 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-11 16:36:02,943 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:36:03,699 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI agent: 422 - {"message":["property actions should not exist","property traceId should not exist","property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"23da20a6-6482-48d0-8ddd-671700660908"}
+2025-11-11 16:36:03,701 - [ERROR] - AppLogger.VoiceAI - Failed to copy agent 6878bfc682a9d176533d7a8e to location BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:36:07,368 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 68cb507c9de977440f6ed69f from location: UTkbqQXAR7A3UsirpOje
+2025-11-11 16:36:07,369 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 68cb507c9de977440f6ed69f
+2025-11-11 16:36:07,949 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-11 16:36:07,953 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:36:07,954 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-11 16:36:07,954 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:36:08,536 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI agent: 422 - {"message":["property actions should not exist","property traceId should not exist","property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"952886f5-5837-4ef2-a018-77059a0bee91"}
+2025-11-11 16:36:08,538 - [ERROR] - AppLogger.VoiceAI - Failed to copy agent 68cb507c9de977440f6ed69f to location BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:36:12,257 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 68e84af1efa28850152d5a6c from location: UTkbqQXAR7A3UsirpOje
+2025-11-11 16:36:12,258 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 68e84af1efa28850152d5a6c
+2025-11-11 16:36:12,916 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-11 16:36:12,921 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:36:12,921 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-11 16:36:12,922 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:36:13,510 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI agent: 422 - {"message":["property actions should not exist","property traceId should not exist","property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"edbcba16-e191-43da-a734-cd88cc317777"}
+2025-11-11 16:36:13,513 - [ERROR] - AppLogger.VoiceAI - Failed to copy agent 68e84af1efa28850152d5a6c to location BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:36:17,311 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 68eeeefde796d04093e9e57b from location: UTkbqQXAR7A3UsirpOje
+2025-11-11 16:36:17,312 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 68eeeefde796d04093e9e57b
+2025-11-11 16:36:17,888 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-11 16:36:17,891 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:36:17,892 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-11 16:36:17,892 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:36:18,478 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI agent: 422 - {"message":["property actions should not exist","property traceId should not exist","property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"d9ef2f7a-82ec-4af3-8a7b-72ad619f9698"}
+2025-11-11 16:36:18,480 - [ERROR] - AppLogger.VoiceAI - Failed to copy agent 68eeeefde796d04093e9e57b to location BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:36:22,272 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 6903f5b3c533205b70e6ee8d from location: UTkbqQXAR7A3UsirpOje
+2025-11-11 16:36:22,273 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 6903f5b3c533205b70e6ee8d
+2025-11-11 16:36:22,847 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-11 16:36:22,854 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:36:22,855 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-11 16:36:22,855 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:36:23,523 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI agent: 422 - {"message":["property actions should not exist","property traceId should not exist","property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"111968af-3e43-4202-a294-3bd32028c123"}
+2025-11-11 16:36:23,525 - [ERROR] - AppLogger.VoiceAI - Failed to copy agent 6903f5b3c533205b70e6ee8d to location BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:36:23,526 - [INFO] - AppLogger.VoiceAI - Bulk copy completed: 0/5 agents copied
+2025-11-11 16:38:19,971 - [INFO] - AppLogger.GHLSubAccount - Fetching all GHL locations
+2025-11-11 16:38:21,232 - [INFO] - AppLogger.GHLSubAccount - Found 88 location(s)
+2025-11-11 16:38:21,249 - [INFO] - AppLogger.GHLSubAccount - Fetching all GHL locations
+2025-11-11 16:38:22,824 - [INFO] - AppLogger.GHLSubAccount - Found 88 location(s)
+2025-11-11 16:38:34,655 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agents for location: UTkbqQXAR7A3UsirpOje
+2025-11-11 16:38:35,521 - [INFO] - AppLogger.VoiceAI - Found 5 Voice AI agent(s)
+2025-11-11 16:38:40,090 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 6878bfc682a9d176533d7a8e from location: UTkbqQXAR7A3UsirpOje
+2025-11-11 16:38:40,091 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 6878bfc682a9d176533d7a8e
+2025-11-11 16:38:40,700 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-11 16:38:40,703 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:38:40,704 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-11 16:38:40,705 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:38:41,270 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI agent: 400 - {"message":"LocationId is missing in body","error":"Bad Request","statusCode":400}
+2025-11-11 16:38:41,272 - [ERROR] - AppLogger.VoiceAI - Failed to copy agent 6878bfc682a9d176533d7a8e to location BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:38:45,166 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 68cb507c9de977440f6ed69f from location: UTkbqQXAR7A3UsirpOje
+2025-11-11 16:38:45,167 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 68cb507c9de977440f6ed69f
+2025-11-11 16:38:45,830 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-11 16:38:45,834 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:38:45,834 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-11 16:38:45,835 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:38:46,450 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI agent: 400 - {"message":"LocationId is missing in body","error":"Bad Request","statusCode":400}
+2025-11-11 16:38:46,452 - [ERROR] - AppLogger.VoiceAI - Failed to copy agent 68cb507c9de977440f6ed69f to location BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:38:50,551 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 68e84af1efa28850152d5a6c from location: UTkbqQXAR7A3UsirpOje
+2025-11-11 16:38:50,551 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 68e84af1efa28850152d5a6c
+2025-11-11 16:38:51,114 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-11 16:38:51,119 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:38:51,120 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-11 16:38:51,121 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:38:51,657 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI agent: 400 - {"message":"LocationId is missing in body","error":"Bad Request","statusCode":400}
+2025-11-11 16:38:51,660 - [ERROR] - AppLogger.VoiceAI - Failed to copy agent 68e84af1efa28850152d5a6c to location BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:38:55,574 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 68eeeefde796d04093e9e57b from location: UTkbqQXAR7A3UsirpOje
+2025-11-11 16:38:55,575 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 68eeeefde796d04093e9e57b
+2025-11-11 16:38:56,194 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-11 16:38:56,198 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:38:56,199 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-11 16:38:56,200 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:38:56,853 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI agent: 400 - {"message":"LocationId is missing in body","error":"Bad Request","statusCode":400}
+2025-11-11 16:38:56,855 - [ERROR] - AppLogger.VoiceAI - Failed to copy agent 68eeeefde796d04093e9e57b to location BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:39:00,915 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 6903f5b3c533205b70e6ee8d from location: UTkbqQXAR7A3UsirpOje
+2025-11-11 16:39:00,915 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 6903f5b3c533205b70e6ee8d
+2025-11-11 16:39:01,520 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-11 16:39:01,525 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:39:01,525 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-11 16:39:01,526 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:39:02,099 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI agent: 400 - {"message":"LocationId is missing in body","error":"Bad Request","statusCode":400}
+2025-11-11 16:39:02,103 - [ERROR] - AppLogger.VoiceAI - Failed to copy agent 6903f5b3c533205b70e6ee8d to location BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:39:02,104 - [INFO] - AppLogger.VoiceAI - Bulk copy completed: 0/5 agents copied
+2025-11-11 16:40:09,998 - [INFO] - AppLogger.GHLSubAccount - Fetching all GHL locations
+2025-11-11 16:40:11,307 - [INFO] - AppLogger.GHLSubAccount - Found 88 location(s)
+2025-11-11 16:40:11,325 - [INFO] - AppLogger.GHLSubAccount - Fetching all GHL locations
+2025-11-11 16:40:12,509 - [INFO] - AppLogger.GHLSubAccount - Found 88 location(s)
+2025-11-11 16:40:27,426 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agents for location: UTkbqQXAR7A3UsirpOje
+2025-11-11 16:40:28,314 - [INFO] - AppLogger.VoiceAI - Found 5 Voice AI agent(s)
+2025-11-11 16:40:32,270 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 6878bfc682a9d176533d7a8e from location: UTkbqQXAR7A3UsirpOje
+2025-11-11 16:40:32,271 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 6878bfc682a9d176533d7a8e
+2025-11-11 16:40:32,861 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-11 16:40:32,864 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:40:32,865 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-11 16:40:32,866 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:40:33,930 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI agent: N/A (ID: 691320b1cdc7af1d6c95f583)
+2025-11-11 16:40:33,933 - [INFO] - AppLogger.VoiceAI - Updating Voice AI agent: 691320b1cdc7af1d6c95f583 in location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:40:34,489 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"4374171a-6721-4d01-963b-6f74bab1d822"}
+2025-11-11 16:40:34,492 - [INFO] - AppLogger.VoiceAI - Successfully copied agent 6878bfc682a9d176533d7a8e to location BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:40:38,699 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 68cb507c9de977440f6ed69f from location: UTkbqQXAR7A3UsirpOje
+2025-11-11 16:40:38,700 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 68cb507c9de977440f6ed69f
+2025-11-11 16:40:39,293 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-11 16:40:39,297 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:40:39,297 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-11 16:40:39,298 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:40:40,338 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI agent: N/A (ID: 691320b7346faab5ce319c15)
+2025-11-11 16:40:40,341 - [INFO] - AppLogger.VoiceAI - Updating Voice AI agent: 691320b7346faab5ce319c15 in location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:40:41,101 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"01dfbd02-dc90-4af1-9f3b-93f98972be9d"}
+2025-11-11 16:40:41,104 - [INFO] - AppLogger.VoiceAI - Successfully copied agent 68cb507c9de977440f6ed69f to location BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:40:45,235 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 68e84af1efa28850152d5a6c from location: UTkbqQXAR7A3UsirpOje
+2025-11-11 16:40:45,236 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 68e84af1efa28850152d5a6c
+2025-11-11 16:40:45,790 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-11 16:40:45,795 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:40:45,796 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-11 16:40:45,797 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:40:46,516 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI agent: 400 - {"message":"The phone number is not registered with this location.","error":"Bad Request","statusCode":400,"traceId":"7014b00a-6733-400c-960e-15109e70ec19"}
+2025-11-11 16:40:46,518 - [ERROR] - AppLogger.VoiceAI - Failed to copy agent 68e84af1efa28850152d5a6c to location BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:40:50,590 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 68eeeefde796d04093e9e57b from location: UTkbqQXAR7A3UsirpOje
+2025-11-11 16:40:50,591 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 68eeeefde796d04093e9e57b
+2025-11-11 16:40:51,244 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-11 16:40:51,247 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:40:51,248 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-11 16:40:51,248 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:40:52,021 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI agent: 400 - {"message":"The phone number is not registered with this location.","error":"Bad Request","statusCode":400,"traceId":"218580a6-7392-4b5a-a340-48a74ca9ec07"}
+2025-11-11 16:40:52,022 - [ERROR] - AppLogger.VoiceAI - Failed to copy agent 68eeeefde796d04093e9e57b to location BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:40:56,025 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 6903f5b3c533205b70e6ee8d from location: UTkbqQXAR7A3UsirpOje
+2025-11-11 16:40:56,027 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 6903f5b3c533205b70e6ee8d
+2025-11-11 16:40:56,615 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-11 16:40:56,620 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:40:56,621 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-11 16:40:56,621 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:40:57,328 - [ERROR] - AppLogger.VoiceAI - Failed to create Voice AI agent: 400 - {"message":"The phone number is not registered with this location.","error":"Bad Request","statusCode":400,"traceId":"da7a4d59-c6d5-41b2-8c5f-b58ec74d54f8"}
+2025-11-11 16:40:57,330 - [ERROR] - AppLogger.VoiceAI - Failed to copy agent 6903f5b3c533205b70e6ee8d to location BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:40:57,331 - [INFO] - AppLogger.VoiceAI - Bulk copy completed: 2/5 agents copied
+2025-11-11 16:50:00,984 - [INFO] - AppLogger.GHLSubAccount - Fetching all GHL locations
+2025-11-11 16:50:02,766 - [INFO] - AppLogger.GHLSubAccount - Found 88 location(s)
+2025-11-11 16:50:02,786 - [INFO] - AppLogger.GHLSubAccount - Fetching all GHL locations
+2025-11-11 16:50:03,749 - [INFO] - AppLogger.GHLSubAccount - Found 88 location(s)
+2025-11-11 16:50:18,161 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agents for location: UTkbqQXAR7A3UsirpOje
+2025-11-11 16:50:19,145 - [INFO] - AppLogger.VoiceAI - Found 5 Voice AI agent(s)
+2025-11-11 16:50:24,709 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 6878bfc682a9d176533d7a8e from location: UTkbqQXAR7A3UsirpOje
+2025-11-11 16:50:24,710 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 6878bfc682a9d176533d7a8e
+2025-11-11 16:50:25,332 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-11 16:50:25,335 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:50:25,336 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-11 16:50:25,336 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:50:26,786 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI agent: N/A (ID: 6913230253ec59ece4d09280)
+2025-11-11 16:50:26,789 - [INFO] - AppLogger.VoiceAI - Updating Voice AI agent: 6913230253ec59ece4d09280 in location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:50:27,383 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"bef14d4f-6e54-4b6f-b738-d2806b0f14b6"}
+2025-11-11 16:50:27,385 - [INFO] - AppLogger.VoiceAI - Successfully copied agent 6878bfc682a9d176533d7a8e to location BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:50:31,620 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 68cb507c9de977440f6ed69f from location: UTkbqQXAR7A3UsirpOje
+2025-11-11 16:50:31,621 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 68cb507c9de977440f6ed69f
+2025-11-11 16:50:32,315 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-11 16:50:32,323 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:50:32,325 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-11 16:50:32,326 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:50:33,953 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI agent: N/A (ID: 6913230953ec591094d0934d)
+2025-11-11 16:50:33,958 - [INFO] - AppLogger.VoiceAI - Updating Voice AI agent: 6913230953ec591094d0934d in location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:50:34,564 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"d1930d1a-8891-4f0e-985a-deed44b6d00a"}
+2025-11-11 16:50:34,567 - [INFO] - AppLogger.VoiceAI - Successfully copied agent 68cb507c9de977440f6ed69f to location BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:50:39,286 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 68e84af1efa28850152d5a6c from location: UTkbqQXAR7A3UsirpOje
+2025-11-11 16:50:39,287 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 68e84af1efa28850152d5a6c
+2025-11-11 16:50:39,894 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-11 16:50:39,899 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:50:39,900 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-11 16:50:39,900 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:50:41,171 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI agent: N/A (ID: 691323105dc1b908b6e62464)
+2025-11-11 16:50:41,174 - [INFO] - AppLogger.VoiceAI - Updating Voice AI agent: 691323105dc1b908b6e62464 in location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:50:41,736 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"d35815f0-ff1f-41ce-9b67-cf9779f6a93a"}
+2025-11-11 16:50:41,738 - [INFO] - AppLogger.VoiceAI - Successfully copied agent 68e84af1efa28850152d5a6c to location BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:50:45,927 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 68eeeefde796d04093e9e57b from location: UTkbqQXAR7A3UsirpOje
+2025-11-11 16:50:45,928 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 68eeeefde796d04093e9e57b
+2025-11-11 16:50:46,574 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-11 16:50:46,578 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:50:46,579 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-11 16:50:46,579 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:50:47,660 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI agent: N/A (ID: 6913231753ec596a61d09582)
+2025-11-11 16:50:47,663 - [INFO] - AppLogger.VoiceAI - Updating Voice AI agent: 6913231753ec596a61d09582 in location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:50:48,342 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"ffd37be1-7010-47c1-8290-8e3b5468ba99"}
+2025-11-11 16:50:48,344 - [INFO] - AppLogger.VoiceAI - Successfully copied agent 68eeeefde796d04093e9e57b to location BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:50:52,413 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 6903f5b3c533205b70e6ee8d from location: UTkbqQXAR7A3UsirpOje
+2025-11-11 16:50:52,414 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 6903f5b3c533205b70e6ee8d
+2025-11-11 16:50:53,036 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-11 16:50:53,041 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:50:53,042 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-11 16:50:53,042 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:50:54,172 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI agent: N/A (ID: 6913231d53ec591b71d096df)
+2025-11-11 16:50:54,176 - [INFO] - AppLogger.VoiceAI - Updating Voice AI agent: 6913231d53ec591b71d096df in location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:50:54,774 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"bbe1a2db-ebb6-42bc-b635-7a760338d554"}
+2025-11-11 16:50:54,777 - [INFO] - AppLogger.VoiceAI - Successfully copied agent 6903f5b3c533205b70e6ee8d to location BP7bzYGH9SpCRK6oPNVg
+2025-11-11 16:50:54,779 - [INFO] - AppLogger.VoiceAI - Bulk copy completed: 5/5 agents copied
+2025-11-11 17:01:15,471 - [INFO] - AppLogger.GHLSubAccount - Fetching all GHL locations
+2025-11-11 17:01:16,697 - [INFO] - AppLogger.GHLSubAccount - Found 88 location(s)
+2025-11-11 17:01:16,732 - [INFO] - AppLogger.GHLSubAccount - Fetching all GHL locations
+2025-11-11 17:01:17,685 - [INFO] - AppLogger.GHLSubAccount - Found 88 location(s)
+2025-11-11 17:01:25,287 - [INFO] - AppLogger.GHLSubAccount - Fetching all GHL locations
+2025-11-11 17:01:26,479 - [INFO] - AppLogger.GHLSubAccount - Found 88 location(s)
+2025-11-11 17:07:19,325 - [INFO] - AppLogger.GHLSubAccount - Fetching all GHL locations
+2025-11-11 17:07:20,603 - [INFO] - AppLogger.GHLSubAccount - Found 88 location(s)
+2025-11-11 17:07:20,622 - [INFO] - AppLogger.GHLSubAccount - Fetching all GHL locations
+2025-11-11 17:07:22,117 - [INFO] - AppLogger.GHLSubAccount - Found 88 location(s)
+2025-11-11 17:07:27,718 - [INFO] - AppLogger.GHLSubAccount - Fetching all GHL locations
+2025-11-11 17:07:29,098 - [INFO] - AppLogger.GHLSubAccount - Found 88 location(s)
+2025-11-11 17:07:29,117 - [INFO] - AppLogger.GHLSubAccount - Fetching all GHL locations
+2025-11-11 17:07:30,186 - [INFO] - AppLogger.GHLSubAccount - Found 88 location(s)
+2025-11-11 17:07:37,312 - [INFO] - AppLogger.GHLSubAccount - Fetching all GHL locations
+2025-11-11 17:07:38,677 - [INFO] - AppLogger.GHLSubAccount - Found 88 location(s)
+2025-11-11 17:08:50,111 - [INFO] - AppLogger.GHLSubAccount - Fetching all GHL locations
+2025-11-11 17:08:51,498 - [INFO] - AppLogger.GHLSubAccount - Found 88 location(s)
+2025-11-11 17:08:52,152 - [INFO] - AppLogger.GHLSubAccount - Fetching all GHL locations
+2025-11-11 17:08:53,510 - [INFO] - AppLogger.GHLSubAccount - Found 88 location(s)
+2025-11-11 17:08:54,696 - [INFO] - AppLogger.GHLSubAccount - Fetching all GHL locations
+2025-11-11 17:08:55,993 - [INFO] - AppLogger.GHLSubAccount - Found 88 location(s)
+2025-11-11 17:08:57,061 - [INFO] - AppLogger.GHLSubAccount - Fetching all GHL locations
+2025-11-11 17:08:58,336 - [INFO] - AppLogger.GHLSubAccount - Found 88 location(s)
+2025-11-11 17:09:08,036 - [INFO] - AppLogger.GHLSubAccount - Fetching all GHL locations
+2025-11-11 17:09:09,704 - [INFO] - AppLogger.GHLSubAccount - Found 88 location(s)
+2025-11-11 17:09:23,852 - [INFO] - AppLogger.GHLSubAccount - Fetching all GHL locations
+2025-11-11 17:09:25,223 - [INFO] - AppLogger.GHLSubAccount - Found 88 location(s)
+2025-11-11 17:09:25,246 - [INFO] - AppLogger.GHLSubAccount - Fetching all GHL locations
+2025-11-11 17:09:26,222 - [INFO] - AppLogger.GHLSubAccount - Found 88 location(s)
+2025-11-11 17:12:36,339 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agents for location: UTkbqQXAR7A3UsirpOje
+2025-11-11 17:12:37,304 - [INFO] - AppLogger.VoiceAI - Found 5 Voice AI agent(s)
+2025-11-11 17:12:41,428 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 6878bfc682a9d176533d7a8e from location: UTkbqQXAR7A3UsirpOje
+2025-11-11 17:12:41,428 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 6878bfc682a9d176533d7a8e
+2025-11-11 17:12:41,998 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-11 17:12:42,003 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 17:12:42,004 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-11 17:12:42,004 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 17:12:43,081 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI agent: N/A (ID: 6913283a5dc1b9f093e6eeea)
+2025-11-11 17:12:43,084 - [INFO] - AppLogger.VoiceAI - Updating Voice AI agent: 6913283a5dc1b9f093e6eeea in location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 17:12:43,611 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"a03a8122-b299-4471-96da-c35c871076e9"}
+2025-11-11 17:12:43,615 - [INFO] - AppLogger.VoiceAI - Successfully copied agent 6878bfc682a9d176533d7a8e to location BP7bzYGH9SpCRK6oPNVg
+2025-11-11 17:12:48,072 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 68cb507c9de977440f6ed69f from location: UTkbqQXAR7A3UsirpOje
+2025-11-11 17:12:48,073 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 68cb507c9de977440f6ed69f
+2025-11-11 17:12:48,679 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-11 17:12:48,683 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 17:12:48,684 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-11 17:12:48,684 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 17:12:49,881 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI agent: N/A (ID: 6913284153ec595f20d16c7d)
+2025-11-11 17:12:49,886 - [INFO] - AppLogger.VoiceAI - Updating Voice AI agent: 6913284153ec595f20d16c7d in location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 17:12:50,448 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"9676b27d-3550-4a42-863f-da9b5a73b96b"}
+2025-11-11 17:12:50,449 - [INFO] - AppLogger.VoiceAI - Successfully copied agent 68cb507c9de977440f6ed69f to location BP7bzYGH9SpCRK6oPNVg
+2025-11-11 17:12:54,580 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 68e84af1efa28850152d5a6c from location: UTkbqQXAR7A3UsirpOje
+2025-11-11 17:12:54,581 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 68e84af1efa28850152d5a6c
+2025-11-11 17:12:55,239 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-11 17:12:55,243 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 17:12:55,244 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-11 17:12:55,245 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 17:12:56,429 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI agent: N/A (ID: 69132847cdc7af1555971889)
+2025-11-11 17:12:56,432 - [INFO] - AppLogger.VoiceAI - Updating Voice AI agent: 69132847cdc7af1555971889 in location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 17:12:57,021 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"8a2a79ce-88b6-4bcd-a333-b213d3dfc6b9"}
+2025-11-11 17:12:57,024 - [INFO] - AppLogger.VoiceAI - Successfully copied agent 68e84af1efa28850152d5a6c to location BP7bzYGH9SpCRK6oPNVg
+2025-11-11 17:13:01,101 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 68eeeefde796d04093e9e57b from location: UTkbqQXAR7A3UsirpOje
+2025-11-11 17:13:01,101 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 68eeeefde796d04093e9e57b
+2025-11-11 17:13:01,745 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-11 17:13:01,749 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 17:13:01,750 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-11 17:13:01,750 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 17:13:03,704 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI agent: N/A (ID: 6913284e97e8a01f81da1613)
+2025-11-11 17:13:03,708 - [INFO] - AppLogger.VoiceAI - Updating Voice AI agent: 6913284e97e8a01f81da1613 in location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 17:13:04,330 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"63d7ebcf-0981-464c-8632-b19f62033394"}
+2025-11-11 17:13:04,332 - [INFO] - AppLogger.VoiceAI - Successfully copied agent 68eeeefde796d04093e9e57b to location BP7bzYGH9SpCRK6oPNVg
+2025-11-11 17:13:08,513 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 6903f5b3c533205b70e6ee8d from location: UTkbqQXAR7A3UsirpOje
+2025-11-11 17:13:08,514 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 6903f5b3c533205b70e6ee8d
+2025-11-11 17:13:09,173 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-11 17:13:09,177 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 17:13:09,178 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-11 17:13:09,178 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 17:13:10,308 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI agent: N/A (ID: 69132855cdc7af52f9971afb)
+2025-11-11 17:13:10,311 - [INFO] - AppLogger.VoiceAI - Updating Voice AI agent: 69132855cdc7af52f9971afb in location: BP7bzYGH9SpCRK6oPNVg
+2025-11-11 17:13:10,920 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"33a0d634-61b7-47c6-87e6-5725ebae5d54"}
+2025-11-11 17:13:10,922 - [INFO] - AppLogger.VoiceAI - Successfully copied agent 6903f5b3c533205b70e6ee8d to location BP7bzYGH9SpCRK6oPNVg
+2025-11-11 17:13:10,923 - [INFO] - AppLogger.VoiceAI - Bulk copy completed: 5/5 agents copied
+2025-11-11 17:27:18,395 - [INFO] - AppLogger.MultiLocationTokens - Token stored for location 7GnLfRPOVTnLeWxCaSHD
+2025-11-11 17:27:18,395 - [INFO] - AppLogger.FastAPI - Successfully authorized location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-11 17:27:33,041 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agents for location: UTkbqQXAR7A3UsirpOje
+2025-11-11 17:27:34,175 - [INFO] - AppLogger.VoiceAI - Found 5 Voice AI agent(s)
+2025-11-11 17:27:37,892 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 6878bfc682a9d176533d7a8e from location: UTkbqQXAR7A3UsirpOje
+2025-11-11 17:27:37,893 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 6878bfc682a9d176533d7a8e
+2025-11-11 17:27:38,439 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-11 17:27:38,444 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-11 17:27:38,445 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-11 17:27:38,445 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-11 17:27:40,618 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI agent: N/A (ID: 69132bba346faa17aa330c5b)
+2025-11-11 17:27:40,622 - [INFO] - AppLogger.VoiceAI - Updating Voice AI agent: 69132bba346faa17aa330c5b in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-11 17:27:41,212 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"10a01363-5545-4553-a48f-d865e3dec169"}
+2025-11-11 17:27:41,214 - [INFO] - AppLogger.VoiceAI - Successfully copied agent 6878bfc682a9d176533d7a8e to location 7GnLfRPOVTnLeWxCaSHD
+2025-11-11 17:27:44,958 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 68cb507c9de977440f6ed69f from location: UTkbqQXAR7A3UsirpOje
+2025-11-11 17:27:44,959 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 68cb507c9de977440f6ed69f
+2025-11-11 17:27:45,509 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-11 17:27:45,513 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-11 17:27:45,514 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-11 17:27:45,514 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-11 17:27:47,295 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI agent: N/A (ID: 69132bc2346faa253a330d46)
+2025-11-11 17:27:47,298 - [INFO] - AppLogger.VoiceAI - Updating Voice AI agent: 69132bc2346faa253a330d46 in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-11 17:27:47,854 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"7081ed07-40b9-43f7-8dbc-a3e6a1c662a2"}
+2025-11-11 17:27:47,856 - [INFO] - AppLogger.VoiceAI - Successfully copied agent 68cb507c9de977440f6ed69f to location 7GnLfRPOVTnLeWxCaSHD
+2025-11-11 17:27:52,263 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 68e84af1efa28850152d5a6c from location: UTkbqQXAR7A3UsirpOje
+2025-11-11 17:27:52,264 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 68e84af1efa28850152d5a6c
+2025-11-11 17:27:52,833 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-11 17:27:52,838 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-11 17:27:52,839 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-11 17:27:52,840 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-11 17:27:54,172 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI agent: N/A (ID: 69132bc953ec592856d1c2f1)
+2025-11-11 17:27:54,175 - [INFO] - AppLogger.VoiceAI - Updating Voice AI agent: 69132bc953ec592856d1c2f1 in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-11 17:27:54,743 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"7ae8640b-9c79-453d-b475-5b5dcd77211e"}
+2025-11-11 17:27:54,745 - [INFO] - AppLogger.VoiceAI - Successfully copied agent 68e84af1efa28850152d5a6c to location 7GnLfRPOVTnLeWxCaSHD
+2025-11-11 17:27:58,409 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 68eeeefde796d04093e9e57b from location: UTkbqQXAR7A3UsirpOje
+2025-11-11 17:27:58,410 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 68eeeefde796d04093e9e57b
+2025-11-11 17:27:59,165 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-11 17:27:59,169 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-11 17:27:59,169 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-11 17:27:59,169 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-11 17:28:00,215 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI agent: N/A (ID: 69132bcfe4add106c9a67293)
+2025-11-11 17:28:00,219 - [INFO] - AppLogger.VoiceAI - Updating Voice AI agent: 69132bcfe4add106c9a67293 in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-11 17:28:00,842 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"54ca0762-1bd3-4945-9c23-a1deda4e86b6"}
+2025-11-11 17:28:00,844 - [INFO] - AppLogger.VoiceAI - Successfully copied agent 68eeeefde796d04093e9e57b to location 7GnLfRPOVTnLeWxCaSHD
+2025-11-11 17:28:04,512 - [INFO] - AppLogger.VoiceAI - Step 1: Fetching source agent: 6903f5b3c533205b70e6ee8d from location: UTkbqQXAR7A3UsirpOje
+2025-11-11 17:28:04,513 - [INFO] - AppLogger.VoiceAI - Fetching Voice AI agent: 6903f5b3c533205b70e6ee8d
+2025-11-11 17:28:05,092 - [INFO] - AppLogger.VoiceAI - Agent found: N/A
+2025-11-11 17:28:05,097 - [INFO] - AppLogger.VoiceAI - Step 2: Preparing configuration for target location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-11 17:28:05,098 - [INFO] - AppLogger.VoiceAI - Step 3: Creating agent in target location
+2025-11-11 17:28:05,098 - [INFO] - AppLogger.VoiceAI - Creating Voice AI agent in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-11 17:28:06,340 - [INFO] - AppLogger.VoiceAI - Successfully created Voice AI agent: N/A (ID: 69132bd5e4add105b5a67390)
+2025-11-11 17:28:06,343 - [INFO] - AppLogger.VoiceAI - Updating Voice AI agent: 69132bd5e4add105b5a67390 in location: 7GnLfRPOVTnLeWxCaSHD
+2025-11-11 17:28:06,918 - [ERROR] - AppLogger.VoiceAI - Failed to update Voice AI agent: 422 - {"message":["property name should not exist"],"error":"Unprocessable Entity","statusCode":422,"traceId":"c5f731a3-eca5-4f74-8bb4-54b8ad62a0a3"}
+2025-11-11 17:28:06,921 - [INFO] - AppLogger.VoiceAI - Successfully copied agent 6903f5b3c533205b70e6ee8d to location 7GnLfRPOVTnLeWxCaSHD
+2025-11-11 17:28:06,923 - [INFO] - AppLogger.VoiceAI - Bulk copy completed: 5/5 agents copied

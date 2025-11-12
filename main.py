@@ -1012,7 +1012,7 @@ def delete_location_authorization_endpoint(
 
 
 # Run the scheduler in a background thread
-# start_scheduler_in_background() # Comment out for local testing
+start_scheduler_in_background() # Comment out for local testing
 
 
 if __name__ == "__main__":
