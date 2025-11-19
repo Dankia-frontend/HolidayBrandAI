@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import Optional, Dict
-from services.rms import rms_service
+from services.rms import rms_service, rms_cache
 from middleware.auth import verify_token
 
 router = APIRouter(prefix="/api/rms", tags=["RMS"])
@@ -23,7 +23,6 @@ class ReservationRequest(BaseModel):
     children: int
     guest: Dict
 
-# Routes - Only customer-facing endpoints
 @router.post("/search")
 async def search_availability(
     request: AvailabilityRequest,

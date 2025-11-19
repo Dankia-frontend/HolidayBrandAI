@@ -20,6 +20,9 @@ class RMSService:
         children: int = 0,
         room_keyword: Optional[str] = None
     ) -> Dict:
+        """
+        Search for available rooms - WORKING LOGIC FROM PREVIOUS CODE
+        """
         property_id = rms_cache.get_property_id()
         agent_id = rms_cache.get_agent_id()
         
@@ -78,48 +81,200 @@ class RMSService:
         children: int,
         guest: Dict
     ) -> Dict:
+        """
+        Create a reservation in RMS - WORKING LOGIC FROM CURRENT CODE
+        Finds an available room and assigns it.
+        """
         property_id = rms_cache.get_property_id()
         agent_id = rms_cache.get_agent_id()
         
+        if not property_id or not agent_id:
+            raise Exception("RMS not initialized - missing property or agent ID")
+        
+        # Step 1: Search for existing guest or create new one
+        print(f"🔍 Searching for guest: {guest.get('email')}")
+        guest_id = await self.search_or_create_guest(guest)
+        
+        if not guest_id:
+            raise Exception("Failed to find or create guest account")
+        
+        print(f"✅ Using guest ID: {guest_id}")
+        
+        # Step 2: Calculate number of nights
+        arrival_date = datetime.fromisoformat(arrival)
+        departure_date = datetime.fromisoformat(departure)
+        nights = (departure_date - arrival_date).days
+        
+        # Step 3: Find an AVAILABLE room for this category
+        print(f"🔍 Looking for AVAILABLE room in category {category_id}...")
+        available_areas = await rms_cache.get_available_areas_for_category(category_id)
+        
+        if not available_areas:
+            # No vacant rooms found - try using any room and let RMS handle conflicts
+            print(f"⚠️ No vacant rooms found for category {category_id}")
+            all_areas = await rms_cache.get_all_areas_for_category(category_id)
+            
+            if not all_areas:
+                raise Exception(f"No rooms/areas found for category {category_id}. Cannot create reservation.")
+            
+            area_id = all_areas[0]
+            print(f"   ⚠️ Using room ID {area_id} (may be occupied, RMS will handle conflicts)")
+        else:
+            area_id = available_areas[0]
+            print(f"   ✅ Found available room ID: {area_id}")
+        
+        # Step 4: Create reservation payload WITH area field
+        # Use the EXACT format that worked before: "areaId": <integer>
         payload = {
             "propertyId": property_id,
             "agentId": agent_id,
-            "categoryId": category_id,
-            "ratePlanId": rate_plan_id,
-            "arrival": arrival,
-            "departure": departure,
+            "arrivalDate": arrival,
+            "departureDate": departure,
             "adults": adults,
             "children": children,
-            "status": "Confirmed",  # Add reservation status
-            "source": "API",  # Add source
-            "guest": {
-                "firstName": guest.get('firstName'),
-                "lastName": guest.get('lastName'),
-                "email": guest.get('email'),
-                "phone": guest.get('phone'),
-                "address": guest.get('address', {})
-            },
-            "payment": {  # Add payment object even if empty
-                "method": "PayLater"
-            }
+            "infants": 0,
+            "categoryId": category_id,
+            "rateId": rate_plan_id,
+            "status": "Confirmed",
+            "source": "API",
+            "areaId": area_id,  
+            "nights": nights,
+            "guestId": guest_id,
+            "paymentMethod": "PayLater",
+            "sendConfirmationEmail": True,
         }
         
-        print(f"📤 Payload being sent: {payload}")
+        print(f"📤 Creating reservation:")
+        print(f"   Property: {property_id}")
+        print(f"   Agent: {agent_id}")
+        print(f"   Category: {category_id}")
+        print(f"   Rate: {rate_plan_id}")
+        print(f"   Area/Room: {area_id}")
+        print(f"   Dates: {arrival} to {departure} ({nights} nights)")
+        print(f"   Guest ID: {guest_id}")
+        print(f"   Guests: {adults} adults, {children} children")
         
-        reservation = await rms_client.create_reservation(payload)
-        print(f"✅ Reservation created: {reservation.get('confirmationNumber')}")
-        return reservation
+        try:
+            reservation = await rms_client.create_reservation(payload)
+            
+            # Extract reservation details
+            reservation_id = reservation.get('id') or reservation.get('reservationId')
+            confirmation_number = reservation.get('confirmationNumber') or reservation.get('confirmationCode')
+            
+            print(f"✅ Reservation created successfully!")
+            print(f"   ID: {reservation_id}")
+            print(f"   Confirmation: {confirmation_number}")
+            print(f"   Assigned Room: {area_id}")
+            
+            return reservation
+            
+        except Exception as e:
+            print(f"❌ Reservation creation failed: {e}")
+            raise Exception(f"Failed to create reservation: {str(e)}")
     
+    async def search_or_create_guest(self, guest_data: Dict) -> Optional[int]:
+        """Search for an existing guest by email or create a new one."""
+        email = guest_data.get('email')
+        
+        if not email:
+            print("⚠️ No email provided, cannot search for guest")
+            return None
+        
+        try:
+            print(f"🔍 Searching for guest with email: {email}")
+            search_payload = {"email": email}
+            
+            results = await rms_client.search_guests(search_payload)
+            
+            guest_id = None
+            if isinstance(results, list) and len(results) > 0:
+                guest_id = results[0].get('id')
+            elif isinstance(results, dict):
+                items = results.get('items') or results.get('guests') or []
+                if len(items) > 0:
+                    guest_id = items[0].get('id')
+            
+            if guest_id:
+                print(f"✅ Found existing guest: {guest_id}")
+                return guest_id
+            
+            print(f"🔧 Creating new guest account for: {email}")
+            new_guest = await self._create_guest_account(guest_data)
+            
+            if new_guest:
+                new_guest_id = new_guest.get('id') or new_guest.get('guestId')
+                print(f"✅ Created new guest: {new_guest_id}")
+                return new_guest_id
+            
+            print(f"❌ Failed to create guest account")
+            return None
+            
+        except Exception as e:
+            print(f"❌ Error in search_or_create_guest: {e}")
+            raise Exception(f"Guest operation failed: {str(e)}")
+    
+    async def _create_guest_account(self, guest_data: Dict) -> Optional[Dict]:
+        """Create a new guest account in RMS."""
+        property_id = rms_cache.get_property_id()
+        
+        if not property_id:
+            raise Exception("RMS not initialized")
+        
+        guest_payload = {
+            "propertyId": property_id,
+            "guestGiven": guest_data.get('firstName', ''),
+            "guestSurname": guest_data.get('lastName', ''),
+            "email": guest_data.get('email', ''),
+        }
+        
+        if guest_data.get('phone'):
+            guest_payload['mobile'] = guest_data.get('phone')
+        
+        address = guest_data.get('address', {})
+        if address:
+            if address.get('address1'):
+                guest_payload['address1'] = address.get('address1')
+            if address.get('address2'):
+                guest_payload['address2'] = address.get('address2')
+            if address.get('city'):
+                guest_payload['city'] = address.get('city')
+            if address.get('state'):
+                guest_payload['state'] = address.get('state')
+            if address.get('postcode'):
+                guest_payload['postcode'] = address.get('postcode')
+            if address.get('country'):
+                guest_payload['country'] = address.get('country')
+        
+        print(f"🔧 Creating guest account...")
+        print(f"   Name: {guest_data.get('firstName')} {guest_data.get('lastName')}")
+        print(f"   Email: {guest_data.get('email')}")
+        
+        try:
+            guest = await rms_client.create_guest(guest_payload)
+            guest_id = guest.get('id') or guest.get('guestId')
+            print(f"✅ Guest created successfully: ID {guest_id}")
+            return guest
+            
+        except Exception as e:
+            print(f"❌ Failed to create guest: {e}")
+            raise Exception(f"Guest creation failed: {str(e)}")
+
     async def get_reservation(self, reservation_id: int) -> Dict:
+        """Get reservation details by ID"""
         return await rms_client.get_reservation(reservation_id)
     
     async def cancel_reservation(self, reservation_id: int) -> Dict:
+        """Cancel a reservation by ID"""
         return await rms_client.cancel_reservation(reservation_id)
     
     def get_cache_stats(self) -> Dict:
+        """Get RMS cache statistics"""
         return rms_cache.get_stats()
     
     def _simplify_grid_response(self, grid_response: Dict) -> Dict:
+        """
+        Simplify the rates grid response - WORKING LOGIC FROM PREVIOUS CODE
+        """
         available = []
         
         categories = grid_response.get('categories', [])
@@ -182,8 +337,7 @@ class RMSService:
         include_group_master_reservations: str = "excludeGroupMasters"
     ) -> Dict:
         """
-        Fetch existing bookings from RMS via /reservations/search.
-        Mirrors the Newbook 'fetch bookings' step, but calls RMS.
+        Fetch existing bookings from RMS via /reservations/search - FROM PREVIOUS CODE
         """
         await rms_cache.initialize()
         property_id = rms_cache.get_property_id()
@@ -235,7 +389,7 @@ class RMSService:
 
     def _extract_primary_guest(self, booking: Dict) -> Dict:
         """
-        Best-effort extraction of a primary guest from various shapes.
+        Best-effort extraction of a primary guest from various shapes - FROM PREVIOUS CODE
         """
         guests = booking.get("guests") or booking.get("guestList") or []
         if isinstance(guests, list) and guests:
@@ -265,7 +419,7 @@ class RMSService:
 
     def _booking_summary(self, booking: Dict) -> Dict:
         """
-        Normalize common booking fields for opportunity naming/value.
+        Normalize common booking fields for opportunity naming/value - FROM PREVIOUS CODE
         """
         bid = booking.get("booking_id") or booking.get("id") or booking.get("reservationId")
         status = booking.get("booking_status") or booking.get("status") or "Unknown"
@@ -286,7 +440,7 @@ class RMSService:
 
     def _save_ghl_payloads_by_status(self, ghl_payloads_by_status: Dict[str, list]):
         """
-        Save each status list to its own JSON file for GHL payload auditing.
+        Save each status list to its own JSON file for GHL payload auditing - FROM PREVIOUS CODE
         """
         for status, bookings in ghl_payloads_by_status.items():
             filename = f"rms_ghl_payload_{status}.json"
@@ -306,7 +460,7 @@ class RMSService:
         offset: int = 0
     ) -> Dict:
         """
-        End-to-end job:
+        End-to-end job - FROM PREVIOUS CODE:
         1) Fetch bookings from RMS
         2) Upsert contacts and create opportunities in GHL
         """

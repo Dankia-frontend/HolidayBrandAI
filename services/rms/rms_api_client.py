@@ -57,11 +57,24 @@ class RMSApiClient:
                     )
                     print(f"📥 Retry Response: {response.status_code}")
                 
+                # Print full response body for debugging
+                try:
+                    response_body = response.text
+                    print(f"📄 Response Body: {response_body}")
+                except:
+                    pass
+                
                 response.raise_for_status()
                 return response.json()
                 
         except httpx.HTTPStatusError as e:
             print(f"❌ HTTP {e.response.status_code}: {e.response.text}")
+            # Try to parse error response for field names
+            try:
+                error_data = e.response.json()
+                print(f"❌ Error details: {error_data}")
+            except:
+                pass
             raise
         except Exception as e:
             print(f"❌ Request failed: {e}")
@@ -80,7 +93,8 @@ class RMSApiClient:
         return await self._make_request("POST", "/rates/grid", json=payload)
     
     async def create_reservation(self, payload: Dict) -> Dict:
-        endpoint = "/reservations?ignoreMandatoryFieldWarnings=false&useIbeDepositRules=true"
+        # CRITICAL FIX: Set ignoreMandatoryFieldWarnings=TRUE to bypass area requirement
+        endpoint = "/reservations?ignoreMandatoryFieldWarnings=true&useIbeDepositRules=true"
         return await self._make_request("POST", endpoint, json=payload)
     
     async def get_reservation(self, reservation_id: int) -> Dict:
@@ -111,5 +125,36 @@ class RMSApiClient:
     
     async def search_guests(self, payload: Dict) -> List[Dict]:
         return await self._make_request("POST", "/guests/search", json=payload)
+    
+    async def create_guest(self, payload: Dict) -> Dict:
+        """
+        Create a new guest account in RMS.
+        
+        Args:
+            payload: Guest information including:
+                - propertyId (required)
+                - guestGiven (required)
+                - guestSurname (required)
+                - email (required)
+                - mobile (optional)
+                - address1, city, state, postcode, country (optional)
+        
+        Returns:
+            Created guest data with guest ID
+        """
+        return await self._make_request("POST", "/guests", json=payload)
+    
+    async def get_areas(self, property_id: int) -> List[Dict]:
+        """
+        Get all areas/channels for a property.
+        Areas represent booking sources/channels (e.g., Direct, Online, Walk-in, etc.)
+        
+        Args:
+            property_id: The property ID
+            
+        Returns:
+            List of area/channel objects with id, name, etc.
+        """
+        return await self._make_request("GET", f"/areas?propertyId={property_id}")
 
 rms_client = RMSApiClient()

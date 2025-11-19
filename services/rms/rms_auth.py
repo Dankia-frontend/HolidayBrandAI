@@ -32,7 +32,7 @@ class RMSAuth:
             "clientId": self.client_id,
             "clientPassword": self.client_password,
             "useTrainingDatabase": self.use_training_db,
-            "moduleType": ["crm/marketing"]
+            "moduleType": ["guestservices"]
         }
         
         print(f"📡 Requesting token from: {url}")
