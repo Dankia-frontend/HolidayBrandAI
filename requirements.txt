@@ -7,6 +7,7 @@ click==8.3.0
 colorama==0.4.6
 fastapi==0.118.2
 h11==0.16.0
+httpx
 idna==3.10
 mysql==0.0.3
 mysql-connector-python==9.4.0
@@ -24,3 +25,4 @@ tzdata==2025.2
 tzlocal==5.3.1
 urllib3==2.5.0
 uvicorn==0.37.0
+

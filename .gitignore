@@ -4,3 +4,10 @@ __pycache__/
 .env
 env
 nohup.out
+rms_cache.json
+rms_guests_cache.json
+rms_ghl_payload_arrived.json
+rms_ghl_payload_cancelled.json
+rms_ghl_payload_departed.json
+rms_ghl_payload_confirmed.json
+rms_ghl_payload_unconfirmed.json

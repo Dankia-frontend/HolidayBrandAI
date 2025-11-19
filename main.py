@@ -1,3 +1,4 @@
+import asyncio
 from datetime import datetime, timedelta
 from fastapi import FastAPI, Query, HTTPException, Depends
 from schemas.schemas import BookingRequest, AvailabilityRequest, CheckBooking
@@ -10,7 +11,13 @@ from utils.logger import get_logger
 from auth.auth import authenticate_request, get_newbook_credentials
 from utils.newbook import NB_HEADERS, get_tariff_information, create_tariffs_quoted
 from utils.scheduler import start_scheduler_in_background
+from routes.rms_routes import router as rms_router
+from services.rms import rms_service, rms_cache
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+import signal
+import sys
 from utils.newbook_db import create_newbook_instance
+
 
 app = FastAPI()
 log = get_logger("FastAPI")
@@ -317,8 +324,82 @@ def create_newbook_instance_endpoint(
         raise HTTPException(status_code=400, detail="Location ID already exists")
 
 
+# Include RMS routes
+app.include_router(rms_router)
+
+# Initialize scheduler
+scheduler = AsyncIOScheduler()
+
+async def daily_rms_refresh():
+    """Automatically refresh RMS cache daily at 3 AM"""
+    print("🔄 Running daily RMS cache refresh...")
+    try:
+        # Just clear the cache file to force fresh fetch on next request
+        import os
+        if os.path.exists("rms_cache.json"):
+            os.remove("rms_cache.json")
+        print("✅ Daily RMS cache cleared - will refresh on next request")
+    except Exception as e:
+        print(f"❌ Daily RMS cache refresh failed: {e}")
+
+async def rms_sync_job():
+    """Sync RMS bookings with GHL every 5 minutes."""
+    print("⏰ Running RMS fetch_and_sync_bookings job...")
+    try:
+        result = await rms_service.fetch_and_sync_bookings()
+        print("✅ Sync result:", result)
+    except Exception as e:
+        print(f"❌ RMS sync job failed: {e}")
+
+@app.on_event("startup")
+async def startup_event():
+    # Initialize RMS (lightweight - only property ID)
+    try:
+        print("🚀 Initializing RMS...")
+        await rms_service.initialize()
+        stats = rms_cache.get_stats()
+        print(f"✅ RMS initialized successfully")
+        print(f"   Property ID: {stats['property_id']}")
+        print(f"   Agent ID: {stats['agent_id']}")
+        print(f"   Cached Categories: {stats['cached_categories']}")
+        print(f"   Cached Rate Plans: {stats['cached_rate_plans']}")
+    except Exception as e:
+        print(f"❌ RMS initialization failed: {e}")
+    
+    # Schedule daily RMS refresh at 3 AM
+    try:
+        scheduler.add_job(daily_rms_refresh, 'cron', hour=3, minute=0)
+        # Add RMS sync job every 5 minutes (use asyncio.run for async job in thread)
+        scheduler.add_job(
+            lambda: asyncio.run(rms_sync_job()),
+            'interval',
+            minutes=1
+        )
+        scheduler.start()
+        print("✅ RMS daily refresh scheduled (3 AM)")
+        print("✅ RMS sync job scheduled (every 5 minutes)")
+    except Exception as e:
+        print(f"⚠️ Scheduler error: {e}")
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    """Cleanup on shutdown"""
+    try:
+        if scheduler.running:
+            scheduler.shutdown(wait=False)
+            print("✅ Scheduler stopped")
+    except Exception as e:
+        print(f"⚠️ Shutdown error: {e}")
+
+# Handle Ctrl+C gracefully
+def signal_handler(sig, frame):
+    print('\n🛑 Shutting down gracefully...')
+    sys.exit(0)
+
+signal.signal(signal.SIGINT, signal_handler)
+
 # Run the scheduler in a background thread
-start_scheduler_in_background() # Comment out for local testing
+# start_scheduler_in_background() # Comment out for local testing
 
 
 if __name__ == "__main__":
