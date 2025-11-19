@@ -34,10 +34,10 @@ class RMSService:
             categories = await rms_cache.find_categories_by_keyword(room_keyword)
             
             if not categories:
-                print(f"⚠️ No categories matched '{room_keyword}', searching all categories instead")
+                print(f"No categories matched '{room_keyword}', searching all categories instead")
                 categories = await rms_cache.get_all_categories()
         else:
-            print("🔍 Searching all categories (no keyword provided)")
+            print("Searching all categories (no keyword provided)")
             categories = await rms_cache.get_all_categories()
         
         category_ids = [cat['id'] for cat in categories]
@@ -49,16 +49,20 @@ class RMSService:
         
         all_rate_ids = list(set(all_rate_ids))
         
-        print(f"📊 Checking availability:")
+        print(f"Checking availability:")
         print(f"   Categories: {len(category_ids)}")
         print(f"   Rate plans: {len(all_rate_ids)}")
         print(f"   Dates: {arrival} to {departure}")
         print(f"   Guests: {adults} adults, {children} children")
         
-        # EXACT payload from original previous code
+        # Use query agent for availability checks (configurable via env)
+        # Default is 2, which typically has full visibility in RMS systems
+        import os
+        query_agent_id = int(os.getenv("RMS_QUERY_AGENT_ID", "2"))
+        
         payload = {
             "propertyId": property_id,
-            "agentId": 2,
+            "agentId": query_agent_id,
             "arrival": arrival,
             "departure": departure,
             "adults": adults,
@@ -83,12 +87,12 @@ class RMSService:
             category_id = category.get('categoryId')
             category_name = category.get('name', 'Unknown')
             
-            # using 'rates' key
+            # Use 'rates' key as in original previous code
             for rate in category.get('rates', []):
                 rate_id = rate.get('rateId')
                 rate_name = rate.get('name', 'Unknown')
                 
-                # using 'dayBreakdown' key 
+                # Use 'dayBreakdown' key as in original previous code
                 day_breakdown = rate.get('dayBreakdown', [])
                 if not day_breakdown:
                     continue
@@ -173,12 +177,15 @@ class RMSService:
         
         all_rate_ids = list(set(all_rate_ids))
         
-        # IMPORTANT: Use agentId: 2 for rates grid API call
-        # Agent ID 2 has special access to view full availability
-        # The actual reservation creation uses the real agent_id (1010)
+        # using query agent for availability checks (typically agent ID 2 in RMS) which is now added in .env instead of hardcode.
+        # This agent has full visibility into availability across all channels
+        # now the booking agent (agent_id) is used for actual reservation creation
+        import os
+        query_agent_id = int(os.getenv("RMS_QUERY_AGENT_ID", "2"))
+        
         payload = {
             "propertyId": property_id,
-            "agentId": 2,  # Special agent for availability queries
+            "agentId": query_agent_id,  
             "arrival": arrival,
             "departure": departure,
             "adults": adults,
@@ -228,7 +235,7 @@ class RMSService:
                 f"for dates {arrival} to {departure}. The room may be blocked or fully booked."
             )
         
-        print(f"   ✅ Confirmed: {available_count} room(s) available for these dates")
+        print(f"Confirmed: {available_count} room(s) available for these dates")
         
         # Step 4: Get all areas for this category from cache
         all_areas = await rms_cache.get_all_areas_for_category(category_id)
@@ -236,16 +243,16 @@ class RMSService:
         if not all_areas:
             raise Exception(f"No rooms/areas found for category {category_id}. Cannot create reservation.")
         
-        print(f"   📋 Found {len(all_areas)} total area(s) in category {category_id}")
+        print(f"Found {len(all_areas)} total area(s) in category {category_id}")
         
-        # Step 5: Try to create reservation with each area available in rms
+        # Step 5: Try to create reservation with each area until one succeeds
         last_error = None
         
         for idx, area_id in enumerate(all_areas):
             if idx > 0:
-                print(f"   🔄 Trying alternate area {idx + 1}/{len(all_areas)}: {area_id}")
+                print(f"Trying alternate area {idx + 1}/{len(all_areas)}: {area_id}")
             else:
-                print(f"   🎯 Trying area ID {area_id} from category {category_id}")
+                print(f"Trying area ID {area_id} from category {category_id}")
             
             # Create reservation payload
             payload = {
@@ -305,12 +312,12 @@ class RMSService:
                         error_data = e.response.json()
                         if isinstance(error_data, dict) and 'message' in error_data:
                             error_msg = error_data['message']
-                            print(f"   Extracted error message from response: '{error_msg}'")
+                            print(f"Extracted error message from response: '{error_msg}'")
                     except:
                         # If JSON parsing fails, use response text
                         try:
                             error_msg = e.response.text
-                            print(f"   Using response text: '{error_msg[:200]}'")
+                            print(f"Using response text: '{error_msg[:200]}'")
                         except:
                             pass
                 
@@ -321,11 +328,11 @@ class RMSService:
                 # Matches: "Area 'ES03' Is Not Available" or "Area Not Available" or "Blocking Reservation" etc.
                 is_area_blocked = ("area" in error_msg_lower and "not available" in error_msg_lower) or "blocking reservation" in error_msg_lower
                 
-                print(f"   Error check - 'area' found: {'area' in error_msg_lower}, 'not available' found: {'not available' in error_msg_lower}, 'blocking' found: {'blocking reservation' in error_msg_lower}")
-                print(f"   Is area blocked: {is_area_blocked}")
+                print(f"Error check - 'area' found: {'area' in error_msg_lower}, 'not available' found: {'not available' in error_msg_lower}, 'blocking' found: {'blocking reservation' in error_msg_lower}")
+                print(f"Is area blocked: {is_area_blocked}")
                 
                 if is_area_blocked:
-                    print(f"   Area {area_id} is blocked for these dates - trying next area")
+                    print(f"Area {area_id} is blocked for these dates - trying next area")
                     # Continue to try next area
                     continue
                 else:
@@ -370,7 +377,7 @@ class RMSService:
                 print(f"Found existing guest: {guest_id}")
                 return guest_id
             
-            print(f"Creating new guest account for: {email}")
+            print(f"🔧 Creating new guest account for: {email}")
             new_guest = await self._create_guest_account(guest_data)
             
             if new_guest:
@@ -492,7 +499,7 @@ class RMSService:
         if sort:
             body["sort"] = sort
 
-        print(f"RMS search reservations: body={body}")
+        print(f"📡 RMS search reservations: body={body}")
 
         # Use the API client for the request
         results = await rms_client.search_reservations(body)
@@ -579,11 +586,7 @@ class RMSService:
         limit: int = 200,
         offset: int = 0
     ) -> Dict:
-        """
-        End-to-end job - FROM PREVIOUS CODE:
-        1) Fetch bookings from RMS
-        2) Upsert contacts and create opportunities in GHL
-        """
+        
         fetched = await self.fetch_reservations(arrival_from, arrival_to, statuses, True, limit, offset)
         items = fetched.get("items", [])
         synced_contacts = 0
@@ -629,7 +632,7 @@ class RMSService:
                         gid = guest.get("id")
                         if gid:
                             all_guests[gid] = extract_ghl_guest(guest)
-                print(f"✅ Batch fetched {len(all_guests)} RMS guests")
+                print(f"Batch fetched {len(all_guests)} RMS guests")
             except Exception as e:
                 print(f"Failed to batch fetch guest info: {e}")
 
@@ -640,7 +643,7 @@ class RMSService:
                 item["guest_info"] = all_guests[guest_id]
 
    
-        # Use your ghl_api helpers for GHL sync
+        # using ghl_api helpers for GHL sync
         # access_token = get_valid_access_token(GHL_CLIENT_ID, GHL_CLIENT_SECRET)
         for b in items:
             try:
@@ -654,7 +657,7 @@ class RMSService:
                 if "booking_departure" not in b and "departureDate" in b:
                     b["booking_departure"] = b["departureDate"]
 
-                # Skip if firstName is missing or empty
+                # if firstName is missing or empty then skip
                 if not guest.get("firstName"):
                     continue
 

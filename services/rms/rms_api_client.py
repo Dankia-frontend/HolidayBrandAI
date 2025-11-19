@@ -93,7 +93,6 @@ class RMSApiClient:
         return await self._make_request("POST", "/rates/grid", json=payload)
     
     async def create_reservation(self, payload: Dict) -> Dict:
-        # CRITICAL FIX: Set ignoreMandatoryFieldWarnings=TRUE to bypass area requirement
         endpoint = "/reservations?ignoreMandatoryFieldWarnings=true&useIbeDepositRules=true"
         return await self._make_request("POST", endpoint, json=payload)
     
