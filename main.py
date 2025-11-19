@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import json
 from utils.logger import get_logger
-from auth.auth import authenticate_request
+from auth.auth import authenticate_request, get_newbook_credentials
 from utils.newbook import NB_HEADERS, get_tariff_information, create_tariffs_quoted
 from utils.scheduler import start_scheduler_in_background
 from routes.rms_routes import router as rms_router
@@ -16,6 +16,8 @@ from services.rms import rms_service, rms_cache
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 import signal
 import sys
+from utils.newbook_db import create_newbook_instance
+
 
 app = FastAPI()
 log = get_logger("FastAPI")
@@ -37,13 +39,14 @@ def get_availability(
     adults: int = Query(..., description="Number of adults"),
     daily_mode: str = Query(..., description="Daily mode value, e.g., 'true' or 'false'"),
     Children: int = Query(..., description="Number of children"),
-    _: str = Depends(authenticate_request)
+    _: str = Depends(authenticate_request),
+    newbook_creds: dict = Depends(get_newbook_credentials)
 ):
     # print(period_from, period_to, adults, daily_mode, Children)
     try:
         payload = {
             "region": REGION,
-            "api_key": API_KEY,
+            "api_key": newbook_creds["api_key"],
             "period_from": period_from,
             "period_to": period_to,
             "adults": adults,
@@ -163,7 +166,8 @@ def confirm_booking(
     category_id: int = Query(..., description="Category ID of the room or package"),
     daily_mode: str = Query(..., description="Daily booking mode (yes/no)"),
     amount: int = Query(..., description="Total booking amount"),
-    _: str = Depends(authenticate_request)
+    _: str = Depends(authenticate_request),
+    newbook_creds: dict = Depends(get_newbook_credentials)
 ):
     try:
         # Get tariff information from availability API
@@ -173,7 +177,9 @@ def confirm_booking(
             adults=adults,
             children=children,
             category_id=category_id,
-            daily_mode=daily_mode
+            daily_mode=daily_mode,
+            api_key=newbook_creds["api_key"],
+            region=REGION
         )
         
         if not tariff_info:
@@ -190,7 +196,7 @@ def confirm_booking(
         # Build payload with tariff information
         payload = {
             "region": REGION,
-            "api_key": API_KEY,
+            "api_key": newbook_creds["api_key"],
             "period_from": period_from,
             "period_to": period_to,
             "guest_firstname": guest_firstname,
@@ -241,7 +247,8 @@ def confirm_booking(
     name: str = Query(..., description="Guest name"),
     email: str = Query(..., description="Guest email"),
     booking_date: str | None = Query(None, description="Optional booking date (YYYY-MM-DD)"),
-    _: str = Depends(authenticate_request)
+    _: str = Depends(authenticate_request),
+    newbook_creds: dict = Depends(get_newbook_credentials)
 ):
     try:
         name = name.strip()
@@ -276,7 +283,7 @@ def confirm_booking(
         # 🧾 Build request payload
         payload = {
             "region": REGION,
-            "api_key": API_KEY,
+            "api_key": newbook_creds["api_key"],
             "period_from": period_from,
             "period_to": period_to,
             "list_type": "all"
@@ -302,6 +309,19 @@ def confirm_booking(
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/newbook-instances")
+def create_newbook_instance_endpoint(
+    location_id: str = Query(...),
+    api_key: str = Query(...),
+    # region: str = Query(None),
+    # _: str = Depends(authenticate_request)
+):
+    success = create_newbook_instance(location_id, api_key)
+    if success:
+        return {"message": "Newbook instance created successfully"}
+    else:
+        raise HTTPException(status_code=400, detail="Location ID already exists")
 
 
 # Include RMS routes

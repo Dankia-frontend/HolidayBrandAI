@@ -28,3 +28,10 @@ DBPASSWORD = os.getenv("DBPASSWORD")
 DBHOST = os.getenv("DBHOST")
 DATABASENAME = os.getenv("DATABASENAME")
 
+db_config = {
+    'user': DBUSERNAME,
+    'password': DBPASSWORD,
+    'host': DBHOST,
+    'database': DATABASENAME
+}
+

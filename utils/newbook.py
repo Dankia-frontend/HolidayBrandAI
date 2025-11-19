@@ -11,15 +11,19 @@ NB_HEADERS = {
     "Authorization": f"Basic {_encoded_credentials}",
 }
 
-def get_tariff_information(period_from, period_to, adults, children, category_id, daily_mode, tariff_label=None):
+def get_tariff_information(period_from, period_to, adults, children, category_id, daily_mode, api_key=None, region=None, tariff_label=None):
     """
     Helper to get tariff information from NewBook availability API.
     Logic preserved from the previous implementation in main.py.
     """
     try:
+        # Use provided api_key and region, or fallback to config values
+        api_key = api_key or API_KEY
+        region = region or REGION
+        
         payload = {
-            "region": REGION,
-            "api_key": API_KEY,
+            "region": region,
+            "api_key": api_key,
             "period_from": period_from,
             "period_to": period_to,
             "adults": adults,
