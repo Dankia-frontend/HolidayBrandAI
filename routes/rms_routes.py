@@ -21,7 +21,10 @@ class ReservationRequest(BaseModel):
     departure: str
     adults: int
     children: int
-    guest: Dict
+    guest_firstName: str
+    guest_lastName: str
+    guest_email: str
+    guest_phone: Optional[str] = None
 
 @router.post("/search")
 async def search_availability(
@@ -55,7 +58,10 @@ async def create_reservation(
             departure=request.departure,
             adults=request.adults,
             children=request.children,
-            guest=request.guest
+            guest_firstName=request.guest_firstName,
+            guest_lastName=request.guest_lastName,
+            guest_email=request.guest_email,
+            guest_phone=request.guest_phone
         )
         return reservation
     except Exception as e:

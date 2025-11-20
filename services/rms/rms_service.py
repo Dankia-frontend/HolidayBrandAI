@@ -138,7 +138,10 @@ class RMSService:
         departure: str,
         adults: int,
         children: int,
-        guest: Dict
+        guest_firstName: str,
+        guest_lastName: str,
+        guest_email: str,
+        guest_phone: Optional[str] = None
     ) -> Dict:
         """
         Create a reservation - Verifies availability and gets an available room
@@ -149,7 +152,15 @@ class RMSService:
         if not property_id or not agent_id:
             raise Exception("RMS not initialized - missing property or agent ID")
         
-        # Step 1: Search for existing guest or create new one
+        # Step 1: Construct guest dictionary from flat parameters
+        guest = {
+            'firstName': guest_firstName,
+            'lastName': guest_lastName,
+            'email': guest_email,
+            'phone': guest_phone
+        }
+        
+        # Step 2: Search for existing guest or create new one
         print(f"Searching for guest: {guest.get('email')}")
         guest_id = await self.search_or_create_guest(guest)
         
@@ -158,12 +169,12 @@ class RMSService:
         
         print(f"Using guest ID: {guest_id}")
         
-        # Step 2: Calculate number of nights
+        # Step 3: Calculate number of nights
         arrival_date = datetime.fromisoformat(arrival)
         departure_date = datetime.fromisoformat(departure)
         nights = (departure_date - arrival_date).days
         
-        # Step 3: Verify availability using rates grid
+        # Step 4: Verify availability using rates grid
         print(f"Verifying availability for category {category_id} and rate {rate_plan_id}...")
         
         # Build the rates grid request
@@ -237,7 +248,7 @@ class RMSService:
         
         print(f"Confirmed: {available_count} room(s) available for these dates")
         
-        # Step 4: Get all areas for this category from cache
+        # Step 5: Get all areas for this category from cache
         all_areas = await rms_cache.get_all_areas_for_category(category_id)
         
         if not all_areas:
@@ -245,7 +256,7 @@ class RMSService:
         
         print(f"Found {len(all_areas)} total area(s) in category {category_id}")
         
-        # Step 5: Try to create reservation with each area until one succeeds
+        # Step 6: Try to create reservation with each area until one succeeds
         last_error = None
         
         for idx, area_id in enumerate(all_areas):
