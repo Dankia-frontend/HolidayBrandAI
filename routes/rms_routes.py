@@ -1,44 +1,27 @@
-from fastapi import APIRouter, HTTPException, Depends
-from pydantic import BaseModel
-from typing import Optional, Dict
+from fastapi import APIRouter, HTTPException, Depends, Query
+from typing import Optional
 from services.rms import rms_service, rms_cache
 from middleware.auth import verify_token
 
 router = APIRouter(prefix="/api/rms", tags=["RMS"])
 
-# Request models
-class AvailabilityRequest(BaseModel):
-    arrival: str
-    departure: str
-    adults: int = 2
-    children: int = 0
-    room_keyword: Optional[str] = None
-
-class ReservationRequest(BaseModel):
-    category_id: int
-    rate_plan_id: int
-    arrival: str
-    departure: str
-    adults: int
-    children: int
-    guest_firstName: str
-    guest_lastName: str
-    guest_email: str
-    guest_phone: Optional[str] = None
-
-@router.post("/search")
+@router.get("/search")
 async def search_availability(
-    request: AvailabilityRequest,
+    arrival: str = Query(..., description="Arrival date (YYYY-MM-DD)"),
+    departure: str = Query(..., description="Departure date (YYYY-MM-DD)"),
+    adults: int = Query(2, description="Number of adults"),
+    children: int = Query(0, description="Number of children"),
+    room_keyword: Optional[str] = Query(None, description="Optional room keyword to filter by"),
     token: str = Depends(verify_token)
 ):
     """Search for available rooms"""
     try:
         results = await rms_service.search_availability(
-            arrival=request.arrival,
-            departure=request.departure,
-            adults=request.adults,
-            children=request.children,
-            room_keyword=request.room_keyword
+            arrival=arrival,
+            departure=departure,
+            adults=adults,
+            children=children,
+            room_keyword=room_keyword
         )
         return results
     except Exception as e:
@@ -46,22 +29,31 @@ async def search_availability(
 
 @router.post("/reservations")
 async def create_reservation(
-    request: ReservationRequest,
+    category_id: int = Query(..., description="Category ID"),
+    rate_plan_id: int = Query(..., description="Rate plan ID"),
+    arrival: str = Query(..., description="Arrival date (YYYY-MM-DD)"),
+    departure: str = Query(..., description="Departure date (YYYY-MM-DD)"),
+    adults: int = Query(..., description="Number of adults"),
+    children: int = Query(..., description="Number of children"),
+    guest_firstName: str = Query(..., description="Guest first name"),
+    guest_lastName: str = Query(..., description="Guest last name"),
+    guest_email: str = Query(..., description="Guest email"),
+    guest_phone: Optional[str] = Query(None, description="Guest phone number"),
     token: str = Depends(verify_token)
 ):
     """Create a new reservation"""
     try:
         reservation = await rms_service.create_reservation(
-            category_id=request.category_id,
-            rate_plan_id=request.rate_plan_id,
-            arrival=request.arrival,
-            departure=request.departure,
-            adults=request.adults,
-            children=request.children,
-            guest_firstName=request.guest_firstName,
-            guest_lastName=request.guest_lastName,
-            guest_email=request.guest_email,
-            guest_phone=request.guest_phone
+            category_id=category_id,
+            rate_plan_id=rate_plan_id,
+            arrival=arrival,
+            departure=departure,
+            adults=adults,
+            children=children,
+            guest_firstName=guest_firstName,
+            guest_lastName=guest_lastName,
+            guest_email=guest_email,
+            guest_phone=guest_phone
         )
         return reservation
     except Exception as e:
