@@ -212,6 +212,8 @@ class RMSService:
         # Check if this category + rate combination is available
         is_available = False
         available_count = 0
+        daily_rates = []
+        total_price = 0
         
         categories_in_response = grid_response.get('categories', [])
         for category in categories_in_response:
@@ -235,6 +237,11 @@ class RMSService:
                         all_days_available = False
                         break
                     available_count = areas
+                    
+                    # Extract daily rate for pricing
+                    daily_rate = day.get('dailyRate', 0)
+                    daily_rates.append(daily_rate)
+                    total_price += daily_rate
                 
                 if all_days_available:
                     is_available = True
@@ -265,7 +272,7 @@ class RMSService:
             else:
                 print(f"Trying area ID {area_id} from category {category_id}")
             
-            # Create reservation payload
+            # Create reservation payload with pricing
             payload = {
                 "propertyId": property_id,
                 "agentId": agent_id,
@@ -275,7 +282,7 @@ class RMSService:
                 "children": children,
                 "infants": 0,
                 "categoryId": category_id,
-                "rateId": rate_plan_id,
+                "rateTypeId": rate_plan_id,  # RMS uses rateTypeId for pricing
                 "status": "Confirmed",
                 "source": "API",
                 "areaId": area_id,
@@ -295,6 +302,7 @@ class RMSService:
                 print(f"   Dates: {arrival} to {departure} ({nights} nights)")
                 print(f"   Guest ID: {guest_id}")
                 print(f"   Guests: {adults} adults, {children} children")
+                print(f"   Pricing: {len(daily_rates)} nights @ {daily_rates} = ${total_price:.2f}")
             
             try:
                 reservation = await rms_client.create_reservation(payload)
