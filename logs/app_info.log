@@ -1,0 +1,348 @@
+2025-11-20 22:55:59,662 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Starting scheduler in background thread...
+2025-11-20 22:55:59,664 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Initializing scheduler...
+2025-11-20 22:55:59,677 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Started successfully. Running background tasks...
+2025-11-20 22:55:59,678 - [INFO] - AppLogger.Scheduler - [SCHEDULER] - Daily cleanup scheduled: 00:00 (midnight)
+2025-11-20 22:55:59,679 - [INFO] - AppLogger.Scheduler - [SCHEDULER] - Opportunity creation scheduled: every 10 minutes
+2025-11-20 22:56:00,165 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Background thread started (daemon=True)
+2025-11-20 22:59:14,334 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Starting scheduler in background thread...
+2025-11-20 22:59:14,339 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Initializing scheduler...
+2025-11-20 22:59:14,361 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Started successfully. Running background tasks...
+2025-11-20 22:59:14,361 - [INFO] - AppLogger.Scheduler - [SCHEDULER] - Daily cleanup scheduled: 00:00 (midnight)
+2025-11-20 22:59:14,362 - [INFO] - AppLogger.Scheduler - [SCHEDULER] - Opportunity creation scheduled: every 10 minutes
+2025-11-20 22:59:14,840 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Background thread started (daemon=True)
+2025-11-20 22:59:25,630 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Starting scheduler in background thread...
+2025-11-20 22:59:25,631 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Initializing scheduler...
+2025-11-20 22:59:25,650 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Started successfully. Running background tasks...
+2025-11-20 22:59:25,651 - [INFO] - AppLogger.Scheduler - [SCHEDULER] - Daily cleanup scheduled: 00:00 (midnight)
+2025-11-20 22:59:25,652 - [INFO] - AppLogger.Scheduler - [SCHEDULER] - Opportunity creation scheduled: every 10 minutes
+2025-11-20 22:59:26,139 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Background thread started (daemon=True)
+2025-11-20 22:59:32,413 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Starting scheduler in background thread...
+2025-11-20 22:59:32,414 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Initializing scheduler...
+2025-11-20 22:59:32,423 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Started successfully. Running background tasks...
+2025-11-20 22:59:32,423 - [INFO] - AppLogger.Scheduler - [SCHEDULER] - Daily cleanup scheduled: 00:00 (midnight)
+2025-11-20 22:59:32,424 - [INFO] - AppLogger.Scheduler - [SCHEDULER] - Opportunity creation scheduled: every 10 minutes
+2025-11-20 22:59:32,929 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Background thread started (daemon=True)
+2025-11-20 23:00:00,054 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Starting scheduler in background thread...
+2025-11-20 23:00:00,066 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Initializing scheduler...
+2025-11-20 23:00:00,082 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Started successfully. Running background tasks...
+2025-11-20 23:00:00,083 - [INFO] - AppLogger.Scheduler - [SCHEDULER] - Daily cleanup scheduled: 00:00 (midnight)
+2025-11-20 23:00:00,084 - [INFO] - AppLogger.Scheduler - [SCHEDULER] - Opportunity creation scheduled: every 10 minutes
+2025-11-20 23:00:00,567 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Background thread started (daemon=True)
+2025-11-20 23:04:58,908 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Starting scheduler in background thread...
+2025-11-20 23:04:58,910 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Initializing scheduler...
+2025-11-20 23:04:58,921 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Started successfully. Running background tasks...
+2025-11-20 23:04:58,921 - [INFO] - AppLogger.Scheduler - [SCHEDULER] - Daily cleanup scheduled: 00:00 (midnight)
+2025-11-20 23:04:58,921 - [INFO] - AppLogger.Scheduler - [SCHEDULER] - Opportunity creation scheduled: every 10 minutes
+2025-11-20 23:04:59,411 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Background thread started (daemon=True)
+2025-11-20 23:10:19,115 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Starting scheduler in background thread...
+2025-11-20 23:10:19,116 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Initializing scheduler...
+2025-11-20 23:10:19,131 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Started successfully. Running background tasks...
+2025-11-20 23:10:19,131 - [INFO] - AppLogger.Scheduler - [SCHEDULER] - Daily cleanup scheduled: 00:00 (midnight)
+2025-11-20 23:10:19,132 - [INFO] - AppLogger.Scheduler - [SCHEDULER] - Opportunity creation scheduled: every 10 minutes
+2025-11-20 23:10:19,618 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Background thread started (daemon=True)
+2025-11-20 23:24:07,070 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Ana Joubert - Cabin 5 - 2025-11-21
+2025-11-20 23:24:08,162 - [ERROR] - AppLogger.GHLIntegration - GHL Error Response: {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-20 23:24:17,269 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Teresa Nucibella - Cabin 4 - 2025-11-21
+2025-11-20 23:24:18,836 - [ERROR] - AppLogger.GHLIntegration - GHL Error Response: {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-20 23:24:26,344 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Janelle Grayson - Chalet 3 - 2025-11-21
+2025-11-20 23:24:27,360 - [ERROR] - AppLogger.GHLIntegration - GHL Error Response: {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-20 23:24:35,915 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Edward Wilson - 041 - 2025-11-22
+2025-11-20 23:24:37,153 - [ERROR] - AppLogger.GHLIntegration - GHL Error Response: {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-20 23:24:47,767 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Juliet Bryant - Bush 003 - 2025-11-21
+2025-11-20 23:24:49,058 - [ERROR] - AppLogger.GHLIntegration - GHL Error Response: {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-20 23:26:11,282 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Starting scheduler in background thread...
+2025-11-20 23:26:11,283 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Initializing scheduler...
+2025-11-20 23:26:11,293 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Started successfully. Running background tasks...
+2025-11-20 23:26:11,293 - [INFO] - AppLogger.Scheduler - [SCHEDULER] - Daily cleanup scheduled: 00:00 (midnight)
+2025-11-20 23:26:11,294 - [INFO] - AppLogger.Scheduler - [SCHEDULER] - Opportunity creation scheduled: every 10 minutes
+2025-11-20 23:26:11,785 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Background thread started (daemon=True)
+2025-11-20 23:30:09,851 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Starting scheduler in background thread...
+2025-11-20 23:30:09,853 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Initializing scheduler...
+2025-11-20 23:30:09,862 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Started successfully. Running background tasks...
+2025-11-20 23:30:09,862 - [INFO] - AppLogger.Scheduler - [SCHEDULER] - Daily cleanup scheduled: 00:00 (midnight)
+2025-11-20 23:30:09,863 - [INFO] - AppLogger.Scheduler - [SCHEDULER] - Opportunity creation scheduled: every 10 minutes
+2025-11-20 23:30:10,354 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Background thread started (daemon=True)
+2025-11-20 23:31:14,952 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Starting scheduler in background thread...
+2025-11-20 23:31:14,953 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Initializing scheduler...
+2025-11-20 23:31:14,966 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Started successfully. Running background tasks...
+2025-11-20 23:31:14,966 - [INFO] - AppLogger.Scheduler - [SCHEDULER] - Daily cleanup scheduled: 00:00 (midnight)
+2025-11-20 23:31:14,967 - [INFO] - AppLogger.Scheduler - [SCHEDULER] - Opportunity creation scheduled: every 10 minutes
+2025-11-20 23:31:15,454 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Background thread started (daemon=True)
+2025-11-20 23:31:50,013 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Starting scheduler in background thread...
+2025-11-20 23:31:50,014 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Initializing scheduler...
+2025-11-20 23:31:50,024 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Started successfully. Running background tasks...
+2025-11-20 23:31:50,024 - [INFO] - AppLogger.Scheduler - [SCHEDULER] - Daily cleanup scheduled: 00:00 (midnight)
+2025-11-20 23:31:50,025 - [INFO] - AppLogger.Scheduler - [SCHEDULER] - Opportunity creation scheduled: every 10 minutes
+2025-11-20 23:31:50,514 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Background thread started (daemon=True)
+2025-11-20 23:34:01,851 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Starting scheduler in background thread...
+2025-11-20 23:34:01,852 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Initializing scheduler...
+2025-11-20 23:34:01,863 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Started successfully. Running background tasks...
+2025-11-20 23:34:01,864 - [INFO] - AppLogger.Scheduler - [SCHEDULER] - Daily cleanup scheduled: 00:00 (midnight)
+2025-11-20 23:34:01,864 - [INFO] - AppLogger.Scheduler - [SCHEDULER] - Opportunity creation scheduled: every 10 minutes
+2025-11-20 23:34:02,354 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Background thread started (daemon=True)
+2025-11-20 23:40:32,201 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Starting scheduler in background thread...
+2025-11-20 23:40:32,202 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Initializing scheduler...
+2025-11-20 23:40:32,216 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Started successfully. Running background tasks...
+2025-11-20 23:40:32,216 - [INFO] - AppLogger.Scheduler - [SCHEDULER] - Daily cleanup scheduled: 00:00 (midnight)
+2025-11-20 23:40:32,217 - [INFO] - AppLogger.Scheduler - [SCHEDULER] - Opportunity creation scheduled: every 10 minutes
+2025-11-20 23:40:32,703 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Background thread started (daemon=True)
+2025-11-20 23:46:54,478 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Starting scheduler in background thread...
+2025-11-20 23:46:54,610 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Initializing scheduler...
+2025-11-20 23:46:54,634 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Started successfully. Running background tasks...
+2025-11-20 23:46:54,636 - [INFO] - AppLogger.Scheduler - [SCHEDULER] - Daily cleanup scheduled: 00:00 (midnight)
+2025-11-20 23:46:54,637 - [INFO] - AppLogger.Scheduler - [SCHEDULER] - Opportunity creation scheduled: every 10 minutes
+2025-11-20 23:46:55,110 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Background thread started (daemon=True)
+2025-11-20 23:55:41,677 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Starting scheduler in background thread...
+2025-11-20 23:55:41,678 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Initializing scheduler...
+2025-11-20 23:55:41,698 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Started successfully. Running background tasks...
+2025-11-20 23:55:41,699 - [INFO] - AppLogger.Scheduler - [SCHEDULER] - Daily cleanup scheduled: 00:00 (midnight)
+2025-11-20 23:55:41,699 - [INFO] - AppLogger.Scheduler - [SCHEDULER] - Opportunity creation scheduled: every 10 minutes
+2025-11-20 23:55:42,179 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Background thread started (daemon=True)
+2025-11-20 23:57:43,322 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Starting scheduler in background thread...
+2025-11-20 23:57:43,323 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Initializing scheduler...
+2025-11-20 23:57:43,340 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Started successfully. Running background tasks...
+2025-11-20 23:57:43,341 - [INFO] - AppLogger.Scheduler - [SCHEDULER] - Daily cleanup scheduled: 00:00 (midnight)
+2025-11-20 23:57:43,342 - [INFO] - AppLogger.Scheduler - [SCHEDULER] - Opportunity creation scheduled: every 10 minutes
+2025-11-20 23:57:43,826 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Background thread started (daemon=True)
+2025-11-20 23:57:56,158 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Starting scheduler in background thread...
+2025-11-20 23:57:56,502 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Initializing scheduler...
+2025-11-20 23:57:56,565 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Started successfully. Running background tasks...
+2025-11-20 23:57:56,573 - [INFO] - AppLogger.Scheduler - [SCHEDULER] - Daily cleanup scheduled: 00:00 (midnight)
+2025-11-20 23:57:56,576 - [INFO] - AppLogger.Scheduler - [SCHEDULER] - Opportunity creation scheduled: every 10 minutes
+2025-11-20 23:57:57,008 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Background thread started (daemon=True)
+2025-11-20 23:57:57,226 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+2025-11-20 23:57:57,242 - [INFO] - AppLogger.FastAPI - ✅ RMS sync job scheduled (every 5 minutes, GHL sending disabled)
+2025-11-20 23:58:08,484 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Starting scheduler in background thread...
+2025-11-20 23:58:08,566 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Initializing scheduler...
+2025-11-20 23:58:08,616 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Started successfully. Running background tasks...
+2025-11-20 23:58:08,617 - [INFO] - AppLogger.Scheduler - [SCHEDULER] - Daily cleanup scheduled: 00:00 (midnight)
+2025-11-20 23:58:08,617 - [INFO] - AppLogger.Scheduler - [SCHEDULER] - Opportunity creation scheduled: every 10 minutes
+2025-11-20 23:58:09,067 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Background thread started (daemon=True)
+2025-11-20 23:58:09,117 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+2025-11-20 23:58:09,165 - [INFO] - AppLogger.FastAPI - ✅ RMS sync job scheduled (every 5 minutes, GHL sending disabled)
+2025-11-20 23:58:16,850 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Starting scheduler in background thread...
+2025-11-20 23:58:16,853 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Initializing scheduler...
+2025-11-20 23:58:16,879 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Started successfully. Running background tasks...
+2025-11-20 23:58:16,880 - [INFO] - AppLogger.Scheduler - [SCHEDULER] - Daily cleanup scheduled: 00:00 (midnight)
+2025-11-20 23:58:16,881 - [INFO] - AppLogger.Scheduler - [SCHEDULER] - Opportunity creation scheduled: every 10 minutes
+2025-11-20 23:58:17,354 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Background thread started (daemon=True)
+2025-11-20 23:58:17,365 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+2025-11-20 23:58:17,372 - [INFO] - AppLogger.FastAPI - ✅ RMS sync job scheduled (every 5 minutes, GHL sending disabled)
+2025-11-21 00:00:00,022 - [INFO] - AppLogger.Scheduler - [DAILY CLEANUP] Running cache cleanup...
+2025-11-21 00:00:00,036 - [INFO] - AppLogger.Scheduler - [CACHE CLEANUP] Deleted bookings_cache.json successfully.
+2025-11-21 00:01:28,328 - [INFO] - AppLogger.Scheduler - [DAILY CLEANUP] Completed GHL pipeline cleanup successfully.
+2025-11-21 00:01:31,706 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Starting scheduler in background thread...
+2025-11-21 00:01:31,707 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Initializing scheduler...
+2025-11-21 00:01:31,717 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Started successfully. Running background tasks...
+2025-11-21 00:01:31,717 - [INFO] - AppLogger.Scheduler - [SCHEDULER] - Daily cleanup scheduled: 00:00 (midnight)
+2025-11-21 00:01:31,718 - [INFO] - AppLogger.Scheduler - [SCHEDULER] - Opportunity creation scheduled: every 10 minutes
+2025-11-21 00:01:32,209 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Background thread started (daemon=True)
+2025-11-21 00:01:32,213 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+2025-11-21 00:01:32,213 - [INFO] - AppLogger.FastAPI - ✅ RMS sync job scheduled (every 5 minutes, GHL sending disabled)
+2025-11-21 00:06:13,807 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Starting scheduler in background thread...
+2025-11-21 00:06:13,852 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Initializing scheduler...
+2025-11-21 00:06:13,866 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Started successfully. Running background tasks...
+2025-11-21 00:06:13,867 - [INFO] - AppLogger.Scheduler - [SCHEDULER] - Daily cleanup scheduled: 00:00 (midnight)
+2025-11-21 00:06:13,868 - [INFO] - AppLogger.Scheduler - [SCHEDULER] - Opportunity creation scheduled: every 10 minutes
+2025-11-21 00:06:14,354 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Background thread started (daemon=True)
+2025-11-21 00:06:14,366 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+2025-11-21 00:06:14,366 - [INFO] - AppLogger.FastAPI - ✅ RMS sync job scheduled (every 5 minutes, GHL sending disabled)
+2025-11-21 00:11:14,379 - [INFO] - AppLogger.FastAPI - [RMS SYNC] Starting RMS fetch_and_sync_bookings job...
+2025-11-21 00:11:19,722 - [INFO] - AppLogger.FastAPI - [RMS SYNC] Job completed: {'fetched': 100, 'contacts_upserted': 0, 'opportunities_created': 0, 'errors': 0, 'limit': 200, 'offset': 0, 'total': 100}
+2025-11-21 00:16:13,879 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] ===== Starting scheduled job to fetch bookings and create opportunities =====
+2025-11-21 00:16:14,387 - [INFO] - AppLogger.FastAPI - [RMS SYNC] Starting RMS fetch_and_sync_bookings job...
+2025-11-21 00:16:18,073 - [INFO] - AppLogger.FastAPI - [RMS SYNC] Job completed: {'fetched': 100, 'contacts_upserted': 0, 'opportunities_created': 0, 'errors': 0, 'limit': 200, 'offset': 0, 'total': 100}
+2025-11-21 00:16:26,525 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] Processing 110 total bookings
+2025-11-21 00:16:26,537 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] Found 53 new bookings and 0 updated bookings
+2025-11-21 00:16:44,724 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Test Test - 060 S - 2025-11-22
+2025-11-21 00:16:46,021 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] Successfully sent booking 4185 to GHL
+2025-11-21 00:17:10,195 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Edward Wilson - 041 - 2025-11-22
+2025-11-21 00:17:11,400 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] Successfully sent booking 3863 to GHL
+2025-11-21 00:17:26,807 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Stephane Jack - Cabin 5 - 2025-11-26
+2025-11-21 00:17:28,262 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] Successfully sent booking 4022 to GHL
+2025-11-21 00:17:46,415 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Grant Parsons - 050 - 2025-11-24
+2025-11-21 00:17:48,107 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] Successfully sent booking 4133 to GHL
+2025-11-21 00:18:03,547 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Rebecca Simonsen - Riverbank 3 - 2025-11-22
+2025-11-21 00:18:05,286 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] Successfully sent booking 4138 to GHL
+2025-11-21 00:18:21,659 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Kristyl Hamlyn - 058 - 2025-11-25
+2025-11-21 00:18:23,123 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] Successfully sent booking 4158 to GHL
+2025-11-21 00:18:39,847 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Corbin Carter - Cabin 3 - 2025-11-22
+2025-11-21 00:18:41,339 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] Successfully sent booking 4166 to GHL
+2025-11-21 00:18:59,981 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Dylan Trueman - Riverbank 1 - 2025-11-22
+2025-11-21 00:19:01,295 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] Successfully sent booking 4167 to GHL
+2025-11-21 00:19:17,117 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Reybel Pugh - 29 / 44 - 2025-11-22
+2025-11-21 00:19:18,745 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] Successfully sent booking 4180 to GHL
+2025-11-21 00:19:36,714 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Ana Joubert - Cabin 5 - 2025-11-21
+2025-11-21 00:19:38,513 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] Successfully sent booking 3626 to GHL
+2025-11-21 00:19:53,907 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Teresa Nucibella - Cabin 4 - 2025-11-21
+2025-11-21 00:19:56,053 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] Successfully sent booking 3627 to GHL
+2025-11-21 00:20:13,211 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Janelle Grayson - Chalet 3 - 2025-11-21
+2025-11-21 00:20:14,746 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] Successfully sent booking 3706 to GHL
+2025-11-21 00:20:31,953 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Juliet Bryant - Bush 003 - 2025-11-21
+2025-11-21 00:20:33,327 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] Successfully sent booking 3893 to GHL
+2025-11-21 00:21:14,365 - [INFO] - AppLogger.FastAPI - [RMS SYNC] Starting RMS fetch_and_sync_bookings job...
+2025-11-21 00:21:19,273 - [INFO] - AppLogger.FastAPI - [RMS SYNC] Job completed: {'fetched': 100, 'contacts_upserted': 0, 'opportunities_created': 0, 'errors': 0, 'limit': 200, 'offset': 0, 'total': 100}
+2025-11-21 00:22:39,208 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Starting scheduler in background thread...
+2025-11-21 00:22:39,209 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Initializing scheduler...
+2025-11-21 00:22:39,223 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Started successfully. Running background tasks...
+2025-11-21 00:22:39,223 - [INFO] - AppLogger.Scheduler - [SCHEDULER] - Daily cleanup scheduled: 00:00 (midnight)
+2025-11-21 00:22:39,224 - [INFO] - AppLogger.Scheduler - [SCHEDULER] - Opportunity creation scheduled: every 10 minutes
+2025-11-21 00:22:39,710 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Background thread started (daemon=True)
+2025-11-21 00:22:39,720 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+2025-11-21 00:22:39,721 - [INFO] - AppLogger.FastAPI - ✅ RMS sync job scheduled (every 5 minutes, GHL sending disabled)
+2025-11-21 00:26:49,163 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Starting scheduler in background thread...
+2025-11-21 00:26:49,164 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Initializing scheduler...
+2025-11-21 00:26:49,176 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Started successfully. Running background tasks...
+2025-11-21 00:26:49,177 - [INFO] - AppLogger.Scheduler - [SCHEDULER] - Daily cleanup scheduled: 00:00 (midnight)
+2025-11-21 00:26:49,178 - [INFO] - AppLogger.Scheduler - [SCHEDULER] - Opportunity creation scheduled: every 10 minutes
+2025-11-21 00:26:49,664 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Background thread started (daemon=True)
+2025-11-21 00:26:49,672 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+2025-11-21 00:26:49,673 - [INFO] - AppLogger.FastAPI - ✅ RMS sync job scheduled (every 5 minutes, GHL sending disabled)
+2025-11-21 00:26:53,554 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Starting scheduler in background thread...
+2025-11-21 00:26:53,555 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Initializing scheduler...
+2025-11-21 00:26:53,566 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Started successfully. Running background tasks...
+2025-11-21 00:26:53,566 - [INFO] - AppLogger.Scheduler - [SCHEDULER] - Daily cleanup scheduled: 00:00 (midnight)
+2025-11-21 00:26:53,567 - [INFO] - AppLogger.Scheduler - [SCHEDULER] - Opportunity creation scheduled: every 10 minutes
+2025-11-21 00:26:54,057 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Background thread started (daemon=True)
+2025-11-21 00:26:54,076 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+2025-11-21 00:26:54,077 - [INFO] - AppLogger.FastAPI - ✅ RMS sync job scheduled (every 5 minutes, GHL sending disabled)
+2025-11-21 00:27:08,100 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Starting scheduler in background thread...
+2025-11-21 00:27:08,146 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Initializing scheduler...
+2025-11-21 00:27:08,162 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Started successfully. Running background tasks...
+2025-11-21 00:27:08,163 - [INFO] - AppLogger.Scheduler - [SCHEDULER] - Daily cleanup scheduled: 00:00 (midnight)
+2025-11-21 00:27:08,164 - [INFO] - AppLogger.Scheduler - [SCHEDULER] - Opportunity creation scheduled: every 10 minutes
+2025-11-21 00:27:08,647 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Background thread started (daemon=True)
+2025-11-21 00:27:08,654 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+2025-11-21 00:27:08,654 - [INFO] - AppLogger.FastAPI - ✅ RMS sync job scheduled (every 5 minutes, GHL sending disabled)
+2025-11-21 00:30:27,066 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Starting scheduler in background thread...
+2025-11-21 00:30:27,067 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Initializing scheduler...
+2025-11-21 00:30:27,081 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Started successfully. Running background tasks...
+2025-11-21 00:30:27,081 - [INFO] - AppLogger.Scheduler - [SCHEDULER] - Daily cleanup scheduled: 00:00 (midnight)
+2025-11-21 00:30:27,082 - [INFO] - AppLogger.Scheduler - [SCHEDULER] - Opportunity creation scheduled: every 10 minutes
+2025-11-21 00:30:27,569 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Background thread started (daemon=True)
+2025-11-21 00:30:27,583 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+2025-11-21 00:30:27,585 - [INFO] - AppLogger.FastAPI - ✅ RMS sync job scheduled (every 5 minutes, GHL sending disabled)
+2025-11-21 00:30:46,587 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Starting scheduler in background thread...
+2025-11-21 00:30:46,594 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Initializing scheduler...
+2025-11-21 00:30:46,628 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Started successfully. Running background tasks...
+2025-11-21 00:30:46,629 - [INFO] - AppLogger.Scheduler - [SCHEDULER] - Daily cleanup scheduled: 00:00 (midnight)
+2025-11-21 00:30:46,632 - [INFO] - AppLogger.Scheduler - [SCHEDULER] - Opportunity creation scheduled: every 10 minutes
+2025-11-21 00:30:47,095 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Background thread started (daemon=True)
+2025-11-21 00:30:47,106 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+2025-11-21 00:30:47,110 - [INFO] - AppLogger.FastAPI - ✅ RMS sync job scheduled (every 5 minutes, GHL sending disabled)
+2025-11-21 00:30:53,888 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Starting scheduler in background thread...
+2025-11-21 00:30:53,889 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Initializing scheduler...
+2025-11-21 00:30:53,902 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Started successfully. Running background tasks...
+2025-11-21 00:30:53,902 - [INFO] - AppLogger.Scheduler - [SCHEDULER] - Daily cleanup scheduled: 00:00 (midnight)
+2025-11-21 00:30:53,903 - [INFO] - AppLogger.Scheduler - [SCHEDULER] - Opportunity creation scheduled: every 10 minutes
+2025-11-21 00:30:54,390 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Background thread started (daemon=True)
+2025-11-21 00:30:54,396 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+2025-11-21 00:30:54,396 - [INFO] - AppLogger.FastAPI - ✅ RMS sync job scheduled (every 5 minutes, GHL sending disabled)
+2025-11-21 00:35:54,409 - [INFO] - AppLogger.FastAPI - [RMS SYNC] Starting RMS fetch_and_sync_bookings job...
+2025-11-21 00:35:59,754 - [INFO] - AppLogger.FastAPI - [RMS SYNC] Job completed: {'fetched': 100, 'contacts_upserted': 0, 'opportunities_created': 0, 'errors': 0, 'limit': 200, 'offset': 0, 'total': 100}
+2025-11-21 00:40:53,904 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] ===== Starting scheduled job to fetch bookings and create opportunities =====
+2025-11-21 00:40:54,401 - [INFO] - AppLogger.FastAPI - [RMS SYNC] Starting RMS fetch_and_sync_bookings job...
+2025-11-21 00:40:58,302 - [INFO] - AppLogger.FastAPI - [RMS SYNC] Job completed: {'fetched': 100, 'contacts_upserted': 0, 'opportunities_created': 0, 'errors': 0, 'limit': 200, 'offset': 0, 'total': 100}
+2025-11-21 00:41:05,294 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] Processing 110 total bookings
+2025-11-21 00:41:05,300 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] Found 53 new bookings and 0 updated bookings
+2025-11-21 00:41:21,038 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Test Test - 060 S - 2025-11-22
+2025-11-21 00:41:22,443 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] Successfully sent booking 4185 to GHL
+2025-11-21 00:41:38,320 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Edward Wilson - 041 - 2025-11-22
+2025-11-21 00:41:39,644 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] Successfully sent booking 3863 to GHL
+2025-11-21 00:41:56,346 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Stephane Jack - Cabin 5 - 2025-11-26
+2025-11-21 00:41:57,695 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] Successfully sent booking 4022 to GHL
+2025-11-21 00:42:16,068 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Grant Parsons - 050 - 2025-11-24
+2025-11-21 00:42:17,620 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] Successfully sent booking 4133 to GHL
+2025-11-21 00:42:32,659 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Rebecca Simonsen - Riverbank 3 - 2025-11-22
+2025-11-21 00:42:34,115 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] Successfully sent booking 4138 to GHL
+2025-11-21 00:42:49,017 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Kristyl Hamlyn - 058 - 2025-11-25
+2025-11-21 00:42:50,928 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] Successfully sent booking 4158 to GHL
+2025-11-21 00:43:51,220 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Corbin Carter - Cabin 3 - 2025-11-22
+2025-11-21 00:43:52,638 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] Successfully sent booking 4166 to GHL
+2025-11-21 00:44:10,346 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Dylan Trueman - Riverbank 1 - 2025-11-22
+2025-11-21 00:44:11,895 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] Successfully sent booking 4167 to GHL
+2025-11-21 00:44:31,424 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Reybel Pugh - 29 / 44 - 2025-11-22
+2025-11-21 00:44:32,943 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] Successfully sent booking 4180 to GHL
+2025-11-21 00:44:48,545 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Ana Joubert - Cabin 5 - 2025-11-21
+2025-11-21 00:44:50,007 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] Successfully sent booking 3626 to GHL
+2025-11-21 00:45:08,376 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Teresa Nucibella - Cabin 4 - 2025-11-21
+2025-11-21 00:45:10,193 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] Successfully sent booking 3627 to GHL
+2025-11-21 00:45:29,289 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Janelle Grayson - Chalet 3 - 2025-11-21
+2025-11-21 00:45:30,857 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] Successfully sent booking 3706 to GHL
+2025-11-21 00:45:48,505 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Juliet Bryant - Bush 003 - 2025-11-21
+2025-11-21 00:45:49,899 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] Successfully sent booking 3893 to GHL
+2025-11-21 00:45:49,900 - [WARNING] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] Booking 3894 has no guests, skipping
+2025-11-21 00:45:54,404 - [INFO] - AppLogger.FastAPI - [RMS SYNC] Starting RMS fetch_and_sync_bookings job...
+2025-11-21 00:45:57,809 - [INFO] - AppLogger.FastAPI - [RMS SYNC] Job completed: {'fetched': 100, 'contacts_upserted': 0, 'opportunities_created': 0, 'errors': 0, 'limit': 200, 'offset': 0, 'total': 100}
+2025-11-21 00:46:05,823 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: JOEL BROWN - 037 - 2025-11-21
+2025-11-21 00:46:07,189 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] Successfully sent booking 3937 to GHL
+2025-11-21 00:46:22,952 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Ben Lippett - 057 - 2025-11-21
+2025-11-21 00:46:24,158 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] Successfully sent booking 3939 to GHL
+2025-11-21 00:46:38,654 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Graham Clarke - 31 - 2025-11-21
+2025-11-21 00:46:40,022 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] Successfully sent booking 4019 to GHL
+2025-11-21 00:46:53,846 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Elysia Mackay - Chalet 2 - 2025-11-21
+2025-11-21 00:46:55,202 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] Successfully sent booking 4084 to GHL
+2025-11-21 00:47:12,364 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Lochlan Niven - Hideaway 1 - 2025-11-21
+2025-11-21 00:47:13,703 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] Successfully sent booking 4096 to GHL
+2025-11-21 00:47:29,174 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Cheyenne Whitchurch - Chalet 1 - 2025-11-21
+2025-11-21 00:47:30,520 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] Successfully sent booking 4097 to GHL
+2025-11-21 00:47:47,185 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Louise Prasser - 058 - 2025-11-21
+2025-11-21 00:47:48,591 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] Successfully sent booking 4113 to GHL
+2025-11-21 00:48:05,830 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: LISA And JACK Bulman - 032 S - 2025-11-21
+2025-11-21 00:48:07,377 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] Successfully sent booking 4144 to GHL
+2025-11-21 00:48:21,345 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: David Smiles - 050 - 2025-11-21
+2025-11-21 00:48:22,714 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] Successfully sent booking 4163 to GHL
+2025-11-21 00:48:37,577 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Alex Buckholz - Riverbank 3 - 2025-11-21
+2025-11-21 00:48:38,883 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] Successfully sent booking 4175 to GHL
+2025-11-21 00:48:54,119 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Jill Parkinson - 048 - 2025-11-16
+2025-11-21 00:48:55,526 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] Successfully sent booking 3704 to GHL
+2025-11-21 00:49:10,159 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Nick Fisher - 049 - 2025-11-19
+2025-11-21 00:49:11,599 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] Successfully sent booking 4139 to GHL
+2025-11-21 00:49:26,941 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Sarah Copland - 42 - 2025-11-20
+2025-11-21 00:49:28,491 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] Successfully sent booking 4178 to GHL
+2025-11-21 00:49:45,959 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Rob Duncan - 012 - 2024-04-24
+2025-11-21 00:49:47,304 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] Successfully sent booking 7 to GHL
+2025-11-21 00:50:06,149 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: David Richardson - 011 S - 2025-06-10
+2025-11-21 00:50:07,430 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] Successfully sent booking 2916 to GHL
+2025-11-21 00:50:25,841 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Aaron Harvey - 008 S - 2025-09-08
+2025-11-21 00:50:27,219 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] Successfully sent booking 3654 to GHL
+2025-11-21 00:50:48,414 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Thomas Chatal - 04 - 2025-10-27
+2025-11-21 00:50:49,592 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] Successfully sent booking 4065 to GHL
+2025-11-21 00:50:54,401 - [INFO] - AppLogger.FastAPI - [RMS SYNC] Starting RMS fetch_and_sync_bookings job...
+2025-11-21 00:50:57,899 - [INFO] - AppLogger.FastAPI - [RMS SYNC] Job completed: {'fetched': 100, 'contacts_upserted': 0, 'opportunities_created': 0, 'errors': 0, 'limit': 200, 'offset': 0, 'total': 100}
+2025-11-21 00:51:04,363 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Karen Fowler - Cabin 4 - 2025-11-18
+2025-11-21 00:51:05,834 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] Successfully sent booking 3850 to GHL
+2025-11-21 00:51:05,835 - [WARNING] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] Booking 3851 has no guests, skipping
+2025-11-21 00:51:21,751 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Tiffany Van Duin - Chalet 2 - 2025-11-17
+2025-11-21 00:51:22,890 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] Successfully sent booking 4121 to GHL
+2025-11-21 00:51:38,006 - [INFO] - AppLogger.GHLIntegration - Sending data to GHL for booking: Krissy Hockaday - 059 - 2025-11-18
+2025-11-21 00:51:39,853 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] Successfully sent booking 4160 to GHL
+2025-11-21 00:51:39,853 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] Job completed: 33 opportunities created, 2 failed
+2025-11-21 00:51:39,962 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] Cache updated with latest data.
+2025-11-21 00:51:39,963 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] ===== Job finished. Total bookings processed: 53 =====
+2025-11-21 00:55:54,397 - [INFO] - AppLogger.FastAPI - [RMS SYNC] Starting RMS fetch_and_sync_bookings job...
+2025-11-21 00:55:57,874 - [INFO] - AppLogger.FastAPI - [RMS SYNC] Job completed: {'fetched': 100, 'contacts_upserted': 0, 'opportunities_created': 0, 'errors': 0, 'limit': 200, 'offset': 0, 'total': 100}
+2025-11-21 01:00:53,912 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] ===== Starting scheduled job to fetch bookings and create opportunities =====
+2025-11-21 01:00:54,407 - [INFO] - AppLogger.FastAPI - [RMS SYNC] Starting RMS fetch_and_sync_bookings job...
+2025-11-21 01:00:57,480 - [INFO] - AppLogger.FastAPI - [RMS SYNC] Job completed: {'fetched': 100, 'contacts_upserted': 0, 'opportunities_created': 0, 'errors': 0, 'limit': 200, 'offset': 0, 'total': 100}
+2025-11-21 01:01:06,195 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] Processing 110 total bookings
+2025-11-21 01:01:06,213 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] No new or updated bookings detected — cache is up to date.
+2025-11-21 01:01:06,214 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] ===== Job finished. Total bookings processed: 53 =====
+2025-11-21 01:05:54,417 - [INFO] - AppLogger.FastAPI - [RMS SYNC] Starting RMS fetch_and_sync_bookings job...
+2025-11-21 01:05:57,847 - [INFO] - AppLogger.FastAPI - [RMS SYNC] Job completed: {'fetched': 100, 'contacts_upserted': 0, 'opportunities_created': 0, 'errors': 0, 'limit': 200, 'offset': 0, 'total': 100}
+2025-11-21 01:10:53,912 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] ===== Starting scheduled job to fetch bookings and create opportunities =====
+2025-11-21 01:10:54,406 - [INFO] - AppLogger.FastAPI - [RMS SYNC] Starting RMS fetch_and_sync_bookings job...
+2025-11-21 01:10:58,389 - [INFO] - AppLogger.FastAPI - [RMS SYNC] Job completed: {'fetched': 100, 'contacts_upserted': 0, 'opportunities_created': 0, 'errors': 0, 'limit': 200, 'offset': 0, 'total': 100}
+2025-11-21 01:11:05,665 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] Processing 110 total bookings
+2025-11-21 01:11:05,677 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] No new or updated bookings detected — cache is up to date.
+2025-11-21 01:11:05,678 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] ===== Job finished. Total bookings processed: 53 =====
+2025-11-21 01:15:54,410 - [INFO] - AppLogger.FastAPI - [RMS SYNC] Starting RMS fetch_and_sync_bookings job...
+2025-11-21 01:15:57,628 - [INFO] - AppLogger.FastAPI - [RMS SYNC] Job completed: {'fetched': 100, 'contacts_upserted': 0, 'opportunities_created': 0, 'errors': 0, 'limit': 200, 'offset': 0, 'total': 100}
+2025-11-21 01:20:53,908 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] ===== Starting scheduled job to fetch bookings and create opportunities =====
+2025-11-21 01:20:54,420 - [INFO] - AppLogger.FastAPI - [RMS SYNC] Starting RMS fetch_and_sync_bookings job...
+2025-11-21 01:20:58,337 - [INFO] - AppLogger.FastAPI - [RMS SYNC] Job completed: {'fetched': 100, 'contacts_upserted': 0, 'opportunities_created': 0, 'errors': 0, 'limit': 200, 'offset': 0, 'total': 100}
+2025-11-21 01:21:04,662 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] Processing 110 total bookings
+2025-11-21 01:21:04,677 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] No new or updated bookings detected — cache is up to date.
+2025-11-21 01:21:04,677 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] ===== Job finished. Total bookings processed: 53 =====
+2025-11-21 01:25:54,405 - [INFO] - AppLogger.FastAPI - [RMS SYNC] Starting RMS fetch_and_sync_bookings job...
+2025-11-21 01:25:58,029 - [INFO] - AppLogger.FastAPI - [RMS SYNC] Job completed: {'fetched': 100, 'contacts_upserted': 0, 'opportunities_created': 0, 'errors': 0, 'limit': 200, 'offset': 0, 'total': 100}

@@ -1,20 +1,5 @@
-2025-11-14 08:42:09,364 - [ERROR] - AppLogger.NewbookDB - Error creating newbook instance: Not enough parameters for the SQL statement
-Traceback (most recent call last):
-  File "D:\Projects\HolidayBrandAI\utils\newbook_db.py", line 44, in create_newbook_instance
-    cursor.execute(query, (location_id, api_key))
-  File "D:\Projects\HolidayBrandAI\venv\Lib\site-packages\mysql\connector\cursor_cext.py", line 333, in execute
-    stmt = RE_PY_PARAM.sub(psub, stmt)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "D:\Projects\HolidayBrandAI\venv\Lib\site-packages\mysql\connector\cursor_cext.py", line 113, in __call__
-    raise ProgrammingError(
-mysql.connector.errors.ProgrammingError: Not enough parameters for the SQL statement
-2025-11-14 08:43:08,618 - [ERROR] - AppLogger.NewbookDB - Error creating newbook instance: Not enough parameters for the SQL statement
-Traceback (most recent call last):
-  File "D:\Projects\HolidayBrandAI\utils\newbook_db.py", line 44, in create_newbook_instance
-    cursor.execute(query, (location_id, api_key))
-  File "D:\Projects\HolidayBrandAI\venv\Lib\site-packages\mysql\connector\cursor_cext.py", line 333, in execute
-    stmt = RE_PY_PARAM.sub(psub, stmt)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "D:\Projects\HolidayBrandAI\venv\Lib\site-packages\mysql\connector\cursor_cext.py", line 113, in __call__
-    raise ProgrammingError(
-mysql.connector.errors.ProgrammingError: Not enough parameters for the SQL statement
+2025-11-20 23:24:08,162 - [ERROR] - AppLogger.GHLIntegration - GHL Error Response: {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-20 23:24:18,836 - [ERROR] - AppLogger.GHLIntegration - GHL Error Response: {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-20 23:24:27,360 - [ERROR] - AppLogger.GHLIntegration - GHL Error Response: {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-20 23:24:37,153 - [ERROR] - AppLogger.GHLIntegration - GHL Error Response: {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-20 23:24:49,058 - [ERROR] - AppLogger.GHLIntegration - GHL Error Response: {"statusCode":401,"message":"The token is not authorized for this scope."}

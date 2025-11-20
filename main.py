@@ -146,7 +146,7 @@ def get_availability(
                 }
 
             data = filtered
-        print(f"📥 Response Data: {data}")
+        # print(f"📥 Response Data: {data}")
         return data
 
     except Exception as e:
@@ -343,12 +343,15 @@ async def daily_rms_refresh():
         print(f"❌ Daily RMS cache refresh failed: {e}")
 
 async def rms_sync_job():
-    """Sync RMS bookings with GHL every 5 minutes."""
+    """Sync RMS bookings (GHL sending disabled - only NewBook sends to GHL)."""
+    log.info("[RMS SYNC] Starting RMS fetch_and_sync_bookings job...")
     print("⏰ Running RMS fetch_and_sync_bookings job...")
     try:
         result = await rms_service.fetch_and_sync_bookings()
+        log.info(f"[RMS SYNC] Job completed: {result}")
         print("✅ Sync result:", result)
     except Exception as e:
+        log.error(f"[RMS SYNC] Job failed: {e}")
         print(f"❌ RMS sync job failed: {e}")
 
 @app.on_event("startup")
@@ -369,13 +372,15 @@ async def startup_event():
     # Schedule daily RMS refresh at 3 AM
     try:
         scheduler.add_job(daily_rms_refresh, 'cron', hour=3, minute=0)
-        # Add RMS sync job every 5 minutes (use asyncio.run for async job in thread)
+        # Add RMS sync job every 5 minutes (GHL sending disabled - only fetches data)
         scheduler.add_job(
             lambda: asyncio.run(rms_sync_job()),
             'interval',
-            minutes=1
+            minutes=5
         )
         scheduler.start()
+        log.info("✅ RMS daily refresh scheduled (3 AM)")
+        log.info("✅ RMS sync job scheduled (every 5 minutes, GHL sending disabled)")
         print("✅ RMS daily refresh scheduled (3 AM)")
         print("✅ RMS sync job scheduled (every 5 minutes)")
     except Exception as e:
