@@ -325,6 +325,20 @@ db_config = {
 
 # # 🧱 --- DATABASE HELPERS ---
 
+def get_ghl_token():
+    """
+    Get the GoHighLevel Private Integration Token.
+    This is a static token that doesn't expire.
+    """
+    from config.config import GHL_PRIVATE_INTEGRATION_TOKEN
+    
+    if not GHL_PRIVATE_INTEGRATION_TOKEN:
+        error_msg = "⚠️ GHL_PRIVATE_INTEGRATION_TOKEN is not set in .env file"
+        log.error(error_msg)
+        print(error_msg)
+        return None
+    
+    return GHL_PRIVATE_INTEGRATION_TOKEN
 
 
 def get_token_row():
@@ -422,7 +436,8 @@ def get_valid_access_token(client_id, client_secret):
             print("⚠️ Failed to refresh access token. Token refresh returned None.")
         return refreshed_token
     
-access_token = get_valid_access_token(GHL_CLIENT_ID, GHL_CLIENT_SECRET)
+# access_token = get_valid_access_token(GHL_CLIENT_ID, GHL_CLIENT_SECRET)
+access_token = get_ghl_token()
 
 def get_contact_id(token, location_id, first=None, last=None, email=None, phone=None):
     """
@@ -579,7 +594,7 @@ def save_opportunities_for_stage(stage_id):
     Fetches all opportunities for a given stage_id (handles pagination)
     and saves them to a JSON file named {stage_id}_opportunities.json.
     """
-    access_token = get_valid_access_token(GHL_CLIENT_ID, GHL_CLIENT_SECRET)
+    access_token = get_ghl_token()
     if not access_token:
         print("No valid access token. Aborting fetch.")
         return
@@ -608,7 +623,7 @@ def delete_opportunities_in_stage(stage_id):
     Also saves the opportunities to a JSON file before deletion.
     """
     save_opportunities_for_stage(stage_id)
-    access_token = get_valid_access_token(GHL_CLIENT_ID, GHL_CLIENT_SECRET)
+    access_token = get_ghl_token()
     if not access_token:
         print("No valid access token. Aborting opportunity deletion.")
         return
@@ -640,7 +655,7 @@ def delete_opportunity_by_booking_id(booking_id, guest_firstname=None, guest_las
     If guest_firstname, guest_lastname, site_name, and booking_arrival are provided,
     will match the exact opportunity name format.
     """
-    access_token = get_valid_access_token(GHL_CLIENT_ID, GHL_CLIENT_SECRET)
+    access_token = get_ghl_token()
     if not access_token:
         print("No valid access token. Aborting opportunity deletion for booking_id:", booking_id)
         return
@@ -688,7 +703,7 @@ def delete_opportunity_by_booking_details(guest_firstname, guest_lastname, site_
     """
     Deletes all opportunities in GHL that match the exact opportunity name format.
     """
-    access_token = get_valid_access_token(GHL_CLIENT_ID, GHL_CLIENT_SECRET)
+    access_token = get_ghl_token()
     if not access_token:
         print("No valid access token. Aborting opportunity deletion for details:", guest_firstname, guest_lastname, site_name, booking_arrival)
         return
