@@ -1505,3 +1505,59 @@ requests.exceptions.ConnectionError: ('Connection aborted.', RemoteDisconnected(
 2025-11-24 08:44:14,047 - [INFO] - AppLogger.FastAPI - ✅ RMS sync job scheduled (every 5 minutes, GHL sending disabled)
 2025-11-24 08:49:14,058 - [INFO] - AppLogger.FastAPI - [RMS SYNC] Starting RMS fetch_and_sync_bookings job...
 2025-11-24 08:49:20,781 - [INFO] - AppLogger.FastAPI - [RMS SYNC] Job completed: {'fetched': 100, 'contacts_upserted': 0, 'opportunities_created': 0, 'errors': 0, 'limit': 200, 'offset': 0, 'total': 100}
+2025-11-25 07:05:26,294 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Starting scheduler in background thread...
+2025-11-25 07:05:26,295 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Initializing scheduler...
+2025-11-25 07:05:26,307 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Started successfully. Running background tasks...
+2025-11-25 07:05:26,308 - [INFO] - AppLogger.Scheduler - [SCHEDULER] - Daily cleanup scheduled: 00:00 (midnight)
+2025-11-25 07:05:26,308 - [INFO] - AppLogger.Scheduler - [SCHEDULER] - Opportunity creation scheduled: every 10 minutes
+2025-11-25 07:05:26,797 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Background thread started (daemon=True)
+2025-11-25 07:05:26,812 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+2025-11-25 07:05:26,813 - [INFO] - AppLogger.FastAPI - ✅ RMS sync job scheduled (every 5 minutes, GHL sending disabled)
+2025-11-25 07:06:29,791 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+2025-11-25 07:06:29,799 - [INFO] - AppLogger.FastAPI - ✅ RMS sync job scheduled (every 5 minutes, GHL sending disabled)
+2025-11-25 07:07:16,308 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+2025-11-25 07:07:16,312 - [INFO] - AppLogger.FastAPI - ✅ RMS sync job scheduled (every 5 minutes, GHL sending disabled)
+2025-11-25 07:12:16,332 - [INFO] - AppLogger.FastAPI - [RMS SYNC] Starting RMS fetch_and_sync_bookings job...
+2025-11-25 07:12:23,274 - [INFO] - AppLogger.FastAPI - [RMS SYNC] Job completed: {'fetched': 100, 'contacts_upserted': 0, 'opportunities_created': 0, 'errors': 0, 'limit': 200, 'offset': 0, 'total': 100}
+2025-11-25 07:17:16,315 - [INFO] - AppLogger.FastAPI - [RMS SYNC] Starting RMS fetch_and_sync_bookings job...
+2025-11-25 07:17:21,769 - [INFO] - AppLogger.FastAPI - [RMS SYNC] Job completed: {'fetched': 100, 'contacts_upserted': 0, 'opportunities_created': 0, 'errors': 0, 'limit': 200, 'offset': 0, 'total': 100}
+2025-11-25 07:22:16,314 - [INFO] - AppLogger.FastAPI - [RMS SYNC] Starting RMS fetch_and_sync_bookings job...
+2025-11-25 07:22:21,708 - [INFO] - AppLogger.FastAPI - [RMS SYNC] Job completed: {'fetched': 100, 'contacts_upserted': 0, 'opportunities_created': 0, 'errors': 0, 'limit': 200, 'offset': 0, 'total': 100}
+2025-11-25 07:27:16,304 - [INFO] - AppLogger.FastAPI - [RMS SYNC] Starting RMS fetch_and_sync_bookings job...
+2025-11-25 07:27:21,318 - [INFO] - AppLogger.FastAPI - [RMS SYNC] Job completed: {'fetched': 100, 'contacts_upserted': 0, 'opportunities_created': 0, 'errors': 0, 'limit': 200, 'offset': 0, 'total': 100}
+2025-11-25 07:32:16,310 - [INFO] - AppLogger.FastAPI - [RMS SYNC] Starting RMS fetch_and_sync_bookings job...
+2025-11-25 07:32:20,984 - [INFO] - AppLogger.FastAPI - [RMS SYNC] Job completed: {'fetched': 100, 'contacts_upserted': 0, 'opportunities_created': 0, 'errors': 0, 'limit': 200, 'offset': 0, 'total': 100}
+2025-11-25 07:37:16,311 - [INFO] - AppLogger.FastAPI - [RMS SYNC] Starting RMS fetch_and_sync_bookings job...
+2025-11-25 07:37:21,747 - [INFO] - AppLogger.FastAPI - [RMS SYNC] Job completed: {'fetched': 100, 'contacts_upserted': 0, 'opportunities_created': 0, 'errors': 0, 'limit': 200, 'offset': 0, 'total': 100}
+2025-11-25 07:39:04,670 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+2025-11-25 07:39:04,670 - [INFO] - AppLogger.FastAPI - ✅ RMS sync job scheduled (every 5 minutes, GHL sending disabled)
+2025-11-25 07:39:37,106 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+2025-11-25 07:39:37,106 - [INFO] - AppLogger.FastAPI - ✅ RMS sync job scheduled (every 5 minutes, GHL sending disabled)
+2025-11-25 07:39:48,872 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+2025-11-25 07:39:48,877 - [INFO] - AppLogger.FastAPI - ✅ RMS sync job scheduled (every 5 minutes, GHL sending disabled)
+2025-11-25 07:40:32,310 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+2025-11-25 07:40:32,317 - [INFO] - AppLogger.FastAPI - ✅ RMS sync job scheduled (every 5 minutes, GHL sending disabled)
+2025-11-25 07:40:54,516 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+2025-11-25 07:40:54,516 - [INFO] - AppLogger.FastAPI - ✅ RMS sync job scheduled (every 5 minutes, GHL sending disabled)
+2025-11-25 07:41:05,937 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+2025-11-25 07:41:05,940 - [INFO] - AppLogger.FastAPI - ✅ RMS sync job scheduled (every 5 minutes, GHL sending disabled)
+2025-11-25 07:42:17,479 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+2025-11-25 07:42:17,480 - [INFO] - AppLogger.FastAPI - ✅ RMS sync job scheduled (every 5 minutes, GHL sending disabled)
+2025-11-25 07:42:58,213 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+2025-11-25 07:42:58,214 - [INFO] - AppLogger.FastAPI - ✅ RMS sync job scheduled (every 5 minutes, GHL sending disabled)
+2025-11-25 07:44:42,094 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+2025-11-25 07:44:42,097 - [INFO] - AppLogger.FastAPI - ✅ RMS sync job scheduled (every 5 minutes, GHL sending disabled)
+2025-11-25 07:48:21,269 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+2025-11-25 07:48:21,270 - [INFO] - AppLogger.FastAPI - ✅ RMS sync job scheduled (every 5 minutes, GHL sending disabled)
+2025-11-25 07:48:32,950 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+2025-11-25 07:48:32,951 - [INFO] - AppLogger.FastAPI - ✅ RMS sync job scheduled (every 5 minutes, GHL sending disabled)
+2025-11-25 07:48:47,299 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+2025-11-25 07:48:47,300 - [INFO] - AppLogger.FastAPI - ✅ RMS sync job scheduled (every 5 minutes, GHL sending disabled)
+2025-11-25 07:49:03,813 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+2025-11-25 07:49:03,814 - [INFO] - AppLogger.FastAPI - ✅ RMS sync job scheduled (every 5 minutes, GHL sending disabled)
+2025-11-25 07:49:29,736 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+2025-11-25 07:49:29,736 - [INFO] - AppLogger.FastAPI - ✅ RMS sync job scheduled (every 5 minutes, GHL sending disabled)
+2025-11-25 07:49:55,592 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+2025-11-25 07:49:55,592 - [INFO] - AppLogger.FastAPI - ✅ RMS sync job scheduled (every 5 minutes, GHL sending disabled)
+2025-11-25 07:54:55,603 - [INFO] - AppLogger.FastAPI - [RMS SYNC] Starting RMS fetch_and_sync_bookings job...
+2025-11-25 07:55:01,952 - [INFO] - AppLogger.FastAPI - [RMS SYNC] Job completed: {'fetched': 100, 'contacts_upserted': 0, 'opportunities_created': 0, 'errors': 0, 'limit': 200, 'offset': 0, 'total': 100}
