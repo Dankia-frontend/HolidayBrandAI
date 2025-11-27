@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from fastapi import FastAPI, Query, HTTPException, Depends
 from schemas.schemas import BookingRequest, AvailabilityRequest, CheckBooking
 import requests
-from config.config import NEWBOOK_API_BASE,REGION,API_KEY
+from config.config import NEWBOOK_API_BASE, REGION, API_KEY
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import json
@@ -12,11 +12,13 @@ from auth.auth import authenticate_request, get_newbook_credentials
 from utils.newbook import NB_HEADERS, get_tariff_information, create_tariffs_quoted
 from utils.scheduler import start_scheduler_in_background
 from routes.rms_routes import router as rms_router
+from services.rms import rms_service, rms_cache, rms_auth
+from utils.rms_db import set_current_rms_instance, get_rms_instance, create_rms_instance as create_rms_instance_db
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 import signal
 import sys
+import os
 from utils.newbook_db import create_newbook_instance
-from utils.rms_db import get_rms_instance, create_rms_instance as create_rms_instance_db
 
 
 app = FastAPI()
@@ -146,12 +148,14 @@ def get_availability(
                 }
 
             data = filtered
-        print(f"📥 Response Data: {data}")
+        # print(f"📥 Response Data: {data}")
         return data
 
     except Exception as e:
         print("❌ Error:", str(e))
         raise HTTPException(status_code=500, detail=str(e))
+
+
 # 2. Confirm Booking [POST]
 @app.post("/confirm-booking")
 def confirm_booking(
@@ -310,6 +314,7 @@ def check_booking(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
 @app.post("/newbook-instances")
 def create_newbook_instance_endpoint(
     location_id: str = Query(...),
@@ -327,10 +332,11 @@ def create_newbook_instance_endpoint(
 # RMS Instance Management Endpoints
 @app.post("/rms-instances")
 def create_rms_instance_endpoint(
-    location_id: str = Query(..., description="RMS Location ID"),
+    location_id: str = Query(..., description="GHL Location ID"),
     client_id: int = Query(..., description="RMS Client ID"),
     client_pass: str = Query(..., description="RMS Client Password (will be encrypted)"),
     agent_id: int = Query(..., description="RMS Agent ID"),
+    # _: str = Depends(authenticate_request)
 ):
     """Create a new RMS instance entry in the database"""
     success = create_rms_instance_db(location_id, client_id, client_pass, agent_id)
@@ -341,7 +347,10 @@ def create_rms_instance_endpoint(
 
 
 @app.get("/rms-instances/{location_id}")
-def get_rms_instance_endpoint(location_id: str):
+def get_rms_instance_endpoint(
+    location_id: str,
+    # _: str = Depends(authenticate_request)
+):
     """Get RMS instance by location_id (password will be masked)"""
     instance = get_rms_instance(location_id)
     if instance:
@@ -350,6 +359,36 @@ def get_rms_instance_endpoint(location_id: str):
         return instance
     else:
         raise HTTPException(status_code=404, detail="RMS instance not found")
+
+
+@app.post("/rms-instances/{location_id}/activate")
+async def activate_rms_instance(
+    location_id: str,
+    # _: str = Depends(authenticate_request)
+):
+    """
+    Activate an RMS instance for use.
+    This sets the current RMS credentials and reinitializes the RMS service.
+    """
+    # Set the current RMS instance from database
+    success = set_current_rms_instance(location_id)
+    if not success:
+        raise HTTPException(status_code=404, detail=f"RMS instance not found for location_id: {location_id}")
+    
+    # Reload credentials in auth and cache
+    rms_auth.reload_credentials()
+    rms_cache.reload_credentials()
+    
+    # Reinitialize RMS service
+    try:
+        await rms_service.initialize()
+        stats = rms_cache.get_stats()
+        return {
+            "message": f"RMS instance activated for location {location_id}",
+            "stats": stats
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to initialize RMS: {str(e)}")
 
 
 # Include RMS routes
@@ -370,39 +409,85 @@ async def daily_rms_refresh():
     except Exception as e:
         print(f"❌ Daily RMS cache refresh failed: {e}")
 
-<<<<<<< Updated upstream
 async def rms_sync_job():
-    """Sync RMS bookings with GHL every 5 minutes."""
+    """Sync RMS bookings (GHL sending disabled - only NewBook sends to GHL)."""
+    log.info("[RMS SYNC] Starting RMS fetch_and_sync_bookings job...")
     print("⏰ Running RMS fetch_and_sync_bookings job...")
     try:
         result = await rms_service.fetch_and_sync_bookings()
+        log.info(f"[RMS SYNC] Job completed: {result}")
         print("✅ Sync result:", result)
     except Exception as e:
+        log.error(f"[RMS SYNC] Job failed: {e}")
         print(f"❌ RMS sync job failed: {e}")
-=======
->>>>>>> Stashed changes
+
+
+async def initialize_rms_from_db():
+    """
+    Initialize RMS using credentials from database.
+    Uses RMS_LOCATION_ID from environment to determine which instance to use.
+    """
+    # Get location_id from environment variable
+    location_id = os.getenv("RMS_LOCATION_ID")
+    
+    if not location_id:
+        log.warning("⚠️ RMS_LOCATION_ID not set in environment - RMS will not be initialized from DB")
+        print("⚠️ RMS_LOCATION_ID not set - falling back to env vars for RMS credentials")
+        return False
+    
+    print(f"🔧 Initializing RMS from database for location: {location_id}")
+    
+    # Set the current RMS instance from database
+    success = set_current_rms_instance(location_id)
+    if not success:
+        log.error(f"❌ RMS instance not found in database for location_id: {location_id}")
+        print(f"❌ RMS instance not found for location_id: {location_id}")
+        return False
+    
+    print(f"✅ RMS credentials loaded from database for location: {location_id}")
+    return True
+
 
 @app.on_event("startup")
 async def startup_event():
-    print("🚀 Application starting...")
-    print("✅ RMS endpoints ready - credentials loaded per-request from database via location_id header")
+    # Initialize RMS from database
+    try:
+        print("🚀 Initializing RMS...")
+        
+        # First, load credentials from database
+        db_initialized = await initialize_rms_from_db()
+        if db_initialized:
+            print("✅ RMS credentials loaded from database")
+        else:
+            print("⚠️ Using environment variables for RMS credentials")
+        
+        # Then initialize the RMS service
+        await rms_service.initialize()
+        stats = rms_cache.get_stats()
+        print(f"✅ RMS initialized successfully")
+        print(f"   Location ID: {stats.get('location_id', 'N/A')}")
+        print(f"   Property ID: {stats['property_id']}")
+        print(f"   Agent ID: {stats['agent_id']}")
+        print(f"   Client ID: {stats['client_id']}")
+        print(f"   Cached Categories: {stats['cached_categories']}")
+        print(f"   Cached Rate Plans: {stats['cached_rate_plans']}")
+    except Exception as e:
+        print(f"❌ RMS initialization failed: {e}")
     
     # Schedule daily RMS refresh at 3 AM
     try:
         scheduler.add_job(daily_rms_refresh, 'cron', hour=3, minute=0)
-<<<<<<< Updated upstream
-        # Add RMS sync job every 5 minutes (use asyncio.run for async job in thread)
+        # Add RMS sync job every 5 minutes (GHL sending disabled - only fetches data)
         scheduler.add_job(
             lambda: asyncio.run(rms_sync_job()),
             'interval',
-            minutes=1
+            minutes=5
         )
         scheduler.start()
-=======
-        scheduler.start()
         log.info("✅ RMS daily refresh scheduled (3 AM)")
->>>>>>> Stashed changes
+        log.info("✅ RMS sync job scheduled (every 5 minutes, GHL sending disabled)")
         print("✅ RMS daily refresh scheduled (3 AM)")
+        print("✅ RMS sync job scheduled (every 5 minutes)")
     except Exception as e:
         print(f"⚠️ Scheduler error: {e}")
 
@@ -424,11 +509,7 @@ def signal_handler(sig, frame):
 signal.signal(signal.SIGINT, signal_handler)
 
 # Run the scheduler in a background thread
-<<<<<<< Updated upstream
-# start_scheduler_in_background() # Comment out for local testing
-=======
 #start_scheduler_in_background() # Comment out for local testing
->>>>>>> Stashed changes
 
 
 if __name__ == "__main__":

@@ -1,41 +1,11 @@
-<<<<<<< Updated upstream
-from fastapi import APIRouter, HTTPException, Depends
-from pydantic import BaseModel
-from typing import Optional, Dict
-from services.rms import rms_service, rms_cache
-=======
 from fastapi import APIRouter, HTTPException, Depends, Query, Header
 from typing import Optional
 from services.rms.rms_service import RMSService
->>>>>>> Stashed changes
 from middleware.auth import verify_token
 from utils.rms_db import get_rms_instance
 
 router = APIRouter(prefix="/api/rms", tags=["RMS"])
 
-<<<<<<< Updated upstream
-# Request models
-class AvailabilityRequest(BaseModel):
-    arrival: str
-    departure: str
-    adults: int = 2
-    children: int = 0
-    room_keyword: Optional[str] = None
-
-class ReservationRequest(BaseModel):
-    category_id: int
-    rate_plan_id: int
-    arrival: str
-    departure: str
-    adults: int
-    children: int
-    guest: Dict
-
-@router.post("/search")
-async def search_availability(
-    request: AvailabilityRequest,
-    token: str = Depends(verify_token)
-=======
 
 async def get_rms_credentials(location_id: str = Header(..., description="RMS Location ID")):
     """
@@ -81,7 +51,6 @@ async def search_availability(
     room_keyword: Optional[str] = Query(None, description="Optional room keyword to filter by"),
     token: str = Depends(verify_token),
     rms_credentials: dict = Depends(get_rms_credentials)
->>>>>>> Stashed changes
 ):
     """Search for available rooms"""
     try:
@@ -92,11 +61,11 @@ async def search_availability(
         await rms_service.initialize()
         
         results = await rms_service.search_availability(
-            arrival=request.arrival,
-            departure=request.departure,
-            adults=request.adults,
-            children=request.children,
-            room_keyword=request.room_keyword
+            arrival=arrival,
+            departure=departure,
+            adults=adults,
+            children=children,
+            room_keyword=room_keyword
         )
         return results
     except HTTPException:
@@ -107,10 +76,6 @@ async def search_availability(
 
 @router.post("/reservations")
 async def create_reservation(
-<<<<<<< Updated upstream
-    request: ReservationRequest,
-    token: str = Depends(verify_token)
-=======
     category_id: int = Query(..., description="Category ID"),
     rate_plan_id: int = Query(..., description="Rate plan ID"),
     arrival: str = Query(..., description="Arrival date (YYYY-MM-DD)"),
@@ -123,7 +88,6 @@ async def create_reservation(
     guest_phone: Optional[str] = Query(None, description="Guest phone number"),
     token: str = Depends(verify_token),
     rms_credentials: dict = Depends(get_rms_credentials)
->>>>>>> Stashed changes
 ):
     """Create a new reservation"""
     try:
@@ -134,13 +98,16 @@ async def create_reservation(
         await rms_service.initialize()
         
         reservation = await rms_service.create_reservation(
-            category_id=request.category_id,
-            rate_plan_id=request.rate_plan_id,
-            arrival=request.arrival,
-            departure=request.departure,
-            adults=request.adults,
-            children=request.children,
-            guest=request.guest
+            category_id=category_id,
+            rate_plan_id=rate_plan_id,
+            arrival=arrival,
+            departure=departure,
+            adults=adults,
+            children=children,
+            guest_firstName=guest_firstName,
+            guest_lastName=guest_lastName,
+            guest_email=guest_email,
+            guest_phone=guest_phone
         )
         return reservation
     except HTTPException:

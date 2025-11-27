@@ -260,6 +260,28 @@ def update_rms_instance(location_id: str, client_id: int = None, client_pass: st
             conn.close()
 
 
+def set_current_rms_instance(location_id: str) -> bool:
+    """
+    Set the current RMS instance by loading credentials from database
+    and setting them as environment variables.
+    Returns: True if successful, False if location_id not found
+    """
+    instance = get_rms_instance(location_id)
+    if not instance:
+        log.warning(f"Cannot set current RMS instance - location_id not found: {location_id}")
+        return False
+    
+    # Set environment variables for RMS services to use
+    os.environ['RMS_LOCATION_ID'] = instance['location_id']
+    os.environ['RMS_CLIENT_ID'] = str(instance['client_id'])
+    os.environ['RMS_CLIENT_PASS'] = instance['client_pass']
+    os.environ['RMS_AGENT_ID'] = str(instance.get('agent_id', 0))
+    
+    log.info(f"Set current RMS instance to location_id: {location_id}")
+    print(f"✅ Set current RMS instance to location_id: {location_id}")
+    return True
+
+
 def delete_rms_instance(location_id: str) -> bool:
     """
     Delete an RMS instance.
