@@ -55,6 +55,15 @@ async def search_availability(
     rms_credentials: dict = Depends(get_rms_credentials)
 ):
     """Search for available rooms"""
+    print(f"\n{'='*80}")
+    print(f"🔍 SEARCH AVAILABILITY REQUEST")
+    print(f"{'='*80}")
+    print(f"Location: {rms_credentials.get('location_id')}")
+    print(f"Dates: {arrival} to {departure}")
+    print(f"Guests: {adults} adults, {children} children")
+    print(f"Keyword: {room_keyword or 'None'}")
+    print(f"{'='*80}\n")
+    
     try:
         # Create a new RMSService instance with the credentials from the header
         rms_service = RMSService(rms_credentials)
@@ -69,6 +78,16 @@ async def search_availability(
             children=children,
             room_keyword=room_keyword
         )
+        
+        # Log summary of results
+        if 'available' in results:
+            print(f"\n✅ Search Results: {len(results['available'])} options found")
+            for idx, option in enumerate(results['available'][:3], 1):  # Show first 3
+                print(f"   {idx}. Category {option.get('category_id')} - Rate {option.get('rate_plan_id')} - ${option.get('total_price')} - {option.get('available_areas')} areas")
+        else:
+            print(f"\n❌ Search Results: No availability found")
+        print()
+        
         return results
     except HTTPException:
         raise
@@ -92,6 +111,26 @@ async def create_reservation(
     rms_credentials: dict = Depends(get_rms_credentials)
 ):
     """Create a new reservation"""
+    # Detailed logging to diagnose Voice AI parameter issues
+    print(f"\n{'='*80}")
+    print(f"📥 CREATE RESERVATION REQUEST")
+    print(f"{'='*80}")
+    print(f"Location Info:")
+    print(f"   X-Location-ID: {rms_credentials.get('location_id')}")
+    print(f"   Client ID: {rms_credentials.get('client_id')}")
+    print(f"   Agent ID: {rms_credentials.get('agent_id')}")
+    print(f"\nReservation Parameters:")
+    print(f"   category_id: {category_id} (type: {type(category_id).__name__})")
+    print(f"   rate_plan_id: {rate_plan_id} (type: {type(rate_plan_id).__name__})")
+    print(f"   arrival: {arrival}")
+    print(f"   departure: {departure}")
+    print(f"   adults: {adults}, children: {children}")
+    print(f"\nGuest Info:")
+    print(f"   Name: {guest_firstName} {guest_lastName}")
+    print(f"   Email: {guest_email}")
+    print(f"   Phone: {guest_phone}")
+    print(f"{'='*80}\n")
+    
     try:
         # Create a new RMSService instance with the credentials from the header
         rms_service = RMSService(rms_credentials)
