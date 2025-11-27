@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException, Depends, Query
 from typing import Optional
 from services.rms import rms_service, rms_cache
 from middleware.auth import verify_token
+from utils.rms_db import get_rms_instance
 
 router = APIRouter(prefix="/api/rms", tags=["RMS"])
 
@@ -16,6 +17,12 @@ async def search_availability(
 ):
     """Search for available rooms"""
     try:
+        # Create a new RMSService instance with the credentials from the header
+        rms_service = RMSService(rms_credentials)
+        
+        # Initialize the service (fetches property, areas, etc.)
+        await rms_service.initialize()
+        
         results = await rms_service.search_availability(
             arrival=arrival,
             departure=departure,
@@ -24,8 +31,11 @@ async def search_availability(
             room_keyword=room_keyword
         )
         return results
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
 
 @router.post("/reservations")
 async def create_reservation(
@@ -43,6 +53,12 @@ async def create_reservation(
 ):
     """Create a new reservation"""
     try:
+        # Create a new RMSService instance with the credentials from the header
+        rms_service = RMSService(rms_credentials)
+        
+        # Initialize the service
+        await rms_service.initialize()
+        
         reservation = await rms_service.create_reservation(
             category_id=category_id,
             rate_plan_id=rate_plan_id,
@@ -56,29 +72,45 @@ async def create_reservation(
             guest_phone=guest_phone
         )
         return reservation
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
 
 @router.get("/reservations/{reservation_id}")
 async def get_reservation(
     reservation_id: int,
-    token: str = Depends(verify_token)
+    token: str = Depends(verify_token),
+    rms_credentials: dict = Depends(get_rms_credentials)
 ):
     """Get reservation details"""
     try:
+        # Create a new RMSService instance with the credentials from the header
+        rms_service = RMSService(rms_credentials)
+        await rms_service.initialize()
+        
         return await rms_service.get_reservation(reservation_id)
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=404, detail=str(e))
+
 
 @router.delete("/reservations/{reservation_id}")
 async def cancel_reservation(
     reservation_id: int,
-    token: str = Depends(verify_token)
+    token: str = Depends(verify_token),
+    rms_credentials: dict = Depends(get_rms_credentials)
 ):
     """Cancel a reservation"""
     try:
+        # Create a new RMSService instance with the credentials from the header
+        rms_service = RMSService(rms_credentials)
+        await rms_service.initialize()
+        
         return await rms_service.cancel_reservation(reservation_id)
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
-# Cache endpoints removed - handled automatically by background jobs

@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from fastapi import FastAPI, Query, HTTPException, Depends
 from schemas.schemas import BookingRequest, AvailabilityRequest, CheckBooking
 import requests
-from config.config import NEWBOOK_API_BASE,REGION,API_KEY
+from config.config import NEWBOOK_API_BASE, REGION, API_KEY
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import json
@@ -12,10 +12,12 @@ from auth.auth import authenticate_request, get_newbook_credentials
 from utils.newbook import NB_HEADERS, get_tariff_information, create_tariffs_quoted, extract_max_occupancy
 from utils.scheduler import start_scheduler_in_background
 from routes.rms_routes import router as rms_router
-from services.rms import rms_service, rms_cache
+from services.rms import rms_service, rms_cache, rms_auth
+from utils.rms_db import set_current_rms_instance, get_rms_instance, create_rms_instance as create_rms_instance_db
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 import signal
 import sys
+import os
 from utils.newbook_db import create_newbook_instance
 
 
@@ -190,6 +192,8 @@ def get_availability(
     except Exception as e:
         print("❌ Error:", str(e))
         raise HTTPException(status_code=500, detail=str(e))
+
+
 # 2. Confirm Booking [POST]
 @app.post("/confirm-booking")
 def confirm_booking(
@@ -313,7 +317,7 @@ def confirm_booking(
     
 # 3. Check Booking [GET]
 @app.get("/check-booking")
-def confirm_booking(
+def check_booking(
     name: str = Query(..., description="Guest name"),
     email: str = Query(..., description="Guest email"),
     booking_date: str | None = Query(None, description="Optional booking date (YYYY-MM-DD)"),
@@ -337,16 +341,16 @@ def confirm_booking(
             except ValueError:
                 # Invalid date → fallback to current week
                 today = datetime.now()
-                monday = today - datetime.timedelta(days=today.weekday())
-                sunday = monday + datetime.timedelta(days=6)
+                monday = today - timedelta(days=today.weekday())
+                sunday = monday + timedelta(days=6)
                 period_from = monday.strftime("%Y-%m-%d 00:00:00")
                 period_to = sunday.strftime("%Y-%m-%d 23:59:59")
         else:
             # No date → current month
             today = datetime.now()
             first_day = today.replace(day=1)
-            next_month = first_day + datetime.timedelta(days=32)
-            last_day = next_month.replace(day=1) - datetime.timedelta(days=1)
+            next_month = first_day + timedelta(days=32)
+            last_day = next_month.replace(day=1) - timedelta(days=1)
             period_from = first_day.strftime("%Y-%m-%d 00:00:00")
             period_to = last_day.strftime("%Y-%m-%d 23:59:59")
 
@@ -380,6 +384,7 @@ def confirm_booking(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
 @app.post("/newbook-instances")
 def create_newbook_instance_endpoint(
     location_id: str = Query(...),
@@ -392,6 +397,68 @@ def create_newbook_instance_endpoint(
         return {"message": "Newbook instance created successfully"}
     else:
         raise HTTPException(status_code=400, detail="Location ID already exists")
+
+
+# RMS Instance Management Endpoints
+@app.post("/rms-instances")
+def create_rms_instance_endpoint(
+    location_id: str = Query(..., description="GHL Location ID"),
+    client_id: int = Query(..., description="RMS Client ID"),
+    client_pass: str = Query(..., description="RMS Client Password (will be encrypted)"),
+    agent_id: int = Query(..., description="RMS Agent ID"),
+    # _: str = Depends(authenticate_request)
+):
+    """Create a new RMS instance entry in the database"""
+    success = create_rms_instance_db(location_id, client_id, client_pass, agent_id)
+    if success:
+        return {"message": "RMS instance created successfully"}
+    else:
+        raise HTTPException(status_code=400, detail="Location ID already exists or error occurred")
+
+
+@app.get("/rms-instances/{location_id}")
+def get_rms_instance_endpoint(
+    location_id: str,
+    # _: str = Depends(authenticate_request)
+):
+    """Get RMS instance by location_id (password will be masked)"""
+    instance = get_rms_instance(location_id)
+    if instance:
+        # Mask the password for security
+        instance['client_pass'] = '********'
+        return instance
+    else:
+        raise HTTPException(status_code=404, detail="RMS instance not found")
+
+
+@app.post("/rms-instances/{location_id}/activate")
+async def activate_rms_instance(
+    location_id: str,
+    # _: str = Depends(authenticate_request)
+):
+    """
+    Activate an RMS instance for use.
+    This sets the current RMS credentials and reinitializes the RMS service.
+    """
+    # Set the current RMS instance from database
+    success = set_current_rms_instance(location_id)
+    if not success:
+        raise HTTPException(status_code=404, detail=f"RMS instance not found for location_id: {location_id}")
+    
+    # Reload credentials in auth and cache
+    rms_auth.reload_credentials()
+    rms_cache.reload_credentials()
+    
+    # Reinitialize RMS service
+    try:
+        await rms_service.initialize()
+        stats = rms_cache.get_stats()
+        return {
+            "message": f"RMS instance activated for location {location_id}",
+            "stats": stats
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to initialize RMS: {str(e)}")
 
 
 # Include RMS routes
@@ -424,16 +491,54 @@ async def rms_sync_job():
         log.error(f"[RMS SYNC] Job failed: {e}")
         print(f"❌ RMS sync job failed: {e}")
 
+
+async def initialize_rms_from_db():
+    """
+    Initialize RMS using credentials from database.
+    Uses RMS_LOCATION_ID from environment to determine which instance to use.
+    """
+    # Get location_id from environment variable
+    location_id = os.getenv("RMS_LOCATION_ID")
+    
+    if not location_id:
+        log.warning("⚠️ RMS_LOCATION_ID not set in environment - RMS will not be initialized from DB")
+        print("⚠️ RMS_LOCATION_ID not set - falling back to env vars for RMS credentials")
+        return False
+    
+    print(f"🔧 Initializing RMS from database for location: {location_id}")
+    
+    # Set the current RMS instance from database
+    success = set_current_rms_instance(location_id)
+    if not success:
+        log.error(f"❌ RMS instance not found in database for location_id: {location_id}")
+        print(f"❌ RMS instance not found for location_id: {location_id}")
+        return False
+    
+    print(f"✅ RMS credentials loaded from database for location: {location_id}")
+    return True
+
+
 @app.on_event("startup")
 async def startup_event():
-    # Initialize RMS (lightweight - only property ID)
+    # Initialize RMS from database
     try:
         print("🚀 Initializing RMS...")
+        
+        # First, load credentials from database
+        db_initialized = await initialize_rms_from_db()
+        if db_initialized:
+            print("✅ RMS credentials loaded from database")
+        else:
+            print("⚠️ Using environment variables for RMS credentials")
+        
+        # Then initialize the RMS service
         await rms_service.initialize()
         stats = rms_cache.get_stats()
         print(f"✅ RMS initialized successfully")
+        print(f"   Location ID: {stats.get('location_id', 'N/A')}")
         print(f"   Property ID: {stats['property_id']}")
         print(f"   Agent ID: {stats['agent_id']}")
+        print(f"   Client ID: {stats['client_id']}")
         print(f"   Cached Categories: {stats['cached_categories']}")
         print(f"   Cached Rate Plans: {stats['cached_rate_plans']}")
     except Exception as e:
