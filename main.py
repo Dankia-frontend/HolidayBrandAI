@@ -9,7 +9,7 @@ from fastapi.responses import JSONResponse
 import json
 from utils.logger import get_logger
 from auth.auth import authenticate_request, get_newbook_credentials
-from utils.newbook import NB_HEADERS, get_tariff_information, create_tariffs_quoted, extract_max_occupancy
+from utils.newbook import NB_HEADERS, get_tariff_information, create_tariffs_quoted
 from utils.scheduler import start_scheduler_in_background
 from routes.rms_routes import router as rms_router
 from services.rms import rms_service, rms_cache, rms_auth
@@ -124,67 +124,29 @@ def get_availability(
                 "data": {}
             }
 
-            valid_categories_found = False
-            validation_errors = []
-
             for category_id, category_data in new_data["data"].items():
                 category_name = category_data.get("category_name")
                 sites_message = category_data.get("sites_message", {})
 
                 # Derive price: prefer average_nightly_tariff from first tariff; fallback to first quoted amount
                 price = None
-                base_max_adults = None
-                base_max_children = None
-                category_valid = True
                 tariffs_available = category_data.get("tariffs_available", [])
                 if tariffs_available:
                     first_tariff = tariffs_available[0]
                     price = first_tariff.get("average_nightly_tariff")
-                    tariffs_quoted = first_tariff.get("tariffs_quoted", {})
-                    # Extract base_max_adults and base_max_children using helper function
-                    base_max_adults, base_max_children = extract_max_occupancy(tariffs_quoted)
-                    if isinstance(tariffs_quoted, dict) and tariffs_quoted:
-                        first_date_key = next(iter(tariffs_quoted.keys()))
-                        quote = tariffs_quoted.get(first_date_key) or {}
-                        if price is None:
+                    if price is None:
+                        tariffs_quoted = first_tariff.get("tariffs_quoted", {})
+                        if isinstance(tariffs_quoted, dict) and tariffs_quoted:
+                            first_date_key = next(iter(tariffs_quoted.keys()))
+                            quote = tariffs_quoted.get(first_date_key) or {}
                             price = quote.get("amount")
-                        
-                        # Validate if requested adults/children exceed limits
-                        if base_max_adults is not None:
-                            try:
-                                max_adults = int(base_max_adults)
-                                if adults > max_adults:
-                                    category_valid = False
-                                    validation_errors.append(f"Category {category_id} ({category_name}): Number of adults ({adults}) exceeds the maximum allowed ({max_adults})")
-                            except (ValueError, TypeError):
-                                pass
-                        
-                        if base_max_children is not None:
-                            try:
-                                max_children = int(base_max_children)
-                                if Children > max_children:
-                                    category_valid = False
-                                    validation_errors.append(f"Category {category_id} ({category_name}): Number of children ({Children}) exceeds the maximum allowed ({max_children})")
-                            except (ValueError, TypeError):
-                                pass
 
-                # Only include category if it passes validation
-                if category_valid:
-                    valid_categories_found = True
-                    filtered["data"][category_id] = {
-                        "category_name": category_name,
-                        "price": price,
-                        "sites_message": sites_message,
-                        "base_max_adults": base_max_adults,
-                        "base_max_children": base_max_children,
-                    }
+                filtered["data"][category_id] = {
+                    "category_name": category_name,
+                    "price": price,
+                    "sites_message": sites_message,
+                }
 
-            # If no valid categories found, return error
-            if not valid_categories_found and validation_errors:
-                error_message = "No categories available for the requested number of guests. " + "; ".join(validation_errors)
-                raise HTTPException(status_code=400, detail=error_message)
-
-            # Return filtered data with base_max_adults and base_max_children
             data = filtered
         # print(f"📥 Response Data: {data}")
         return data
@@ -226,34 +188,6 @@ def confirm_booking(
         
         if not tariff_info:
             raise HTTPException(status_code=400, detail="No tariff information found for the specified category and dates")
-        
-        # Get base_max_adults and base_max_children from tariff information
-        base_max_adults = tariff_info.get("base_max_adults")
-        base_max_children = tariff_info.get("base_max_children")
-        
-        # Validate if requested adults/children exceed limits
-        if base_max_adults is not None:
-            try:
-                max_adults = int(base_max_adults)
-                if adults > max_adults:
-                    raise HTTPException(
-                        status_code=400,
-                        detail=f"Number of adults ({adults}) exceeds the maximum allowed ({max_adults}) for this category"
-                    )
-            except (ValueError, TypeError):
-                pass
-        
-        if base_max_children is not None:
-            try:
-                children_int = int(children) if isinstance(children, str) else children
-                max_children = int(base_max_children)
-                if children_int > max_children:
-                    raise HTTPException(
-                        status_code=400,
-                        detail=f"Number of children ({children_int}) exceeds the maximum allowed ({max_children}) for this category"
-                    )
-            except (ValueError, TypeError):
-                pass
         
         # Create tariffs_quoted using the actual tariff ID from availability
         tariffs_quoted = create_tariffs_quoted(
@@ -303,10 +237,6 @@ def confirm_booking(
 
         # Remove api_key from response (if present)
         result.pop("api_key", None)
-        
-        # Add base_max_adults and base_max_children to response
-        result["base_max_adults"] = base_max_adults
-        result["base_max_children"] = base_max_children
 
         return result
 
@@ -579,7 +509,7 @@ def signal_handler(sig, frame):
 signal.signal(signal.SIGINT, signal_handler)
 
 # Run the scheduler in a background thread
-start_scheduler_in_background() # Comment out for local testing
+#start_scheduler_in_background() # Comment out for local testing
 
 
 if __name__ == "__main__":
