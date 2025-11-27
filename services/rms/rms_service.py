@@ -22,7 +22,7 @@ class RMSService:
         self._rates_cache = {}
         self._api_client = None
         
-        # Lightweight cache: just remember which areas worked recently
+        # Lightweight cache: remember which areas worked recently
         # Format: {"1_42_2026-08-01_2026-08-02": [25, 47, 52]}
         self._working_areas_cache = {}
         self._cache_timestamp = {}
@@ -123,7 +123,7 @@ class RMSService:
     def _get_strategic_areas(self, all_areas: List[int], max_count: int = 10) -> List[int]:
         """
         Get strategic sample of areas to try.
-        Uses: first few + random middle + last few + any cached working areas
+        Uses: first few + random middle + last few
         """
         strategic = []
         
@@ -278,52 +278,79 @@ class RMSService:
         room_keyword: Optional[str] = None
     ) -> Dict:
         """
-        Search for available rooms - ULTRA FAST VERSION
-        Only 1-2 API calls total!
+        Search for available rooms - WORKING VERSION
+        
+        This method properly:
+        1. Finds matching categories (or all categories)
+        2. Fetches rate plans for each category
+        3. Calls rates grid API with both categoryIds AND rateIds
+        4. Returns simplified results
         """
         if not self._initialized:
             raise Exception("RMS service not initialized")
         
         client = self._get_api_client()
         
-        # Get category IDs (use cache if available to avoid API call)
+        # Step 1: Find matching categories (use cache if available)
         if room_keyword:
-            print(f"🔍 Searching: '{room_keyword}'")
+            print(f"🔍 Searching for categories matching: '{room_keyword}'")
             if self._categories_cache:
-                # Use cached categories
                 categories = [cat for cat in self._categories_cache.values() 
                              if room_keyword.lower() in cat['name'].lower()]
                 if not categories:
+                    print(f"   No categories matched '{room_keyword}', searching all instead")
                     categories = list(self._categories_cache.values())
             else:
-                # Fetch if not cached
                 categories = await self._find_categories_by_keyword(room_keyword)
                 if not categories:
+                    print(f"   No categories matched '{room_keyword}', searching all instead")
                     categories = await self._get_all_categories()
         else:
-            print("🔍 Searching all categories")
+            print("🔍 Searching all categories (no keyword provided)")
             if self._categories_cache:
                 categories = list(self._categories_cache.values())
             else:
                 categories = await self._get_all_categories()
         
-        category_ids = [cat['id'] for cat in categories]
-        print(f"   Categories: {category_ids}")
+        # Filter to only active categories with areas (prevent issues)
+        active_categories = [
+            cat for cat in categories 
+            if not cat.get('inactive', False) 
+            and cat.get('numberOfAreas', 0) > 0
+            and cat.get('availableToIbe', False)  # Only include categories available for online booking
+        ]
         
-        # IMPORTANT: Don't fetch rates separately!
-        # The rates grid API returns all available rates automatically
-        # We just pass the category IDs and it gives us back available rates
+        category_ids = [cat['id'] for cat in active_categories]
+        print(f"📋 Found {len(active_categories)} active bookable categories: {category_ids}")
         
+        for cat in active_categories:
+            print(f"   Category {cat['id']}: {cat.get('name', 'Unknown')}")
+        
+        # Step 2: Get all rate plans for these categories
+        # CRITICAL: RMS API requires BOTH categoryIds AND rateIds or it returns 500 error!
+        all_rate_ids = []
+        for cat_id in category_ids:
+            rates = await self._get_rates_for_category(cat_id)
+            print(f"   Category {cat_id} has {len(rates)} rate plans: {[r['id'] for r in rates]}")
+            all_rate_ids.extend([rate['id'] for rate in rates])
+        
+        all_rate_ids = list(set(all_rate_ids))  # Remove duplicates
+        
+        print(f"Checking availability:")
+        print(f"   Categories: {len(category_ids)} -> {category_ids}")
+        print(f"   Rate plans: {len(all_rate_ids)} -> {all_rate_ids}")
         print(f"   Dates: {arrival} to {departure}")
         print(f"   Guests: {adults} adults, {children} children")
         
-        # Filter to only active categories with areas (prevent 500 error)
-        active_category_ids = []
-        for cat in categories:
-            if not cat.get('inactive', False) and cat.get('numberOfAreas', 0) > 0:
-                active_category_ids.append(cat['id'])
+        if not all_rate_ids:
+            print("⚠️ WARNING: No rate plans found for any category!")
+            return {
+                'available': [],
+                'message': "No rate plans configured for this property. Please check RMS rate plan setup."
+            }
         
-        print(f"   Filtered to {len(active_category_ids)} active categories (from {len(category_ids)} total)")
+        # Step 3: Query the rates grid with BOTH categoryIds and rateIds
+        print(f"   Using Query Agent ID from DB: {self.query_agent_id}")
         
         payload = {
             "propertyId": self._property_id,
@@ -332,18 +359,30 @@ class RMSService:
             "departure": departure,
             "adults": adults,
             "children": children,
-            "categoryIds": active_category_ids,  # Use filtered categories
-            # Don't specify rateIds - let API return all available rates
+            "categoryIds": category_ids,
+            "rateIds": all_rate_ids,  # MUST include rate IDs!
             "includeEstimatedRates": False,
             "includeZeroRates": False
         }
         
         print("📡 Calling rates grid API...")
-        grid_response = await client.get_rates_grid(payload)
-        return self._simplify_grid_response(grid_response)
+        try:
+            grid_response = await client.get_rates_grid(payload)
+            return self._simplify_grid_response(grid_response)
+        except Exception as e:
+            print(f"⚠️ Rates grid API failed: {e}")
+            print(f"   Returning error response to avoid crash")
+            return {
+                'available': [],
+                'message': "Unable to check availability at this time. Please try again later or contact us directly.",
+                'error': str(e)
+            }
     
     def _simplify_grid_response(self, grid_response: Dict) -> Dict:
-        """Simplify the rates grid response - FAST, NO DISCOVERY"""
+        """
+        Simplify the rates grid response into a clean format.
+        Returns available room options with pricing.
+        """
         available = []
         
         categories = grid_response.get('categories', [])
@@ -372,6 +411,7 @@ class RMSService:
                 is_available = True
                 available_count = None
                 
+                # Check each day for availability and calculate total price
                 for day in day_breakdown:
                     available_areas_count = day.get('availableAreas', 0)
                     
@@ -388,16 +428,19 @@ class RMSService:
                     if daily_rate:
                         total_price += daily_rate
                 
+                # Only include if available and has a price
                 if is_available and total_price > 0 and available_count > 0:
                     available.append({
                         'category_id': category_id,
                         'category_name': category_name,
                         'rate_plan_id': rate_id,
+                        'rate_plan_name': rate_name,
                         'total_price': total_price,
                         'available_areas': available_count
                     })
                     print(f"   Category {category_id}, Rate {rate_id}: ✅ {available_count} areas - ${total_price}")
         
+        # Sort by price (cheapest first)
         available.sort(key=lambda x: x['total_price'])
         print(f"✅ Search complete: {len(available)} available options")
         
@@ -406,6 +449,8 @@ class RMSService:
             'message': f"Found {len(available)} available room(s)" if available else "No rooms available"
         }
     
+    # ==================== CREATE RESERVATION ====================
+    # This uses the get_available_areas API for reliable bookings
     async def create_reservation(
         self,
         category_id: int,
@@ -423,7 +468,7 @@ class RMSService:
         Create reservation by checking availability FIRST before attempting to book.
         
         Strategy:
-        1. Call rates grid API to get actual available areas for this date range
+        1. Call /availableAreas API to get actual available areas for this date range
         2. Try to book one of those available areas (should succeed immediately)
         3. Cache successful area for future bookings
         
@@ -444,8 +489,6 @@ class RMSService:
         available_area_ids = []
         try:
             # Call /availableAreas API directly - much more reliable!
-            client = self._get_api_client()
-            
             payload = {
                 "propertyId": self._property_id,
                 "categoryId": category_id,
@@ -523,7 +566,6 @@ class RMSService:
         # If using fallback (many areas), randomize to avoid always trying blocked ones
         if len(available_area_ids) > 30:
             print(f"   📌 Fallback mode detected: randomizing {len(available_area_ids)} areas")
-            import random
             shuffled_areas = random.sample(available_area_ids, min(len(available_area_ids), 30))
             for area_id in shuffled_areas:
                 if area_id not in areas_to_try:
@@ -578,7 +620,7 @@ class RMSService:
                 reservation_id = reservation.get('id') or reservation.get('reservationId')
                 confirmation_number = reservation.get('confirmationNumber') or reservation.get('confirmationCode')
                 
-                print(f"\n🎉 RESERVATION SUCCESSFUL!")
+                print(f"\n RESERVATION SUCCESSFUL!")
                 print(f"{'='*80}")
                 print(f"   Reservation ID: {reservation_id}")
                 print(f"   Confirmation: {confirmation_number}")
@@ -630,14 +672,13 @@ class RMSService:
         print(f"   {error_detail}")
         print(f"{'='*80}\n")
         raise Exception(error_detail)
-
-
-
+    
     async def _find_or_create_guest(self, guest: Dict) -> Optional[int]:
         """Find existing guest by email or create new one"""
         client = self._get_api_client()
         email = guest.get('email')
         
+        # Try to find existing guest by email
         if email:
             search_payload = {
                 "propertyId": self._property_id,
@@ -651,8 +692,9 @@ class RMSService:
                     print(f"   Found existing guest: {guest_id}")
                     return guest_id
             except Exception as e:
-                print(f"   ⚠️ Guest search failed: {e}")
+                print(f"   ⚠️ Guest search failed (will create new): {e}")
         
+        # Create new guest
         create_payload = {
             "propertyId": self._property_id,
             "guestGiven": guest.get('firstName', 'Guest'),
@@ -670,16 +712,23 @@ class RMSService:
             print(f"   ❌ Failed to create guest: {e}")
             return None
     
+    # ==================== RESERVATION MANAGEMENT ====================
     async def get_reservation(self, reservation_id: int) -> Dict:
-        """Get reservation details"""
+        """Get reservation details by ID"""
+        if not self._initialized:
+            raise Exception("RMS service not initialized")
+        
         client = self._get_api_client()
         return await client.get_reservation(reservation_id)
     
     async def cancel_reservation(self, reservation_id: int) -> Dict:
         """Cancel a reservation"""
+        if not self._initialized:
+            raise Exception("RMS service not initialized")
+        
         client = self._get_api_client()
         return await client.cancel_reservation(reservation_id)
 
 
-# Create a default instance for backward compatibility
+# Create a default instance for backward compatibility (will use env vars)
 rms_service = RMSService()
