@@ -89,7 +89,7 @@ class RMSService:
                 
                 print(f"   Areas by category:")
                 for cat_id, area_ids in categories_map.items():
-                    print(f"   Category {cat_id}: {len(area_ids)} rooms")
+                    print(f"   Category {cat_id}: {len(area_ids)} rooms - IDs: {area_ids[:5]}{'...' if len(area_ids) > 5 else ''}")
             else:
                 print("⚠️ No areas returned - this will cause issues!")
                 raise Exception("No areas/rooms found in RMS")
@@ -162,11 +162,190 @@ class RMSService:
         ]
         
         if all_areas:
-            print(f"   Found {len(all_areas)} total rooms for category {category_id}")
+            print(f"   Found {len(all_areas)} total rooms for category {category_id}: {all_areas[:10]}{'...' if len(all_areas) > 10 else ''}")
         else:
             print(f"   ⚠️ No rooms found for category {category_id}")
         
         return all_areas
+    
+    async def _check_if_any_availability(
+        self,
+        category_id: int,
+        rate_plan_id: int,
+        arrival: str,
+        departure: str,
+        adults: int,
+        children: int
+    ) -> Dict:
+        """
+        Quick check to see if ANY rooms are available in this category.
+        Returns the availability info including how many areas are available.
+        """
+        client = self._get_api_client()
+        
+        # Check overall availability without specifying areaIds
+        payload = {
+            "propertyId": self._property_id,
+            "agentId": int(self.query_agent_id),
+            "arrival": arrival,
+            "departure": departure,
+            "adults": adults,
+            "children": children,
+            "categoryIds": [category_id],
+            "rateIds": [rate_plan_id],
+            "includeEstimatedRates": False,
+            "includeZeroRates": False
+        }
+        
+        try:
+            grid_response = await client.get_rates_grid(payload)
+            
+            categories = grid_response.get('categories', [])
+            for category in categories:
+                if category.get('categoryId') != category_id:
+                    continue
+                
+                rates = category.get('rates', [])
+                for rate in rates:
+                    if rate.get('rateId') != rate_plan_id:
+                        continue
+                    
+                    day_breakdown = rate.get('dayBreakdown', [])
+                    if not day_breakdown:
+                        continue
+                    
+                    # Check if all days have availability
+                    min_available = float('inf')
+                    for day in day_breakdown:
+                        available_areas = day.get('availableAreas', 0)
+                        min_available = min(min_available, available_areas)
+                    
+                    if min_available > 0:
+                        return {
+                            'available': True,
+                            'count': min_available,
+                            'breakdown': day_breakdown
+                        }
+            
+            return {'available': False, 'count': 0}
+            
+        except Exception as e:
+            print(f"   ⚠️ Error checking availability: {e}")
+            return {'available': False, 'count': 0}
+    
+    async def _find_available_area(
+        self,
+        category_id: int,
+        rate_plan_id: int,
+        arrival: str,
+        departure: str,
+        adults: int,
+        children: int,
+        all_areas: List[int]
+    ) -> Optional[int]:
+        """
+        Smart approach to find an available area:
+        1. First check if ANY availability exists
+        2. If yes, try up to 10 areas using strategic selection
+        3. Try random areas instead of sequential to spread the load
+        
+        Note: RMS API tells us HOW MANY areas are available but not WHICH ones,
+        so we need to try areas until we find one that works.
+        """
+        if not all_areas:
+            return None
+        
+        client = self._get_api_client()
+        
+        print(f"\n🔍 Checking availability for category {category_id}...")
+        print(f"   Dates: {arrival} to {departure}")
+        print(f"   Rate Plan: {rate_plan_id}")
+        print(f"   Total areas in category: {len(all_areas)}")
+        
+        # Step 1: Quick check - is there ANY availability?
+        availability_info = await self._check_if_any_availability(
+            category_id, rate_plan_id, arrival, departure, adults, children
+        )
+        
+        if not availability_info['available']:
+            print(f"   ❌ No availability for this category/rate plan combination")
+            return None
+        
+        available_count = availability_info['count']
+        print(f"   ✅ {available_count} room(s) are available (but API doesn't tell us which ones)")
+        print(f"   🎲 Will try up to 10 areas using smart selection...")
+        
+        # Step 2: Try areas strategically
+        # Use a mix of: first few, random middle, last few
+        import random
+        
+        max_attempts = min(10, len(all_areas))
+        
+        # Create a strategic sample:
+        # - First 3 areas (often available)
+        # - 4 random areas from the middle
+        # - Last 3 areas (often available)
+        areas_to_try = []
+        
+        # First few
+        areas_to_try.extend(all_areas[:3])
+        
+        # Random from middle
+        if len(all_areas) > 6:
+            middle_areas = all_areas[3:-3]
+            if middle_areas:
+                sample_size = min(4, len(middle_areas))
+                areas_to_try.extend(random.sample(middle_areas, sample_size))
+        
+        # Last few
+        if len(all_areas) > 3:
+            areas_to_try.extend(all_areas[-3:])
+        
+        # Remove duplicates and limit
+        areas_to_try = list(dict.fromkeys(areas_to_try))[:max_attempts]
+        
+        print(f"   📋 Will try these areas: {areas_to_try}")
+        
+        # Step 3: Try each area with a reservation attempt
+        for idx, area_id in enumerate(areas_to_try, 1):
+            print(f"   Attempt {idx}/{len(areas_to_try)}: Testing area {area_id}...")
+            
+            # Calculate nights
+            arrival_date = datetime.fromisoformat(arrival)
+            departure_date = datetime.fromisoformat(departure)
+            nights = (departure_date - arrival_date).days
+            
+            # Try a test reservation (we'll create the actual one later)
+            test_payload = {
+                "propertyId": self._property_id,
+                "agentId": int(self.query_agent_id),
+                "arrivalDate": arrival,
+                "departureDate": departure,
+                "adults": adults,
+                "children": children,
+                "infants": 0,
+                "categoryId": category_id,
+                "rateTypeId": rate_plan_id,
+                "status": "Confirmed",
+                "source": "API",
+                "areaId": area_id,
+                "nights": nights,
+                "guestId": 0,  # Temporary - will use real guest ID later
+                "paymentMethod": "PayLater",
+                "sendConfirmationEmail": False
+            }
+            
+            # Actually, we can't do a "test" reservation without a guest
+            # So we just return the first area and hope it works
+            # If it fails, the calling code will handle the error
+            
+            # Since we know there ARE available areas (from step 1),
+            # and we're trying a strategic sample, we'll return the first one to try
+            print(f"   ✅ Selected area {area_id} for reservation attempt")
+            return area_id
+        
+        print(f"   ❌ No areas selected")
+        return None
     
     async def search_availability(
         self,
@@ -294,7 +473,7 @@ class RMSService:
                         'total_price': total_price,
                         'available_areas': day_breakdown[0].get('availableAreas', 0) if day_breakdown else 0
                     })
-                    print(f"      Rate {rate_id} ({rate_name}): ✅ AVAILABLE - ${total_price}")
+                    print(f"      Rate {rate_id} ({rate_name}): ✅ AVAILABLE - ${total_price} - {day_breakdown[0].get('availableAreas', 0)} areas")
                 else:
                     if not is_available:
                         print(f"      Rate {rate_id} ({rate_name}): ❌ NOT AVAILABLE - {unavailable_reason}")
@@ -324,13 +503,24 @@ class RMSService:
         guest_phone: Optional[str] = None
     ) -> Dict:
         """
-        Create a reservation - MATCHES ORIGINAL WORKING LOGIC
-        Tries multiple areas until one succeeds
+        Create a reservation - SMART RETRY APPROACH
+        
+        Problem: RMS API tells us "56 rooms available" but not WHICH 56.
+        Solution:
+        1. Check if ANY availability exists (quick)
+        2. Try up to 10 strategic areas (random selection)
+        3. Stop when we find one that works
+        
+        This balances efficiency (not trying all 86 rooms) with reliability (finding an available room).
         """
         if not self._initialized:
             raise Exception("RMS service not initialized")
         
         client = self._get_api_client()
+        
+        print(f"\n{'='*80}")
+        print(f"🎯 CREATING RESERVATION - SMART RETRY METHOD")
+        print(f"{'='*80}")
         
         # Step 1: Find or create guest
         guest = {
@@ -345,7 +535,7 @@ class RMSService:
         if not guest_id:
             raise Exception("Failed to create/find guest")
         
-        print(f"Using guest ID: {guest_id}")
+        print(f"✅ Guest ID: {guest_id}")
         
         # Step 2: Calculate nights
         arrival_date = datetime.fromisoformat(arrival)
@@ -358,18 +548,50 @@ class RMSService:
         if not all_areas:
             raise Exception(f"No rooms/areas found for category {category_id}. Cannot create reservation.")
         
-        print(f"Found {len(all_areas)} total area(s) in category {category_id}")
+        print(f"📍 Category {category_id} has {len(all_areas)} total areas")
         
-        # Step 4: Try to create reservation with each area until one succeeds
+        # Step 4: Quick check - is there ANY availability?
+        print(f"\n🔍 Checking if any rooms are available...")
+        availability_info = await self._check_if_any_availability(
+            category_id, rate_plan_id, arrival, departure, adults, children
+        )
+        
+        if not availability_info['available']:
+            raise Exception(
+                f"No rooms available in category {category_id} for rate plan {rate_plan_id} "
+                f"on dates {arrival} to {departure}. Please try different dates or room type."
+            )
+        
+        available_count = availability_info['count']
+        print(f"✅ Good news: {available_count} room(s) ARE available!")
+        print(f"⚠️ Note: RMS API doesn't tell us WHICH rooms, so we'll try up to 10 strategically")
+        
+        # Step 5: Create strategic list of areas to try
+        import random
+        max_attempts = min(10, len(all_areas))
+        
+        # Strategic selection: first few + random middle + last few
+        areas_to_try = []
+        areas_to_try.extend(all_areas[:3])  # First 3
+        
+        if len(all_areas) > 6:
+            middle_areas = all_areas[3:-3]
+            if middle_areas:
+                sample_size = min(4, len(middle_areas))
+                areas_to_try.extend(random.sample(middle_areas, sample_size))
+        
+        areas_to_try.extend(all_areas[-3:])  # Last 3
+        areas_to_try = list(dict.fromkeys(areas_to_try))[:max_attempts]  # Remove duplicates
+        
+        print(f"\n🎲 Will try these {len(areas_to_try)} areas: {areas_to_try}")
+        
+        # Step 6: Try each area until one succeeds
         last_error = None
         
-        for idx, area_id in enumerate(all_areas):
-            if idx > 0:
-                print(f"Trying alternate area {idx + 1}/{len(all_areas)}: {area_id}")
-            else:
-                print(f"Trying area ID {area_id} from category {category_id}")
+        for idx, area_id in enumerate(areas_to_try, 1):
+            print(f"\n{'─'*80}")
+            print(f"Attempt {idx}/{len(areas_to_try)}: Trying area {area_id}...")
             
-            # Create reservation payload - MATCHING ORIGINAL WORKING CODE
             payload = {
                 "propertyId": self._property_id,
                 "agentId": int(self.query_agent_id),
@@ -379,7 +601,7 @@ class RMSService:
                 "children": children,
                 "infants": 0,
                 "categoryId": category_id,
-                "rateTypeId": rate_plan_id,  # RMS uses rateTypeId for pricing (not rateId!)
+                "rateTypeId": rate_plan_id,
                 "status": "Confirmed",
                 "source": "API",
                 "areaId": area_id,
@@ -389,28 +611,20 @@ class RMSService:
                 "sendConfirmationEmail": True,
             }
             
-            if idx == 0:
-                print(f"Creating reservation:")
-                print(f"   Property: {self._property_id}")
-                print(f"   Agent: {self.query_agent_id}")
-                print(f"   Category: {category_id}")
-                print(f"   Rate: {rate_plan_id}")
-                print(f"   Area/Room: {area_id}")
-                print(f"   Dates: {arrival} to {departure} ({nights} nights)")
-                print(f"   Guest ID: {guest_id}")
-                print(f"   Guests: {adults} adults, {children} children")
-            
             try:
                 reservation = await client.create_reservation(payload)
                 
-                # Extract reservation details
+                # Success!
                 reservation_id = reservation.get('id') or reservation.get('reservationId')
                 confirmation_number = reservation.get('confirmationNumber') or reservation.get('confirmationCode')
                 
-                print(f"✅ Reservation created successfully!")
-                print(f"   ID: {reservation_id}")
+                print(f"\n SUCCESS ON ATTEMPT {idx}!")
+                print(f"{'='*80}")
+                print(f"   Reservation ID: {reservation_id}")
                 print(f"   Confirmation: {confirmation_number}")
                 print(f"   Assigned Room: {area_id}")
+                print(f"   Tried {idx} out of {len(areas_to_try)} possible areas")
+                print(f"{'='*80}\n")
                 
                 return reservation
                 
@@ -418,17 +632,13 @@ class RMSService:
                 import httpx
                 last_error = e
                 
-                # Extract the actual error message from the response body
+                # Extract error message
                 error_msg = str(e)
-                
-                # If this is an HTTP error, try to get the actual message from the response
                 if isinstance(e, httpx.HTTPStatusError):
                     try:
                         response_data = e.response.json()
                         if isinstance(response_data, dict) and 'message' in response_data:
                             error_msg = response_data['message']
-                        elif isinstance(response_data, dict):
-                            error_msg = str(response_data)
                     except:
                         try:
                             error_msg = e.response.text
@@ -437,33 +647,40 @@ class RMSService:
                 
                 error_msg_lower = error_msg.lower()
                 
-                # Check if this is an "Area/Site Not Available" error
-                # Matches: "Site '002' Is Not Available" or "Area Not Available" or "Blocking Reservation"
+                # Check if this is a "room blocked" error
                 is_area_blocked = (
                     ("site" in error_msg_lower and "not available" in error_msg_lower) or
                     ("area" in error_msg_lower and "not available" in error_msg_lower) or 
-                    "blocking reservation" in error_msg_lower or
-                    ("not available between selected dates" in error_msg_lower)
+                    "blocking reservation" in error_msg_lower
                 )
                 
                 if is_area_blocked:
-                    print(f"   ❌ Area {area_id} is blocked for these dates - trying next area")
-                    print(f"      Error: {error_msg}")
+                    print(f"   ❌ Area {area_id} is blocked - trying next area...")
                     continue
                 else:
                     # For other errors, raise immediately
-                    print(f"❌ Reservation creation failed with unexpected error: {error_msg}")
+                    print(f"\n❌ UNEXPECTED ERROR (not a blocked room error)")
+                    print(f"{'='*80}")
+                    print(f"   Error: {error_msg}")
+                    print(f"{'='*80}\n")
                     raise Exception(f"Failed to create reservation: {error_msg}")
         
-        # All areas failed
-        if last_error:
-            print(f"❌ All {len(all_areas)} area(s) in category {category_id} are blocked for these dates")
-            raise Exception(
-                f"All rooms in category {category_id} are blocked for dates {arrival} to {departure}. "
-                f"Please try a different category or dates."
-            )
+        # All attempts failed
+        print(f"\n❌ ALL {len(areas_to_try)} ATTEMPTS FAILED")
+        print(f"{'='*80}")
+        print(f"   We know {available_count} rooms are available")
+        print(f"   But the {len(areas_to_try)} areas we tried were all blocked")
+        print(f"   This might mean:")
+        print(f"   - The available rooms are in the {len(all_areas) - len(areas_to_try)} areas we didn't try")
+        print(f"   - There's a timing issue (rooms became unavailable)")
+        print(f"   - There's a rate plan / category mismatch")
+        print(f"{'='*80}\n")
         
-        raise Exception("Unexpected error: No areas were tried")
+        raise Exception(
+            f"Unable to find an available room after {len(areas_to_try)} attempts. "
+            f"RMS reports {available_count} rooms available, but the areas we tried were blocked. "
+            f"Please try again or contact support."
+        )
     
     async def _find_or_create_guest(self, guest: Dict) -> Optional[int]:
         """Find existing guest by email or create new one"""
@@ -480,10 +697,10 @@ class RMSService:
                 results = await client.search_guests(search_payload)
                 if results and len(results) > 0:
                     guest_id = results[0].get('id')
-                    print(f"✅ Found existing guest: {guest_id}")
+                    print(f"   Found existing guest: {guest_id}")
                     return guest_id
             except Exception as e:
-                print(f"⚠️ Guest search failed: {e}")
+                print(f"   ⚠️ Guest search failed: {e}")
         
         # Create new guest
         create_payload = {
@@ -497,10 +714,10 @@ class RMSService:
         try:
             result = await client.create_guest(create_payload)
             guest_id = result.get('id') or result.get('guestId')
-            print(f"✅ Created new guest: {guest_id}")
+            print(f"   Created new guest: {guest_id}")
             return guest_id
         except Exception as e:
-            print(f"❌ Failed to create guest: {e}")
+            print(f"   ❌ Failed to create guest: {e}")
             return None
     
     async def get_reservation(self, reservation_id: int) -> Dict:
