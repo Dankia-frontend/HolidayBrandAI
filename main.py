@@ -450,44 +450,18 @@ async def initialize_rms_from_db():
 
 @app.on_event("startup")
 async def startup_event():
-    # Initialize RMS from database
-    try:
-        print("🚀 Initializing RMS...")
-        
-        # First, load credentials from database
-        db_initialized = await initialize_rms_from_db()
-        if db_initialized:
-            print("✅ RMS credentials loaded from database")
-        else:
-            print("⚠️ Using environment variables for RMS credentials")
-        
-        # Then initialize the RMS service
-        await rms_service.initialize()
-        stats = rms_cache.get_stats()
-        print(f"✅ RMS initialized successfully")
-        print(f"   Location ID: {stats.get('location_id', 'N/A')}")
-        print(f"   Property ID: {stats['property_id']}")
-        print(f"   Agent ID: {stats['agent_id']}")
-        print(f"   Client ID: {stats['client_id']}")
-        print(f"   Cached Categories: {stats['cached_categories']}")
-        print(f"   Cached Rate Plans: {stats['cached_rate_plans']}")
-    except Exception as e:
-        print(f"❌ RMS initialization failed: {e}")
+    # RMS initialization removed - now handled per-request with credentials from headers
+    # Each request creates its own RMS instance with the correct park's credentials
+    print("✅ Server started - RMS will initialize per-request based on X-Location-ID header")
     
     # Schedule daily RMS refresh at 3 AM
     try:
         scheduler.add_job(daily_rms_refresh, 'cron', hour=3, minute=0)
-        # Add RMS sync job every 5 minutes (GHL sending disabled - only fetches data)
-        scheduler.add_job(
-            lambda: asyncio.run(rms_sync_job()),
-            'interval',
-            minutes=5
-        )
+        # Note: RMS sync job disabled - was using global instance
+        # Each location now has its own credentials loaded per-request
         scheduler.start()
         log.info("✅ RMS daily refresh scheduled (3 AM)")
-        log.info("✅ RMS sync job scheduled (every 5 minutes, GHL sending disabled)")
-        print("✅ RMS daily refresh scheduled (3 AM)")
-        print("✅ RMS sync job scheduled (every 5 minutes)")
+        print("✅ RMS daily cache cleanup scheduled (3 AM)")
     except Exception as e:
         print(f"⚠️ Scheduler error: {e}")
 
