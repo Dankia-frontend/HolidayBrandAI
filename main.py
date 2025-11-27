@@ -12,11 +12,11 @@ from auth.auth import authenticate_request, get_newbook_credentials
 from utils.newbook import NB_HEADERS, get_tariff_information, create_tariffs_quoted
 from utils.scheduler import start_scheduler_in_background
 from routes.rms_routes import router as rms_router
-from services.rms import rms_service, rms_cache
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 import signal
 import sys
 from utils.newbook_db import create_newbook_instance
+from utils.rms_db import get_rms_instance, create_rms_instance as create_rms_instance_db
 
 
 app = FastAPI()
@@ -243,7 +243,7 @@ def confirm_booking(
     
 # 3. Check Booking [GET]
 @app.get("/check-booking")
-def confirm_booking(
+def check_booking(
     name: str = Query(..., description="Guest name"),
     email: str = Query(..., description="Guest email"),
     booking_date: str | None = Query(None, description="Optional booking date (YYYY-MM-DD)"),
@@ -267,16 +267,16 @@ def confirm_booking(
             except ValueError:
                 # Invalid date → fallback to current week
                 today = datetime.now()
-                monday = today - datetime.timedelta(days=today.weekday())
-                sunday = monday + datetime.timedelta(days=6)
+                monday = today - timedelta(days=today.weekday())
+                sunday = monday + timedelta(days=6)
                 period_from = monday.strftime("%Y-%m-%d 00:00:00")
                 period_to = sunday.strftime("%Y-%m-%d 23:59:59")
         else:
             # No date → current month
             today = datetime.now()
             first_day = today.replace(day=1)
-            next_month = first_day + datetime.timedelta(days=32)
-            last_day = next_month.replace(day=1) - datetime.timedelta(days=1)
+            next_month = first_day + timedelta(days=32)
+            last_day = next_month.replace(day=1) - timedelta(days=1)
             period_from = first_day.strftime("%Y-%m-%d 00:00:00")
             period_to = last_day.strftime("%Y-%m-%d 23:59:59")
 
@@ -324,6 +324,34 @@ def create_newbook_instance_endpoint(
         raise HTTPException(status_code=400, detail="Location ID already exists")
 
 
+# RMS Instance Management Endpoints
+@app.post("/rms-instances")
+def create_rms_instance_endpoint(
+    location_id: str = Query(..., description="RMS Location ID"),
+    client_id: int = Query(..., description="RMS Client ID"),
+    client_pass: str = Query(..., description="RMS Client Password (will be encrypted)"),
+    agent_id: int = Query(..., description="RMS Agent ID"),
+):
+    """Create a new RMS instance entry in the database"""
+    success = create_rms_instance_db(location_id, client_id, client_pass, agent_id)
+    if success:
+        return {"message": "RMS instance created successfully"}
+    else:
+        raise HTTPException(status_code=400, detail="Location ID already exists or error occurred")
+
+
+@app.get("/rms-instances/{location_id}")
+def get_rms_instance_endpoint(location_id: str):
+    """Get RMS instance by location_id (password will be masked)"""
+    instance = get_rms_instance(location_id)
+    if instance:
+        # Mask the password for security
+        instance['client_pass'] = '********'
+        return instance
+    else:
+        raise HTTPException(status_code=404, detail="RMS instance not found")
+
+
 # Include RMS routes
 app.include_router(rms_router)
 
@@ -342,6 +370,7 @@ async def daily_rms_refresh():
     except Exception as e:
         print(f"❌ Daily RMS cache refresh failed: {e}")
 
+<<<<<<< Updated upstream
 async def rms_sync_job():
     """Sync RMS bookings with GHL every 5 minutes."""
     print("⏰ Running RMS fetch_and_sync_bookings job...")
@@ -350,25 +379,18 @@ async def rms_sync_job():
         print("✅ Sync result:", result)
     except Exception as e:
         print(f"❌ RMS sync job failed: {e}")
+=======
+>>>>>>> Stashed changes
 
 @app.on_event("startup")
 async def startup_event():
-    # Initialize RMS (lightweight - only property ID)
-    try:
-        print("🚀 Initializing RMS...")
-        await rms_service.initialize()
-        stats = rms_cache.get_stats()
-        print(f"✅ RMS initialized successfully")
-        print(f"   Property ID: {stats['property_id']}")
-        print(f"   Agent ID: {stats['agent_id']}")
-        print(f"   Cached Categories: {stats['cached_categories']}")
-        print(f"   Cached Rate Plans: {stats['cached_rate_plans']}")
-    except Exception as e:
-        print(f"❌ RMS initialization failed: {e}")
+    print("🚀 Application starting...")
+    print("✅ RMS endpoints ready - credentials loaded per-request from database via location_id header")
     
     # Schedule daily RMS refresh at 3 AM
     try:
         scheduler.add_job(daily_rms_refresh, 'cron', hour=3, minute=0)
+<<<<<<< Updated upstream
         # Add RMS sync job every 5 minutes (use asyncio.run for async job in thread)
         scheduler.add_job(
             lambda: asyncio.run(rms_sync_job()),
@@ -376,8 +398,11 @@ async def startup_event():
             minutes=1
         )
         scheduler.start()
+=======
+        scheduler.start()
+        log.info("✅ RMS daily refresh scheduled (3 AM)")
+>>>>>>> Stashed changes
         print("✅ RMS daily refresh scheduled (3 AM)")
-        print("✅ RMS sync job scheduled (every 5 minutes)")
     except Exception as e:
         print(f"⚠️ Scheduler error: {e}")
 
@@ -399,7 +424,11 @@ def signal_handler(sig, frame):
 signal.signal(signal.SIGINT, signal_handler)
 
 # Run the scheduler in a background thread
+<<<<<<< Updated upstream
 # start_scheduler_in_background() # Comment out for local testing
+=======
+#start_scheduler_in_background() # Comment out for local testing
+>>>>>>> Stashed changes
 
 
 if __name__ == "__main__":

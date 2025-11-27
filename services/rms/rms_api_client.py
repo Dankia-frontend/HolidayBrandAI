@@ -1,14 +1,133 @@
 import httpx
-from typing import Dict, List
-from .rms_auth import rms_auth
+from typing import Dict, List, Optional
 import os
+from datetime import datetime, timedelta
+
 
 class RMSApiClient:
-    def __init__(self):
+    def __init__(self, credentials: dict = None):
+        """
+        Initialize RMS API Client with optional credentials.
+        
+        Args:
+            credentials: dict with location_id, client_id, client_pass (decrypted), agent_id
+                        If not provided, will try to load from environment variables.
+        """
         self.base_url = os.getenv("RMS_BASE_URL", "https://restapi8.rmscloud.com")
+        self.credentials = credentials
+        self._token: Optional[str] = None
+        self._token_expiry: Optional[datetime] = None
+    
+    @property
+    def auth_agent_id(self) -> int:
+        """Agent ID for authentication - always from env var RMS_AGENT_ID"""
+        return int(os.getenv("RMS_AGENT_ID", "0"))
+    
+    @property
+    def query_agent_id(self) -> int:
+        """Agent ID for queries (availability, reservations) - from database credentials"""
+        if self.credentials:
+            return self.credentials.get('agent_id')
+        return int(os.getenv("RMS_QUERY_AGENT_ID", "0"))
+    
+    @property
+    def agent_password(self) -> str:
+        return os.getenv("RMS_AGENT_PASSWORD", "")
+    
+    @property
+    def client_id(self) -> int:
+        if self.credentials:
+            return self.credentials.get('client_id')
+        return int(os.getenv("RMS_CLIENT_ID", "0"))
+    
+    @property
+    def client_password(self) -> str:
+        if self.credentials:
+            return self.credentials.get('client_pass')  # Already decrypted
+        return os.getenv("RMS_CLIENT_PASSWORD", "")
+    
+    @property
+    def use_training_db(self) -> bool:
+        return os.getenv("RMS_USE_TRAINING", "false").lower() == "true"
+    
+    async def _get_token(self) -> str:
+        """Get or generate authentication token"""
+        if self._token and self._token_expiry:
+            if datetime.now() < self._token_expiry:
+                print(f"🔑 Using cached token (expires: {self._token_expiry})")
+                return self._token
+        
+        print("🔄 Token expired or missing, generating new token...")
+        return await self._generate_token()
+    
+    async def _generate_token(self) -> str:
+        """Generate a new authentication token"""
+        url = f"{self.base_url}/authToken"
+        payload = {
+            "agentId": self.auth_agent_id,  # Use auth agent ID from env (RMS_AGENT_ID)
+            "agentPassword": self.agent_password,
+            "clientId": self.client_id,
+            "clientPassword": self.client_password,
+            "useTrainingDatabase": self.use_training_db,
+            "moduleType": ["guestservices"]
+        }
+        
+        print(f"📡 Requesting token from: {url}")
+        print(f"   Auth Agent ID (from env RMS_AGENT_ID): {self.auth_agent_id}")
+        print(f"   Agent Password: {'*' * len(self.agent_password) if self.agent_password else 'NOT SET!'}")
+        print(f"   Client ID (from DB): {self.client_id}")
+        print(f"   Client Password: {'*' * len(self.client_password) if self.client_password else 'NOT SET!'}")
+        print(f"   Query Agent ID (from DB agent_id): {self.query_agent_id}")
+        print(f"   Use Training: {self.use_training_db}")
+        
+        try:
+            async with httpx.AsyncClient() as client:
+                response = await client.post(url, json=payload, timeout=30.0)
+                
+                print(f"   Response Status: {response.status_code}")
+                
+                if response.status_code != 200:
+                    print(f"   Error Response: {response.text}")
+                
+                response.raise_for_status()
+                data = response.json()
+                
+                self._token = data.get("token")
+                expiry_str = data.get("expiryDate")
+                
+                if not self._token:
+                    print(f"   Response Data: {data}")
+                    raise Exception("No token received from RMS API")
+                
+                if expiry_str:
+                    try:
+                        self._token_expiry = datetime.fromisoformat(expiry_str.replace('Z', '+00:00'))
+                    except:
+                        self._token_expiry = datetime.now() + timedelta(hours=24)
+                
+                print(f"✅ RMS token generated successfully")
+                print(f"   Token: {self._token[:20]}...")
+                print(f"   Expires: {self._token_expiry}")
+                
+                return self._token
+                
+        except httpx.HTTPError as e:
+            print(f"❌ HTTP error during token generation: {e}")
+            if hasattr(e, 'response'):
+                print(f"   Response body: {e.response.text}")
+            raise
+        except Exception as e:
+            print(f"❌ Error generating token: {e}")
+            raise
+    
+    def _clear_token_cache(self):
+        """Clear the token cache"""
+        self._token = None
+        self._token_expiry = None
+        print("🗑️ Token cache cleared")
     
     async def _make_request(self, method: str, endpoint: str, **kwargs) -> Dict:
-        token = await rms_auth.get_token()
+        token = await self._get_token()
         
         headers = {
             "authtoken": token,
@@ -41,9 +160,9 @@ class RMSApiClient:
                 
                 if response.status_code == 401:
                     print("⚠️ 401 Unauthorized - clearing token cache and retrying...")
-                    rms_auth.clear_cache()
+                    self._clear_token_cache()
                     
-                    new_token = await rms_auth.get_token()
+                    new_token = await self._get_token()
                     headers["authtoken"] = new_token
                     
                     print(f"🔄 Retrying {method} {url}")
@@ -69,7 +188,6 @@ class RMSApiClient:
                 
         except httpx.HTTPStatusError as e:
             print(f"❌ HTTP {e.response.status_code}: {e.response.text}")
-            # Try to parse error response for field names
             try:
                 error_data = e.response.json()
                 print(f"❌ Error details: {error_data}")
@@ -105,55 +223,15 @@ class RMSApiClient:
     async def search_reservations(self, payload: Dict) -> List[Dict]:
         return await self._make_request("POST", "/reservations/search", json=payload)
     
-    async def get_account(self, account_id: int) -> Dict:
-        payload = {
-            "accountClass": "Guest",
-            "ids": [account_id]
-        }
-        results = await self._make_request("POST", "/accounts/search", json=payload)
-        # The API may return a list or dict; normalize to a single account dict
-        if isinstance(results, list) and results:
-            return results[0]
-        elif isinstance(results, dict):
-            # Some APIs return {"items": [...]}
-            items = results.get("items") or results.get("accounts") or results.get("data") or []
-            if isinstance(items, list) and items:
-                return items[0]
-            return results
-        return {}
-    
     async def search_guests(self, payload: Dict) -> List[Dict]:
         return await self._make_request("POST", "/guests/search", json=payload)
     
     async def create_guest(self, payload: Dict) -> Dict:
-        """
-        Create a new guest account in RMS.
-        
-        Args:
-            payload: Guest information including:
-                - propertyId (required)
-                - guestGiven (required)
-                - guestSurname (required)
-                - email (required)
-                - mobile (optional)
-                - address1, city, state, postcode, country (optional)
-        
-        Returns:
-            Created guest data with guest ID
-        """
         return await self._make_request("POST", "/guests", json=payload)
     
     async def get_areas(self, property_id: int) -> List[Dict]:
-        """
-        Get all areas/channels for a property.
-        Areas represent booking sources/channels (e.g., Direct, Online, Walk-in, etc.)
-        
-        Args:
-            property_id: The property ID
-            
-        Returns:
-            List of area/channel objects with id, name, etc.
-        """
         return await self._make_request("GET", f"/areas?propertyId={property_id}")
 
+
+# Create a default instance for backward compatibility
 rms_client = RMSApiClient()

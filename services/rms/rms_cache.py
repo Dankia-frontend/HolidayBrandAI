@@ -10,10 +10,43 @@ class RMSCache:
     def __init__(self):
         self.property_id: Optional[int] = None
         self.agent_id: Optional[int] = None
+        self.client_id: Optional[int] = None  # Track which client/park this cache belongs to
+        self.location_id: Optional[str] = None  # Track location_id from DB
         self.categories_cache: Dict[int, Dict] = {}
         self.rates_cache: Dict[int, Dict] = {}
         self.areas_cache: List[Dict] = []
-        self.agent_id = int(os.getenv("RMS_AGENT_ID", "1010"))
+        
+        # Don't load from env vars directly - will be loaded from DB
+        self._credentials_loaded = False
+    
+    def _load_credentials_from_db(self):
+        """Load client_id and agent_id from database"""
+        if self._credentials_loaded:
+            return
+            
+        try:
+            from utils.rms_db import get_current_rms_instance
+            instance = get_current_rms_instance()
+            
+            if instance:
+                self.client_id = instance.get('client_id')
+                self.agent_id = instance.get('agent_id')
+                self.location_id = instance.get('location_id')
+                self._credentials_loaded = True
+                print(f"✅ RMS Cache: Loaded credentials from DB - client_id={self.client_id}, agent_id={self.agent_id}")
+            else:
+                # Fallback to environment variables if no instance set
+                print("⚠️ RMS Cache: No instance set in DB, falling back to env vars")
+                self.agent_id = int(os.getenv("RMS_AGENT_ID", "1010"))
+                self.client_id = int(os.getenv("RMS_CLIENT_ID", "0"))
+                self._credentials_loaded = True
+        except Exception as e:
+            print(f"⚠️ RMS Cache: Error loading from DB, using env vars: {e}")
+            self.agent_id = int(os.getenv("RMS_AGENT_ID", "1010"))
+            self.client_id = int(os.getenv("RMS_CLIENT_ID", "0"))
+            self._credentials_loaded = True
+        
+        # Load cache from file after credentials are loaded
         self._load_from_file()
     
     def _get_client(self):
@@ -26,19 +59,49 @@ class RMSCache:
             try:
                 with open(CACHE_FILE, 'r') as f:
                     data = json.load(f)
+                    
+                    # Check if cache belongs to current client/park
+                    cached_client_id = data.get('client_id')
+                    
+                    # Clear cache if: no client_id stored (old cache) OR client_id doesn't match
+                    if cached_client_id is None or cached_client_id != self.client_id:
+                        if cached_client_id is None:
+                            print(f"⚠️ Cache has no client_id (legacy cache) - clearing...")
+                        else:
+                            print(f"⚠️ Cache is for different park (client_id {cached_client_id} vs current {self.client_id})")
+                        print(f"🗑️ Clearing stale cache...")
+                        self._clear_cache_file()
+                        return
+                    
                     self.property_id = data.get('property_id')
                     self.areas_cache = data.get('areas_cache', [])
                     self.categories_cache = data.get('categories_cache', {})
                     self.rates_cache = {
                         int(k): v for k, v in data.get('rates_cache', {}).items()
                     }
-                    print(f"✅ RMS cache loaded from file")
+                    print(f"✅ RMS cache loaded from file (client_id: {self.client_id})")
             except Exception as e:
                 print(f"⚠️ Error loading RMS cache: {e}")
+    
+    def _clear_cache_file(self):
+        """Remove the cache file to force re-initialization"""
+        try:
+            if os.path.exists(CACHE_FILE):
+                os.remove(CACHE_FILE)
+                print(f"✅ Cache file removed")
+            # Reset in-memory cache
+            self.property_id = None
+            self.areas_cache = []
+            self.categories_cache = {}
+            self.rates_cache = {}
+        except Exception as e:
+            print(f"⚠️ Error clearing cache file: {e}")
     
     def _save_to_file(self):
         try:
             data = {
+                'client_id': self.client_id,  # Store client_id to detect park changes
+                'location_id': self.location_id,  # Also store location_id
                 'property_id': self.property_id,
                 'areas_cache': self.areas_cache,
                 'categories_cache': self.categories_cache,
@@ -51,14 +114,58 @@ class RMSCache:
         except Exception as e:
             print(f"⚠️ Error saving RMS cache: {e}")
     
+    def set_credentials(self, client_id: int, agent_id: int, location_id: str = None):
+        """
+        Manually set credentials (used when loading from database)
+        """
+        # Check if credentials changed
+        if self.client_id != client_id:
+            print(f"🔄 Client ID changed from {self.client_id} to {client_id} - clearing cache")
+            self._clear_cache_file()
+        
+        self.client_id = client_id
+        self.agent_id = agent_id
+        self.location_id = location_id
+        self._credentials_loaded = True
+        
+        print(f"✅ RMS Cache: Credentials set - client_id={client_id}, agent_id={agent_id}")
+    
+    def set_credentials_from_instance(self, instance: dict):
+        """
+        Set credentials from an RMS instance dictionary
+        """
+        if not instance:
+            raise ValueError("Instance dictionary is required")
+        
+        client_id = instance.get('client_id')
+        agent_id = instance.get('agent_id')
+        location_id = instance.get('location_id')
+        
+        # Check if credentials changed
+        if self.client_id != client_id:
+            print(f"🔄 Client ID changed from {self.client_id} to {client_id} - clearing cache")
+            self._clear_cache_file()
+        
+        self.client_id = client_id
+        self.agent_id = agent_id
+        self.location_id = location_id
+        self._credentials_loaded = True
+        
+        print(f"✅ RMS Cache: Credentials set from instance - location={location_id}")
+    
     async def initialize(self):
         """Initialize RMS cache with property data"""
+        # Ensure credentials are loaded first
+        self._load_credentials_from_db()
+        
         if self.property_id:
-            print(f"✅ RMS already initialized: Property {self.property_id}, Agent {self.agent_id}")
+            print(f"✅ RMS already initialized: Property {self.property_id}, Agent {self.agent_id}, Client {self.client_id}")
             return
         
         print("🔧 Initializing RMS cache...")
-        print(f"   Agent ID from config: {self.agent_id}")
+        print(f"   Agent ID: {self.agent_id}")
+        print(f"   Client ID: {self.client_id}")
+        print(f"   Location ID: {self.location_id}")
         
         client = self._get_client()
         
@@ -237,15 +344,33 @@ class RMSCache:
         return self.property_id
     
     def get_agent_id(self) -> Optional[int]:
+        self._load_credentials_from_db()
         return self.agent_id
     
+    def get_client_id(self) -> Optional[int]:
+        self._load_credentials_from_db()
+        return self.client_id
+    
+    def get_location_id(self) -> Optional[str]:
+        self._load_credentials_from_db()
+        return self.location_id
+    
     def get_stats(self) -> Dict:
+        self._load_credentials_from_db()
         return {
+            'location_id': self.location_id,
+            'client_id': self.client_id,
             'property_id': self.property_id,
             'agent_id': self.agent_id,
             'cached_areas': len(self.areas_cache),
             'cached_categories': len(self.categories_cache),
             'cached_rate_plans': len(self.rates_cache)
         }
+    
+    def reload_credentials(self):
+        """Force reload credentials from database"""
+        self._credentials_loaded = False
+        self._clear_cache_file()
+        self._load_credentials_from_db()
 
 rms_cache = RMSCache()
