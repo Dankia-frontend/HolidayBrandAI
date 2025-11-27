@@ -1,41 +1,43 @@
 from fastapi import APIRouter, HTTPException, Depends, Query, Header
 from typing import Optional
 from services.rms.rms_service import RMSService
-from middleware.auth import verify_token
+from middleware.auth import authenticate_request
 from utils.rms_db import get_rms_instance
 
 router = APIRouter(prefix="/api/rms", tags=["RMS"])
 
 
-async def get_rms_credentials(location_id: str = Header(..., description="RMS Location ID")):
+async def get_rms_credentials(x_location_id: str = Header(..., alias="X-Location-ID")):
     """
     Dependency to fetch RMS credentials from database based on location_id header.
     Returns the RMS instance dict with decrypted credentials.
-    """
-    print(f"📥 Received location_id header: {location_id}")
     
-    instance = get_rms_instance(location_id)
+    Note: Uses X-Location-ID header (matching Newbook pattern) for consistency
+    """
+    print(f"📥 Received X-Location-ID header: {x_location_id}")
+    
+    instance = get_rms_instance(x_location_id)
     if not instance:
         raise HTTPException(
             status_code=404, 
-            detail=f"RMS instance not found for location_id: {location_id}"
+            detail=f"RMS instance not found for location_id: {x_location_id}"
         )
     
     # Validate required fields
     if not instance.get('client_id'):
         raise HTTPException(
             status_code=400,
-            detail=f"client_id not configured for location_id: {location_id}"
+            detail=f"client_id not configured for location_id: {x_location_id}"
         )
     if not instance.get('client_pass'):
         raise HTTPException(
             status_code=400,
-            detail=f"client_pass not configured or decryption failed for location_id: {location_id}"
+            detail=f"client_pass not configured or decryption failed for location_id: {x_location_id}"
         )
     if not instance.get('agent_id'):
         raise HTTPException(
             status_code=400,
-            detail=f"agent_id not configured for location_id: {location_id}"
+            detail=f"agent_id not configured for location_id: {x_location_id}"
         )
     
     print(f"✅ RMS credentials loaded: client_id={instance.get('client_id')}, agent_id={instance.get('agent_id')}")
@@ -49,7 +51,7 @@ async def search_availability(
     adults: int = Query(2, description="Number of adults"),
     children: int = Query(0, description="Number of children"),
     room_keyword: Optional[str] = Query(None, description="Optional room keyword to filter by"),
-    token: str = Depends(verify_token),
+    x_ai_agent_key: str = Depends(authenticate_request),
     rms_credentials: dict = Depends(get_rms_credentials)
 ):
     """Search for available rooms"""
@@ -86,7 +88,7 @@ async def create_reservation(
     guest_lastName: str = Query(..., description="Guest last name"),
     guest_email: str = Query(..., description="Guest email"),
     guest_phone: Optional[str] = Query(None, description="Guest phone number"),
-    token: str = Depends(verify_token),
+    x_ai_agent_key: str = Depends(authenticate_request),
     rms_credentials: dict = Depends(get_rms_credentials)
 ):
     """Create a new reservation"""
@@ -119,7 +121,7 @@ async def create_reservation(
 @router.get("/reservations/{reservation_id}")
 async def get_reservation(
     reservation_id: int,
-    token: str = Depends(verify_token),
+    x_ai_agent_key: str = Depends(authenticate_request),
     rms_credentials: dict = Depends(get_rms_credentials)
 ):
     """Get reservation details"""
@@ -138,7 +140,7 @@ async def get_reservation(
 @router.delete("/reservations/{reservation_id}")
 async def cancel_reservation(
     reservation_id: int,
-    token: str = Depends(verify_token),
+    x_ai_agent_key: str = Depends(authenticate_request),
     rms_credentials: dict = Depends(get_rms_credentials)
 ):
     """Cancel a reservation"""
