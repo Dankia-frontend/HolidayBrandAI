@@ -11,6 +11,24 @@ NB_HEADERS = {
     "Authorization": f"Basic {_encoded_credentials}",
 }
 
+def extract_max_occupancy(tariffs_quoted):
+    """
+    Helper to extract base_max_adults and base_max_children from tariffs_quoted.
+    Returns tuple (base_max_adults, base_max_children) or (None, None) if not found.
+    """
+    if not isinstance(tariffs_quoted, dict) or not tariffs_quoted:
+        return None, None
+    
+    try:
+        first_date_key = next(iter(tariffs_quoted.keys()))
+        quote_data = tariffs_quoted.get(first_date_key) or {}
+        base_max_adults = quote_data.get("base_max_adults")
+        base_max_children = quote_data.get("base_max_children")
+        return base_max_adults, base_max_children
+    except (StopIteration, AttributeError, TypeError):
+        return None, None
+
+
 def get_tariff_information(period_from, period_to, adults, children, category_id, daily_mode, api_key=None, region=None, tariff_label=None):
     """
     Helper to get tariff information from NewBook availability API.
@@ -59,6 +77,7 @@ def get_tariff_information(period_from, period_to, adults, children, category_id
                         print(f"[TARIFF_HELPER] Found matching tariff: {tariff_label}")
                         tariff_id = None
                         tariffs_quoted = tariff.get("tariffs_quoted", {})
+                        base_max_adults, base_max_children = extract_max_occupancy(tariffs_quoted)
                         if tariffs_quoted:
                             first_date = next(iter(tariffs_quoted.keys()))
                             tariff_applied_data = tariffs_quoted[first_date]
@@ -73,6 +92,8 @@ def get_tariff_information(period_from, period_to, adults, children, category_id
                             "special_deal": tariff["special_deal"],
                             "tariff_code": tariff.get("tariff_code", 0),
                             "tariff_id": tariff_id,
+                            "base_max_adults": base_max_adults,
+                            "base_max_children": base_max_children,
                             "tariffs_available": [tariff]
                         }
                 print(f"[TARIFF_HELPER] Warning: Tariff '{tariff_label}' not found, using first available")
@@ -83,6 +104,7 @@ def get_tariff_information(period_from, period_to, adults, children, category_id
 
                 tariff_id = None
                 tariffs_quoted = first_tariff.get("tariffs_quoted", {})
+                base_max_adults, base_max_children = extract_max_occupancy(tariffs_quoted)
                 if tariffs_quoted:
                     first_date = next(iter(tariffs_quoted.keys()))
                     tariff_applied_data = tariffs_quoted[first_date]
@@ -97,6 +119,8 @@ def get_tariff_information(period_from, period_to, adults, children, category_id
                     "special_deal": first_tariff["special_deal"],
                     "tariff_code": first_tariff.get("tariff_code", 0),
                     "tariff_id": tariff_id,
+                    "base_max_adults": base_max_adults,
+                    "base_max_children": base_max_children,
                     "tariffs_available": [first_tariff]
                 }
 

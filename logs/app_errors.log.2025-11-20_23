@@ -1,0 +1,5 @@
+2025-11-20 23:24:08,162 - [ERROR] - AppLogger.GHLIntegration - GHL Error Response: {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-20 23:24:18,836 - [ERROR] - AppLogger.GHLIntegration - GHL Error Response: {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-20 23:24:27,360 - [ERROR] - AppLogger.GHLIntegration - GHL Error Response: {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-20 23:24:37,153 - [ERROR] - AppLogger.GHLIntegration - GHL Error Response: {"statusCode":401,"message":"The token is not authorized for this scope."}
+2025-11-20 23:24:49,058 - [ERROR] - AppLogger.GHLIntegration - GHL Error Response: {"statusCode":401,"message":"The token is not authorized for this scope."}

@@ -17,15 +17,10 @@ GHL_OPPORTUNITY_URL = "https://services.leadconnectorhq.com/opportunities/"
 CACHE_FILE = "bookings_cache.json"
 
 def create_opportunities_from_newbook():
-    
-    # delete_opportunities_in_stage('3aeae130-f411-4ac7-bcca-271291fdc3b9')
-    # delete_opportunities_in_stage('b429a8e9-e73e-4590-b4c5-8ea1d65e0daf')
-    # delete_opportunities_in_stage('99912993-0e69-48f9-9943-096ae68408d7')
-    # delete_opportunities_in_stage('fc60b2fa-8c2d-4202-9347-ac2dd32a0e43')
-    # delete_opportunities_in_stage('8b54e5e5-27f3-463a-9d81-890c6dfd27eb')
-    print("[TEST] Starting job to fetch completed bookings...")
-
+    """Fetch bookings from NewBook and create opportunities in GHL."""
     try:
+        log.info("[OPPORTUNITY JOB] ===== Starting scheduled job to fetch bookings and create opportunities =====")
+        print("[TEST] Starting job to fetch completed bookings...")
         # --- Authentication ---
         user_pass = f"{USERNAME}:{PASSWORD}"
         encoded_credentials = base64.b64encode(user_pass.encode()).decode()
@@ -85,199 +80,239 @@ def create_opportunities_from_newbook():
                 #     json.dump(bookings, f, indent=2)
                 # print(f"[INFO] Saved {len(bookings)} bookings for {list_type} to {filepath}")
             except Exception as e:
+                log.error(f"[OPPORTUNITY JOB] Failed to fetch bookings for {list_type}: {e}")
                 print(f"[ERROR] Failed to fetch bookings for {list_type}: {e}")
 
+        # --- Use all bookings from all types for further processing ---
+        completed_bookings = []
+        for bookings in all_bookings_by_type.values():
+            completed_bookings.extend(bookings)
+        if not completed_bookings:
+            log.info("[OPPORTUNITY JOB] No completed bookings found.")
+            print("[TEST] No completed bookings found.")
+            return
+        
+        log.info(f"[OPPORTUNITY JOB] Processing {len(completed_bookings)} total bookings")
+
+        # --- Deduplicate bookings by booking_id ---
+        deduped_bookings_dict = {}
+        for b in completed_bookings:
+            deduped_bookings_dict[b["booking_id"]] = b
+        completed_bookings = list(deduped_bookings_dict.values())
+
+        # --- Load Cache ---
+        if os.path.exists(CACHE_FILE):
+            with open(CACHE_FILE, "r") as f:
+                cached_data = json.load(f)
+        else:
+            cached_data = {}
+
+        # --- Handle both old (list) and new (dict) formats ---
+        if isinstance(cached_data, list):
+            old_bookings = {b["booking_id"]: b for b in cached_data}
+        else:
+            old_bookings = {b["booking_id"]: b for b in cached_data.get("bookings", [])}
+
+        # --- New bookings dict ---
+        new_bookings = {b["booking_id"]: b for b in completed_bookings}
+
+        # --- Detect Changes ---
+        added = [b for b_id, b in new_bookings.items() if b_id not in old_bookings]
+        updated = [b for b_id, b in new_bookings.items() if b_id in old_bookings and b != old_bookings[b_id]]
+        removed = [b for b_id, b in old_bookings.items() if b_id not in new_bookings]
+
+        # --- Track deleted booking_ids to avoid duplicate deletes ---
+        deleted_booking_ids = set()
+
+        # --- Remove opportunities for bookings that are no longer present or changed stage ---
+        for b in removed + updated:
+            booking_id = b["booking_id"]
+            guests_list = b.get("guests", [])
+            if not guests_list:
+                log.warning(f"[OPPORTUNITY JOB] Booking {booking_id} has no guests, skipping deletion")
+                continue
+            guest = guests_list[0]
+            guest_firstname = guest.get("firstname", "")
+            guest_lastname = guest.get("lastname", "")
+            site_name = b.get("site_name", "")
+            booking_arrival = b.get("booking_arrival", "")
+            # Delete by booking_id (custom field) and by details (name match)
+            delete_opportunity_by_booking_id(
+                booking_id,
+                guest_firstname=guest_firstname,
+                guest_lastname=guest_lastname,
+                site_name=site_name,
+                booking_arrival=booking_arrival
+            )
+            delete_opportunity_by_booking_details(
+                guest_firstname,
+                guest_lastname,
+                site_name,
+                booking_arrival
+            )
+            deleted_booking_ids.add(booking_id)
+
+        # --- Use new bucket logic ---
+        bucket_dict = bucket_bookings(completed_bookings)
+        arriving_soon_ids = set()
+        arriving_today_ids = set()
+        today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+
+        # --- Delete GHL opportunities for cancelled bookings (only if not already deleted) ---
+        for b in bucket_dict["cancelled"]:
+            booking_id = b["booking_id"]
+            if booking_id in deleted_booking_ids:
+                continue  # Already deleted above
+            guests_list = b.get("guests", [])
+            if not guests_list:
+                log.warning(f"[OPPORTUNITY JOB] Cancelled booking {booking_id} has no guests, skipping deletion")
+                continue
+            guest = guests_list[0]
+            guest_firstname = guest.get("firstname", "")
+            guest_lastname = guest.get("lastname", "")
+            site_name = b.get("site_name", "")
+            booking_arrival = b.get("booking_arrival", "")
+            print(f"[CANCELLED] Booking {booking_id} is cancelled, deleting opportunity from GHL.")
+            delete_opportunity_by_booking_id(
+                booking_id,
+                guest_firstname=guest_firstname,
+                guest_lastname=guest_lastname,
+                site_name=site_name,
+                booking_arrival=booking_arrival
+            )
+            delete_opportunity_by_booking_details(
+                guest_firstname,
+                guest_lastname,
+                site_name,
+                booking_arrival
+            )
+            deleted_booking_ids.add(booking_id)
+
+        # --- Filter out bookings not for today or future in arriving_today ---
+        filtered_arriving_today = []
+        for b in bucket_dict["arriving_today"]:
+            arrival_str = b.get("booking_arrival")
+            if arrival_str:
+                arrival_dt = datetime.strptime(arrival_str, "%Y-%m-%d %H:%M:%S")
+                # Only keep bookings where arrival is today
+                if arrival_dt.date() == today.date():
+                    filtered_arriving_today.append(b)
+                    arriving_today_ids.add(b["booking_id"])
+                else:
+                    print(f"[CLEANUP] Booking {b['booking_id']} in arriving_today is for previous/future day ({arrival_dt.date()}), deleting opportunity.")
+                    delete_opportunity_by_booking_id(b["booking_id"])
+            else:
+                print(f"[CLEANUP] Booking {b['booking_id']} in arriving_today has no arrival date, deleting opportunity.")
+                delete_opportunity_by_booking_id(b["booking_id"])
+        bucket_dict["arriving_today"] = filtered_arriving_today
+
+        # --- Filter out bookings not for future in arriving_soon ---
+        filtered_arriving_soon = []
+        for b in bucket_dict["arriving_soon"]:
+            arrival_str = b.get("booking_arrival")
+            if arrival_str:
+                arrival_dt = datetime.strptime(arrival_str, "%Y-%m-%d %H:%M:%S")
+                # Only keep bookings where arrival is after today
+                if arrival_dt.date() > today.date():
+                    filtered_arriving_soon.append(b)
+                    arriving_soon_ids.add(b["booking_id"])
+                else:
+                    print(f"[CLEANUP] Booking {b['booking_id']} in arriving_soon is for today/past ({arrival_dt.date()}), deleting opportunity.")
+                    delete_opportunity_by_booking_id(b["booking_id"])
+            else:
+                print(f"[CLEANUP] Booking {b['booking_id']} in arriving_soon has no arrival date, deleting opportunity.")
+                delete_opportunity_by_booking_id(b["booking_id"])
+        bucket_dict["arriving_soon"] = filtered_arriving_soon
+
+        # --- Remove from arriving_soon if now in arriving_today ---
+        for booking_id in arriving_soon_ids & arriving_today_ids:
+            print(f"[CLEANUP] Booking {booking_id} moved from arriving_soon to arriving_today, deleting from arriving_soon stage.")
+            delete_opportunity_by_booking_id(booking_id)
+
+        # --- Remove from arriving_today if person was supposed to arrive yesterday but did not ---
+        yesterday = today - timedelta(days=1)
+        for b in bucket_dict["arriving_today"]:
+            arrival_str = b.get("booking_arrival")
+            if arrival_str:
+                arrival_dt = datetime.strptime(arrival_str, "%Y-%m-%d %H:%M:%S")
+                if arrival_dt.date() == yesterday.date() and b.get("booking_status", "").lower() != "arrived":
+                    print(f"[CLEANUP] Booking {b['booking_id']} was supposed to arrive yesterday but did not, deleting from arriving_today stage.")
+                    delete_opportunity_by_booking_id(b["booking_id"])
+
+        # --- Process Changes ---
+        if not (added or updated):
+            log.info("[OPPORTUNITY JOB] No new or updated bookings detected — cache is up to date.")
+            print("[TEST] No new or updated bookings detected — cache is up to date.")
+        else:
+            log.info(f"[OPPORTUNITY JOB] Found {len(added)} new bookings and {len(updated)} updated bookings")
+            all_changes = added + updated
+            bucket_dict_changes = bucket_bookings(all_changes)
+            
+            opportunities_created = 0
+            opportunities_failed = 0
+            
+            for bucket, bookings in bucket_dict_changes.items():
+                if bookings:
+                    # write_bucket_file(bucket, bookings)
+                    for b in bookings:
+                        if bucket != "cancelled":
+                            # --- Delete from GHL if already exists before sending ---
+                            guests_list = b.get("guests", [])
+                            if not guests_list:
+                                log.warning(f"[OPPORTUNITY JOB] Booking {b.get('booking_id', 'unknown')} has no guests, skipping")
+                                opportunities_failed += 1
+                                continue
+                            guest = guests_list[0]
+                            guest_firstname = guest.get("firstname", "")
+                            guest_lastname = guest.get("lastname", "")
+                            site_name = b.get("site_name", "")
+                            booking_arrival = b.get("booking_arrival", "")
+                            # Delete by booking_id (custom field) and by details (name match) before sending
+                            delete_opportunity_by_booking_id(
+                                b["booking_id"],
+                                guest_firstname=guest_firstname,
+                                guest_lastname=guest_lastname,
+                                site_name=site_name,
+                                booking_arrival=booking_arrival
+                            )
+                            delete_opportunity_by_booking_details(
+                                guest_firstname,
+                                guest_lastname,
+                                site_name,
+                                booking_arrival
+                            )
+                            access_token = get_valid_access_token(GHL_CLIENT_ID, GHL_CLIENT_SECRET)
+                            if not access_token:
+                                log.error(f"[OPPORTUNITY JOB] Failed to get valid access token for booking {b['booking_id']}. Skipping GHL sync.")
+                                print(f"[GHL ERROR] No valid access token available. Skipping booking {b['booking_id']}")
+                                opportunities_failed += 1
+                                continue  # Skip this booking instead of sending with None token
+                            
+                            try:
+                                send_to_ghl(b, access_token)
+                                opportunities_created += 1
+                                log.info(f"[OPPORTUNITY JOB] Successfully sent booking {b['booking_id']} to GHL")
+                            except Exception as e:
+                                log.error(f"[OPPORTUNITY JOB] Failed to send booking {b['booking_id']} to GHL: {e}")
+                                opportunities_failed += 1
+                        else:
+                            log.debug(f"[OPPORTUNITY JOB] Skipping cancelled booking {b['booking_id']}")
+                            print(f"[SKIP] Booking {b['booking_id']} is cancelled or no-show, skipping...")
+
+            log.info(f"[OPPORTUNITY JOB] Job completed: {opportunities_created} opportunities created, {opportunities_failed} failed")
+
+            # --- Update Cache ---
+            with open(CACHE_FILE, "w") as f:
+                json.dump({"bookings": completed_bookings}, f, indent=2)
+            log.info("[OPPORTUNITY JOB] Cache updated with latest data.")
+            print("[TEST] Cache updated with latest data.")
+        
+        log.info(f"[OPPORTUNITY JOB] ===== Job finished. Total bookings processed: {len(completed_bookings)} =====")
+        print(f"[TEST] Total Bookings Fetched: {len(completed_bookings)}")
     except Exception as e:
-        log.exception(f"Failed to fetch completed bookings: {e}")
-        print(f"[ERROR] Failed to fetch completed bookings: {e}")
-        return
-
-    # --- Use all bookings from all types for further processing ---
-    completed_bookings = []
-    for bookings in all_bookings_by_type.values():
-        completed_bookings.extend(bookings)
-    if not completed_bookings:
-        print("[TEST] No completed bookings found.")
-        return
-
-    # --- Deduplicate bookings by booking_id ---
-    deduped_bookings_dict = {}
-    for b in completed_bookings:
-        deduped_bookings_dict[b["booking_id"]] = b
-    completed_bookings = list(deduped_bookings_dict.values())
-
-    # --- Load Cache ---
-    if os.path.exists(CACHE_FILE):
-        with open(CACHE_FILE, "r") as f:
-            cached_data = json.load(f)
-    else:
-        cached_data = {}
-
-    # --- Handle both old (list) and new (dict) formats ---
-    if isinstance(cached_data, list):
-        old_bookings = {b["booking_id"]: b for b in cached_data}
-    else:
-        old_bookings = {b["booking_id"]: b for b in cached_data.get("bookings", [])}
-
-    # --- New bookings dict ---
-    new_bookings = {b["booking_id"]: b for b in completed_bookings}
-
-    # --- Detect Changes ---
-    added = [b for b_id, b in new_bookings.items() if b_id not in old_bookings]
-    updated = [b for b_id, b in new_bookings.items() if b_id in old_bookings and b != old_bookings[b_id]]
-    removed = [b for b_id, b in old_bookings.items() if b_id not in new_bookings]
-
-    # --- Track deleted booking_ids to avoid duplicate deletes ---
-    deleted_booking_ids = set()
-
-    # --- Remove opportunities for bookings that are no longer present or changed stage ---
-    for b in removed + updated:
-        booking_id = b["booking_id"]
-        guest = b.get("guests", [{}])[0]
-        guest_firstname = guest.get("firstname", "")
-        guest_lastname = guest.get("lastname", "")
-        site_name = b.get("site_name", "")
-        booking_arrival = b.get("booking_arrival", "")
-        # Delete by booking_id (custom field) and by details (name match)
-        delete_opportunity_by_booking_id(
-            booking_id,
-            guest_firstname=guest_firstname,
-            guest_lastname=guest_lastname,
-            site_name=site_name,
-            booking_arrival=booking_arrival
-        )
-        delete_opportunity_by_booking_details(
-            guest_firstname,
-            guest_lastname,
-            site_name,
-            booking_arrival
-        )
-        deleted_booking_ids.add(booking_id)
-
-    # --- Use new bucket logic ---
-    bucket_dict = bucket_bookings(completed_bookings)
-    arriving_soon_ids = set()
-    arriving_today_ids = set()
-    today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-
-    # --- Delete GHL opportunities for cancelled bookings (only if not already deleted) ---
-    for b in bucket_dict["cancelled"]:
-        booking_id = b["booking_id"]
-        if booking_id in deleted_booking_ids:
-            continue  # Already deleted above
-        guest = b.get("guests", [{}])[0]
-        guest_firstname = guest.get("firstname", "")
-        guest_lastname = guest.get("lastname", "")
-        site_name = b.get("site_name", "")
-        booking_arrival = b.get("booking_arrival", "")
-        print(f"[CANCELLED] Booking {booking_id} is cancelled, deleting opportunity from GHL.")
-        delete_opportunity_by_booking_id(
-            booking_id,
-            guest_firstname=guest_firstname,
-            guest_lastname=guest_lastname,
-            site_name=site_name,
-            booking_arrival=booking_arrival
-        )
-        delete_opportunity_by_booking_details(
-            guest_firstname,
-            guest_lastname,
-            site_name,
-            booking_arrival
-        )
-        deleted_booking_ids.add(booking_id)
-
-    # --- Filter out bookings not for today or future in arriving_today ---
-    filtered_arriving_today = []
-    for b in bucket_dict["arriving_today"]:
-        arrival_str = b.get("booking_arrival")
-        if arrival_str:
-            arrival_dt = datetime.strptime(arrival_str, "%Y-%m-%d %H:%M:%S")
-            # Only keep bookings where arrival is today
-            if arrival_dt.date() == today.date():
-                filtered_arriving_today.append(b)
-                arriving_today_ids.add(b["booking_id"])
-            else:
-                print(f"[CLEANUP] Booking {b['booking_id']} in arriving_today is for previous/future day ({arrival_dt.date()}), deleting opportunity.")
-                delete_opportunity_by_booking_id(b["booking_id"])
-        else:
-            print(f"[CLEANUP] Booking {b['booking_id']} in arriving_today has no arrival date, deleting opportunity.")
-            delete_opportunity_by_booking_id(b["booking_id"])
-    bucket_dict["arriving_today"] = filtered_arriving_today
-
-    # --- Filter out bookings not for future in arriving_soon ---
-    filtered_arriving_soon = []
-    for b in bucket_dict["arriving_soon"]:
-        arrival_str = b.get("booking_arrival")
-        if arrival_str:
-            arrival_dt = datetime.strptime(arrival_str, "%Y-%m-%d %H:%M:%S")
-            # Only keep bookings where arrival is after today
-            if arrival_dt.date() > today.date():
-                filtered_arriving_soon.append(b)
-                arriving_soon_ids.add(b["booking_id"])
-            else:
-                print(f"[CLEANUP] Booking {b['booking_id']} in arriving_soon is for today/past ({arrival_dt.date()}), deleting opportunity.")
-                delete_opportunity_by_booking_id(b["booking_id"])
-        else:
-            print(f"[CLEANUP] Booking {b['booking_id']} in arriving_soon has no arrival date, deleting opportunity.")
-            delete_opportunity_by_booking_id(b["booking_id"])
-    bucket_dict["arriving_soon"] = filtered_arriving_soon
-
-    # --- Remove from arriving_soon if now in arriving_today ---
-    for booking_id in arriving_soon_ids & arriving_today_ids:
-        print(f"[CLEANUP] Booking {booking_id} moved from arriving_soon to arriving_today, deleting from arriving_soon stage.")
-        delete_opportunity_by_booking_id(booking_id)
-
-    # --- Remove from arriving_today if person was supposed to arrive yesterday but did not ---
-    yesterday = today - timedelta(days=1)
-    for b in bucket_dict["arriving_today"]:
-        arrival_str = b.get("booking_arrival")
-        if arrival_str:
-            arrival_dt = datetime.strptime(arrival_str, "%Y-%m-%d %H:%M:%S")
-            if arrival_dt.date() == yesterday.date() and b.get("booking_status", "").lower() != "arrived":
-                print(f"[CLEANUP] Booking {b['booking_id']} was supposed to arrive yesterday but did not, deleting from arriving_today stage.")
-                delete_opportunity_by_booking_id(b["booking_id"])
-
-    # --- Process Changes ---
-    if not (added or updated):
-        print("[TEST] No new or updated bookings detected — cache is up to date.")
-    else:
-        all_changes = added + updated
-        bucket_dict_changes = bucket_bookings(all_changes)
-        for bucket, bookings in bucket_dict_changes.items():
-            if bookings:
-                # write_bucket_file(bucket, bookings)
-                for b in bookings:
-                    if bucket != "cancelled":
-                        # --- Delete from GHL if already exists before sending ---
-                        guest = b.get("guests", [{}])[0]
-                        guest_firstname = guest.get("firstname", "")
-                        guest_lastname = guest.get("lastname", "")
-                        site_name = b.get("site_name", "")
-                        booking_arrival = b.get("booking_arrival", "")
-                        # Delete by booking_id (custom field) and by details (name match) before sending
-                        delete_opportunity_by_booking_id(
-                            b["booking_id"],
-                            guest_firstname=guest_firstname,
-                            guest_lastname=guest_lastname,
-                            site_name=site_name,
-                            booking_arrival=booking_arrival
-                        )
-                        delete_opportunity_by_booking_details(
-                            guest_firstname,
-                            guest_lastname,
-                            site_name,
-                            booking_arrival
-                        )
-                        access_token = get_valid_access_token(GHL_CLIENT_ID, GHL_CLIENT_SECRET)
-                        send_to_ghl(b, access_token)
-                    else:
-                        print(f"[SKIP] Booking {b['booking_id']} is cancelled or no-show, skipping...")
-
-        # --- Update Cache ---
-        with open(CACHE_FILE, "w") as f:
-            json.dump({"bookings": completed_bookings}, f, indent=2)
-        print("[TEST] Cache updated with latest data.")
-    print(f"[TEST] Total Bookings Fetched: {len(completed_bookings)}")
+        log.exception(f"[OPPORTUNITY JOB] CRITICAL: Job failed with exception: {e}")
+        print(f"[CRITICAL ERROR] Job failed: {e}")
+        raise  # Re-raise to ensure scheduler knows it failed
 
 
 db_config = {
@@ -290,6 +325,20 @@ db_config = {
 
 # # 🧱 --- DATABASE HELPERS ---
 
+def get_ghl_token():
+    """
+    Get the GoHighLevel Private Integration Token.
+    This is a static token that doesn't expire.
+    """
+    from config.config import GHL_PRIVATE_INTEGRATION_TOKEN
+    
+    if not GHL_PRIVATE_INTEGRATION_TOKEN:
+        error_msg = "⚠️ GHL_PRIVATE_INTEGRATION_TOKEN is not set in .env file"
+        log.error(error_msg)
+        print(error_msg)
+        return None
+    
+    return GHL_PRIVATE_INTEGRATION_TOKEN
 
 
 def get_token_row():
@@ -324,6 +373,7 @@ def update_tokens(tokens):
 # # 🔄 --- TOKEN LOGIC ---
 
 def refresh_access_token(client_id, client_secret, refresh_token):
+    log.info("♻️ Refreshing GoHighLevel access token...")
     print("♻️ Refreshing GoHighLevel access token...")
     token_url = "https://services.leadconnectorhq.com/oauth/token"
     data = {
@@ -335,25 +385,37 @@ def refresh_access_token(client_id, client_secret, refresh_token):
 
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
     response = requests.post(token_url, data=data, headers=headers)
+    log.info(f"Token refresh response status: {response.status_code}")
     print("\n📥 Raw Response Status:", response.status_code)
     print("📥 Raw Response Body:", response.text)
-    print("📥 Raw Response Body:", response)
 
     if response.status_code != 200:
-        print("❌ Error refreshing token:", response.text)
+        error_msg = f"Error refreshing token: {response.status_code} - {response.text}"
+        log.error(error_msg)
+        print(f"❌ {error_msg}")
         return None
 
-    new_tokens = response.json()
-    print("✅ Token refreshed successfully.", response.json())
-    update_tokens(new_tokens)
-    print("✅ Token refreshed and updated in DB.")
-    return new_tokens.get("access_token")
+    try:
+        new_tokens = response.json()
+        log.info("✅ Token refreshed successfully")
+        print("✅ Token refreshed successfully.", new_tokens)
+        update_tokens(new_tokens)
+        log.info("✅ Token refreshed and updated in DB")
+        print("✅ Token refreshed and updated in DB.")
+        return new_tokens.get("access_token")
+    except Exception as e:
+        error_msg = f"Failed to parse token response: {e}"
+        log.error(error_msg)
+        print(f"❌ {error_msg}")
+        return None
 
 
 def get_valid_access_token(client_id, client_secret):
     token_data = get_token_row()
     if not token_data or not token_data["access_token"]:
-        print("⚠️ No token found in DB. Run initial authorization first.")
+        error_msg = "⚠️ No token found in DB. Run initial authorization first."
+        log.error(error_msg)
+        print(error_msg)
         return None
 
     created_at = token_data["created_at"]
@@ -362,13 +424,20 @@ def get_valid_access_token(client_id, client_secret):
 
     # Only refresh if expired
     if datetime.now() < expiry_time:
+        log.debug("✅ Access token still valid.")
         print("✅ Access token still valid.")
         return token_data["access_token"]
     else:
+        log.info("⏰ Access token expired, refreshing...")
         print("⏰ Access token expired, refreshing...")
-        return refresh_access_token(client_id, client_secret, token_data["refresh_token"])
+        refreshed_token = refresh_access_token(client_id, client_secret, token_data["refresh_token"])
+        if not refreshed_token:
+            log.error("⚠️ Failed to refresh access token. Token refresh returned None.")
+            print("⚠️ Failed to refresh access token. Token refresh returned None.")
+        return refreshed_token
     
-access_token = get_valid_access_token(GHL_CLIENT_ID, GHL_CLIENT_SECRET)
+# access_token = get_valid_access_token(GHL_CLIENT_ID, GHL_CLIENT_SECRET)
+access_token = get_ghl_token()
 
 def get_contact_id(token, location_id, first=None, last=None, email=None, phone=None):
     """
@@ -413,6 +482,10 @@ def get_contact_id(token, location_id, first=None, last=None, email=None, phone=
         return None
 # ✅ Helper function to send data to GHL (example)
 def send_to_ghl(booking, access_token, guest_info=None):
+    if not access_token:
+        log.error(f"[GHL] Cannot send booking {booking.get('booking_id')} - access token is None")
+        print(f"[GHL ERROR] Access token is None. Cannot send booking {booking.get('booking_id')}")
+        return
 
     try:
         # Use guest_info if provided, else fallback to booking['guests'][0]
@@ -422,7 +495,12 @@ def send_to_ghl(booking, access_token, guest_info=None):
             email = guest_info.get("email", "")
             phone = guest_info.get("phone", "")
         else:
-            guest = booking['guests'][0]
+            guests_list = booking.get('guests', [])
+            if not guests_list:
+                log.error(f"[GHL] Booking {booking.get('booking_id', 'unknown')} has no guests, cannot create opportunity")
+                print(f"[GHL ERROR] Booking has no guests, cannot create opportunity")
+                return
+            guest = guests_list[0]
             first_name = guest.get("firstname", "")
             last_name = guest.get("lastname", "")
             email = next((g.get("content") for g in guest.get("contact_details", []) if g["type"] == "email"), "")
@@ -516,7 +594,7 @@ def save_opportunities_for_stage(stage_id):
     Fetches all opportunities for a given stage_id (handles pagination)
     and saves them to a JSON file named {stage_id}_opportunities.json.
     """
-    access_token = get_valid_access_token(GHL_CLIENT_ID, GHL_CLIENT_SECRET)
+    access_token = get_ghl_token()
     if not access_token:
         print("No valid access token. Aborting fetch.")
         return
@@ -545,7 +623,7 @@ def delete_opportunities_in_stage(stage_id):
     Also saves the opportunities to a JSON file before deletion.
     """
     save_opportunities_for_stage(stage_id)
-    access_token = get_valid_access_token(GHL_CLIENT_ID, GHL_CLIENT_SECRET)
+    access_token = get_ghl_token()
     if not access_token:
         print("No valid access token. Aborting opportunity deletion.")
         return
@@ -577,7 +655,7 @@ def delete_opportunity_by_booking_id(booking_id, guest_firstname=None, guest_las
     If guest_firstname, guest_lastname, site_name, and booking_arrival are provided,
     will match the exact opportunity name format.
     """
-    access_token = get_valid_access_token(GHL_CLIENT_ID, GHL_CLIENT_SECRET)
+    access_token = get_ghl_token()
     if not access_token:
         print("No valid access token. Aborting opportunity deletion for booking_id:", booking_id)
         return
@@ -625,7 +703,7 @@ def delete_opportunity_by_booking_details(guest_firstname, guest_lastname, site_
     """
     Deletes all opportunities in GHL that match the exact opportunity name format.
     """
-    access_token = get_valid_access_token(GHL_CLIENT_ID, GHL_CLIENT_SECRET)
+    access_token = get_ghl_token()
     if not access_token:
         print("No valid access token. Aborting opportunity deletion for details:", guest_firstname, guest_lastname, site_name, booking_arrival)
         return
