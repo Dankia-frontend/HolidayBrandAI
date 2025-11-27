@@ -1561,3 +1561,22 @@ requests.exceptions.ConnectionError: ('Connection aborted.', RemoteDisconnected(
 2025-11-25 07:49:55,592 - [INFO] - AppLogger.FastAPI - ✅ RMS sync job scheduled (every 5 minutes, GHL sending disabled)
 2025-11-25 07:54:55,603 - [INFO] - AppLogger.FastAPI - [RMS SYNC] Starting RMS fetch_and_sync_bookings job...
 2025-11-25 07:55:01,952 - [INFO] - AppLogger.FastAPI - [RMS SYNC] Job completed: {'fetched': 100, 'contacts_upserted': 0, 'opportunities_created': 0, 'errors': 0, 'limit': 200, 'offset': 0, 'total': 100}
+2025-11-27 13:27:26,103 - [ERROR] - AppLogger.GHLIntegration - ⚠️ GHL_PRIVATE_INTEGRATION_TOKEN is not set in .env file
+2025-11-27 13:27:50,675 - [ERROR] - AppLogger.GHLIntegration - ⚠️ GHL_PRIVATE_INTEGRATION_TOKEN is not set in .env file
+2025-11-27 13:28:13,074 - [ERROR] - AppLogger.GHLIntegration - ⚠️ GHL_PRIVATE_INTEGRATION_TOKEN is not set in .env file
+2025-11-27 13:28:13,385 - [WARNING] - AppLogger.FastAPI - ⚠️ RMS_LOCATION_ID not set in environment - RMS will not be initialized from DB
+2025-11-27 13:28:14,141 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+2025-11-27 13:28:14,142 - [INFO] - AppLogger.FastAPI - ✅ RMS sync job scheduled (every 5 minutes, GHL sending disabled)
+2025-11-27 13:33:01,870 - [ERROR] - AppLogger.GHLIntegration - ⚠️ GHL_PRIVATE_INTEGRATION_TOKEN is not set in .env file
+2025-11-27 13:33:01,989 - [WARNING] - AppLogger.FastAPI - ⚠️ RMS_LOCATION_ID not set in environment - RMS will not be initialized from DB
+2025-11-27 13:33:03,090 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+2025-11-27 13:33:03,091 - [INFO] - AppLogger.FastAPI - ✅ RMS sync job scheduled (every 5 minutes, GHL sending disabled)
+2025-11-27 13:33:56,007 - [ERROR] - AppLogger.GHLIntegration - ⚠️ GHL_PRIVATE_INTEGRATION_TOKEN is not set in .env file
+2025-11-27 13:33:56,081 - [WARNING] - AppLogger.FastAPI - ⚠️ RMS_LOCATION_ID not set in environment - RMS will not be initialized from DB
+2025-11-27 13:33:56,728 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+2025-11-27 13:33:56,729 - [INFO] - AppLogger.FastAPI - ✅ RMS sync job scheduled (every 5 minutes, GHL sending disabled)
+2025-11-27 13:36:12,389 - [WARNING] - AppLogger.FastAPI - ⚠️ RMS_LOCATION_ID not set in environment - RMS will not be initialized from DB
+2025-11-27 13:36:15,008 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+2025-11-27 13:36:15,010 - [INFO] - AppLogger.FastAPI - ✅ RMS sync job scheduled (every 5 minutes, GHL sending disabled)
+2025-11-27 13:41:15,015 - [INFO] - AppLogger.FastAPI - [RMS SYNC] Starting RMS fetch_and_sync_bookings job...
+2025-11-27 13:41:15,016 - [ERROR] - AppLogger.FastAPI - [RMS SYNC] Job failed: 'RMSService' object has no attribute 'fetch_and_sync_bookings'

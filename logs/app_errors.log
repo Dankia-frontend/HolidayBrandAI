@@ -470,3 +470,9 @@ Traceback (most recent call last):
   File "D:\Projects\HolidayBrandAI\venv\Lib\site-packages\requests\adapters.py", line 659, in send
     raise ConnectionError(err, request=request)
 requests.exceptions.ConnectionError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2025-11-27 13:27:26,103 - [ERROR] - AppLogger.GHLIntegration - ⚠️ GHL_PRIVATE_INTEGRATION_TOKEN is not set in .env file
+2025-11-27 13:27:50,675 - [ERROR] - AppLogger.GHLIntegration - ⚠️ GHL_PRIVATE_INTEGRATION_TOKEN is not set in .env file
+2025-11-27 13:28:13,074 - [ERROR] - AppLogger.GHLIntegration - ⚠️ GHL_PRIVATE_INTEGRATION_TOKEN is not set in .env file
+2025-11-27 13:33:01,870 - [ERROR] - AppLogger.GHLIntegration - ⚠️ GHL_PRIVATE_INTEGRATION_TOKEN is not set in .env file
+2025-11-27 13:33:56,007 - [ERROR] - AppLogger.GHLIntegration - ⚠️ GHL_PRIVATE_INTEGRATION_TOKEN is not set in .env file
+2025-11-27 13:41:15,016 - [ERROR] - AppLogger.FastAPI - [RMS SYNC] Job failed: 'RMSService' object has no attribute 'fetch_and_sync_bookings'
