@@ -332,7 +332,7 @@ class RMSService:
         
         client = self._get_api_client()
         
-        # Step 1: Construct guest dictionary from flat parameters
+        # Step 1: Find or create guest
         guest = {
             'firstName': guest_firstName,
             'lastName': guest_lastName,
@@ -340,110 +340,27 @@ class RMSService:
             'phone': guest_phone
         }
         
-        # Step 2: Search for existing guest or create new one
-        print(f"Searching for guest: {guest.get('email')}")
-        guest_id = await self.search_or_create_guest(guest)
+        guest_id = await self._find_or_create_guest(guest)
         
         if not guest_id:
             raise Exception("Failed to create/find guest")
         
         print(f"Using guest ID: {guest_id}")
         
-        # Step 3: Calculate number of nights
+        # Step 2: Calculate nights
         arrival_date = datetime.fromisoformat(arrival)
         departure_date = datetime.fromisoformat(departure)
         nights = (departure_date - arrival_date).days
         
-        # Step 4: Verify availability using rates grid
-        print(f"Verifying availability for category {category_id} and rate {rate_plan_id}...")
-        
-        # Build the rates grid request
-        categories = await rms_cache.get_all_categories()
-        category_ids = [cat['id'] for cat in categories]
-        
-        all_rate_ids = []
-        for cat_id in category_ids:
-            rates = await rms_cache.get_rates_for_category(cat_id)
-            all_rate_ids.extend([rate['id'] for rate in rates])
-        
-        all_rate_ids = list(set(all_rate_ids))
-        
-        # using query agent for availability checks (typically agent ID 2 in RMS) which is now added in .env instead of hardcode.
-        # This agent has full visibility into availability across all channels
-        # now the booking agent (agent_id) is used for actual reservation creation
-        import os
-        query_agent_id = int(os.getenv("RMS_QUERY_AGENT_ID", "2"))
-        
-        payload = {
-            "propertyId": property_id,
-            "agentId": query_agent_id,  
-            "arrival": arrival,
-            "departure": departure,
-            "adults": adults,
-            "children": children,
-            "categoryIds": category_ids,
-            "rateIds": all_rate_ids,
-            "includeEstimatedRates": False,
-            "includeZeroRates": False
-        }
-        
-        grid_response = await rms_client.get_rates_grid(payload)
-        
-        # Check if this category + rate combination is available
-        is_available = False
-        available_count = 0
-        daily_rates = []
-        total_price = 0
-        
-        categories_in_response = grid_response.get('categories', [])
-        for category in categories_in_response:
-            if category.get('categoryId') != category_id:
-                continue
-            
-            for rate in category.get('rates', []):
-                if rate.get('rateId') != rate_plan_id:
-                    continue
-                
-                # Found the matching category and rate
-                day_breakdown = rate.get('dayBreakdown', [])
-                if not day_breakdown:
-                    break
-                
-                # Check if all days have availability
-                all_days_available = True
-                for day in day_breakdown:
-                    areas = day.get('availableAreas', 0)
-                    if areas <= 0:
-                        all_days_available = False
-                        break
-                    available_count = areas
-                    
-                    # Extract daily rate for pricing
-                    daily_rate = day.get('dailyRate', 0)
-                    daily_rates.append(daily_rate)
-                    total_price += daily_rate
-                
-                if all_days_available:
-                    is_available = True
-                break
-        
-        if not is_available or available_count == 0:
-            raise Exception(
-                f"No available rooms found for category {category_id} with rate {rate_plan_id} "
-                f"for dates {arrival} to {departure}. The room may be blocked or fully booked."
-            )
-        
-        print(f"Confirmed: {available_count} room(s) available for these dates")
-        
-        # Step 5: Get all areas for this category from cache
-        all_areas = await rms_cache.get_all_areas_for_category(category_id)
+        # Step 3: Get all areas for this category
+        all_areas = await self._get_all_areas_for_category(category_id)
         
         if not all_areas:
             raise Exception(f"No rooms/areas found for category {category_id}. Cannot create reservation.")
         
         print(f"Found {len(all_areas)} total area(s) in category {category_id}")
         
-        # Step 6: Try to create reservation with each area until one succeeds
+        # Step 4: Try to create reservation with each area until one succeeds
         last_error = None
         
         for idx, area_id in enumerate(all_areas):
@@ -452,7 +369,7 @@ class RMSService:
             else:
                 print(f"Trying area ID {area_id} from category {category_id}")
             
-            # Create reservation payload with pricing
+            # Create reservation payload - MATCHING ORIGINAL WORKING CODE
             payload = {
                 "propertyId": self._property_id,
                 "agentId": int(self.query_agent_id),
@@ -462,7 +379,7 @@ class RMSService:
                 "children": children,
                 "infants": 0,
                 "categoryId": category_id,
-                "rateTypeId": rate_plan_id,  # RMS uses rateTypeId for pricing
+                "rateTypeId": rate_plan_id,  # RMS uses rateTypeId for pricing (not rateId!)
                 "status": "Confirmed",
                 "source": "API",
                 "areaId": area_id,
@@ -482,7 +399,6 @@ class RMSService:
                 print(f"   Dates: {arrival} to {departure} ({nights} nights)")
                 print(f"   Guest ID: {guest_id}")
                 print(f"   Guests: {adults} adults, {children} children")
-                print(f"   Pricing: {len(daily_rates)} nights @ {daily_rates} = ${total_price:.2f}")
             
             try:
                 reservation = await client.create_reservation(payload)
