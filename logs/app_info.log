@@ -1580,3 +1580,47 @@ requests.exceptions.ConnectionError: ('Connection aborted.', RemoteDisconnected(
 2025-11-27 13:36:15,010 - [INFO] - AppLogger.FastAPI - ✅ RMS sync job scheduled (every 5 minutes, GHL sending disabled)
 2025-11-27 13:41:15,015 - [INFO] - AppLogger.FastAPI - [RMS SYNC] Starting RMS fetch_and_sync_bookings job...
 2025-11-27 13:41:15,016 - [ERROR] - AppLogger.FastAPI - [RMS SYNC] Job failed: 'RMSService' object has no attribute 'fetch_and_sync_bookings'
+2025-11-29 12:12:36,124 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+2025-11-29 12:14:25,224 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+2025-11-29 12:24:17,451 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+2025-11-29 12:24:34,891 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+2025-11-29 12:24:49,634 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+2025-11-29 12:25:01,679 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+2025-11-29 12:26:48,825 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+2025-11-29 12:27:03,714 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+2025-11-29 12:27:16,755 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+2025-11-29 12:29:43,091 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+2025-11-29 12:30:33,919 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+2025-11-29 12:30:38,726 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+2025-11-29 12:30:47,303 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+2025-11-29 12:31:02,836 - [WARNING] - AppLogger.FastAPI - Could not find exact matching booking for guest Test Test (test@gmail.com), using first booking
+2025-11-29 12:31:02,837 - [WARNING] - AppLogger.FastAPI - ⚠️ Guest info validation mismatch for booking unknown: [{'field': 'firstname', 'input': 'Test', 'extracted': 'Natalie'}, {'field': 'lastname', 'input': 'Test', 'extracted': 'Cowlrick'}, {'field': 'email', 'input': 'test@gmail.com', 'extracted': 'natalie.cowlrick@gmail.com'}]
+2025-11-29 12:31:48,416 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+2025-11-29 12:32:01,840 - [WARNING] - AppLogger.FastAPI - Could not find exact matching booking for guest Test Test (test@gmail.com), using first booking
+2025-11-29 12:32:01,846 - [WARNING] - AppLogger.FastAPI - ⚠️ Guest info validation mismatch for booking unknown: [{'field': 'firstname', 'input': 'Test', 'extracted': 'Natalie'}, {'field': 'lastname', 'input': 'Test', 'extracted': 'Cowlrick'}, {'field': 'email', 'input': 'test@gmail.com', 'extracted': 'natalie.cowlrick@gmail.com'}]
+2025-11-29 12:33:50,946 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+2025-11-29 12:33:55,896 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+2025-11-29 12:34:04,998 - [WARNING] - AppLogger.FastAPI - Could not find exact matching booking for guest Test Test (test@gmail.com), using first booking
+2025-11-29 12:34:05,002 - [WARNING] - AppLogger.FastAPI - ⚠️ Guest info validation mismatch for booking unknown: [{'field': 'firstname', 'input': 'Test', 'extracted': 'Natalie'}, {'field': 'lastname', 'input': 'Test', 'extracted': 'Cowlrick'}, {'field': 'email', 'input': 'test@gmail.com', 'extracted': 'natalie.cowlrick@gmail.com'}]
+2025-11-29 12:34:31,683 - [WARNING] - AppLogger.FastAPI - ⚠️ Guest info validation mismatch for booking 3241: [{'field': 'email', 'input': 'philscottautos@bigpond.com', 'extracted': 'philscottauto@bigpond.com'}]
+2025-11-29 12:35:12,688 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+2025-11-29 12:35:21,962 - [WARNING] - AppLogger.FastAPI - ⚠️ Guest info validation mismatch for booking 3241: [{'field': 'email', 'input': 'philscottautos@bigpond.com', 'extracted': 'philscottauto@bigpond.com'}]
+2025-11-29 12:36:04,486 - [WARNING] - AppLogger.FastAPI - ⚠️ Guest info validation mismatch for booking 3241: [{'field': 'email', 'input': 'philscottautos@bigpond.com', 'extracted': 'philscottauto@bigpond.com'}]
+2025-11-29 12:36:14,589 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+2025-11-29 12:36:21,457 - [WARNING] - AppLogger.FastAPI - ⚠️ Guest info validation mismatch for booking 3241: [{'field': 'email', 'input': 'philscottautos@bigpond.com', 'extracted': 'philscottauto@bigpond.com'}]
+2025-11-29 12:37:05,216 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+2025-11-29 12:37:18,515 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+2025-11-29 12:37:25,205 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+2025-11-29 12:37:40,677 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+2025-11-29 12:41:59,488 - [WARNING] - AppLogger.FastAPI - ⚠️ Guest info validation mismatch for booking 3241: [{'field': 'email', 'input': 'philscottautos@bigpond.com', 'extracted': 'philscottauto@bigpond.com'}]
+2025-11-29 12:42:24,786 - [INFO] - AppLogger.FastAPI - ✅ Guest info validation passed for booking 3241
+2025-11-29 13:04:08,413 - [INFO] - AppLogger.FastAPI - ✅ Guest info validation passed for booking 4170
+2025-11-29 13:04:29,586 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+2025-11-29 13:04:36,877 - [INFO] - AppLogger.FastAPI - ✅ Guest info validation passed for booking 4170
+2025-11-29 13:05:30,491 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Starting scheduler in background thread...
+2025-11-29 13:05:30,603 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Initializing scheduler...
+2025-11-29 13:05:30,861 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Started successfully. Running background tasks...
+2025-11-29 13:05:30,911 - [INFO] - AppLogger.Scheduler - [SCHEDULER] - Daily cleanup scheduled: 00:00 (midnight)
+2025-11-29 13:05:30,959 - [INFO] - AppLogger.Scheduler - [SCHEDULER] - Opportunity creation scheduled: every 10 minutes
+2025-11-29 13:05:31,124 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Background thread started (daemon=True)
+2025-11-29 13:05:31,258 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
