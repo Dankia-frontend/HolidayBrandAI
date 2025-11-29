@@ -19,6 +19,7 @@ import signal
 import sys
 import os
 from utils.newbook_db import create_newbook_instance
+from urllib.parse import unquote
 
 
 app = FastAPI()
@@ -474,7 +475,7 @@ def check_booking(
     try:
         first_name = first_name.strip()
         last_name = last_name.strip()
-        email = email.strip()
+        email = unquote(email)
 
         if not first_name or not last_name or not email:
             raise HTTPException(status_code=400, detail="Missing required fields: name, email")

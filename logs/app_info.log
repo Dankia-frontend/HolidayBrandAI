@@ -1624,3 +1624,7 @@ requests.exceptions.ConnectionError: ('Connection aborted.', RemoteDisconnected(
 2025-11-29 13:05:30,959 - [INFO] - AppLogger.Scheduler - [SCHEDULER] - Opportunity creation scheduled: every 10 minutes
 2025-11-29 13:05:31,124 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Background thread started (daemon=True)
 2025-11-29 13:05:31,258 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+2025-11-29 13:15:30,815 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] ===== Starting scheduled job to fetch bookings and create opportunities =====
+2025-11-29 13:15:42,358 - [INFO] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] Processing 152 total bookings
+2025-11-29 13:15:58,412 - [WARNING] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] Booking 3894 has no guests, skipping deletion
+2025-11-29 13:17:05,894 - [WARNING] - AppLogger.GHLIntegration - [OPPORTUNITY JOB] Booking 3851 has no guests, skipping deletion
