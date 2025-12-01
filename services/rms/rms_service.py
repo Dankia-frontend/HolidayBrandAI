@@ -89,10 +89,9 @@ class RMSService:
         print(f"   ✅ Filtering out {occupied_count} Occupied areas")
         print(f"   ✅ {len(available_areas)} potentially available areas to try")
         
-        # If no vacant areas, fall back to all areas (shouldn't happen)
+        # If no vacant areas, return empty list (don't try occupied ones!)
         if not available_areas:
-            print(f"   ⚠️ No vacant areas found, trying all areas as fallback")
-            available_areas = [area['id'] for area in all_category_areas]
+            print(f"   ⚠️ No vacant areas found for category {category_id}")
         
         return available_areas
     
@@ -368,7 +367,7 @@ class RMSService:
         print("📡 Calling rates grid API...")
         try:
             grid_response = await client.get_rates_grid(payload)
-            return self._simplify_grid_response(grid_response)
+            return await self._simplify_grid_response(grid_response, arrival, departure, adults, children)
         except Exception as e:
             print(f"⚠️ Rates grid API failed: {e}")
             print(f"   Returning error response to avoid crash")
@@ -378,7 +377,7 @@ class RMSService:
                 'error': str(e)
             }
     
-    def _simplify_grid_response(self, grid_response: Dict) -> Dict:
+    async def _simplify_grid_response(self, grid_response: Dict, arrival: str, departure: str, adults: int, children: int) -> Dict:
         """
         Simplify the rates grid response into a clean format.
         Returns available room options with pricing.
@@ -440,13 +439,81 @@ class RMSService:
                     })
                     print(f"   Category {category_id}, Rate {rate_id}: ✅ {available_count} areas - ${total_price}")
         
+        # VERIFY ACTUAL AVAILABILITY - /rates/grid can be inaccurate!
+        # Call /availableAreas for each unique category to get REAL availability
+        print(f"\n🔍 Verifying actual availability for {len(available)} options...")
+        
+        client = self._get_api_client()
+        unique_categories = {}  # {category_id: actual_available_count}
+        
+        # Get unique category IDs from results
+        category_ids_to_check = list(set([item['category_id'] for item in available]))
+        
+        for cat_id in category_ids_to_check:
+            try:
+                # Call /availableAreas to get actual list
+                payload = {
+                    "propertyId": self._property_id,
+                    "categoryId": cat_id,
+                    "arrivalDate": arrival,
+                    "departureDate": departure,
+                    "adults": adults,
+                    "children": children
+                }
+                
+                print(f"   Checking category {cat_id}...")
+                areas_response = await client.get_available_areas(payload)
+                
+                # Filter out occupied areas
+                actual_available = [
+                    area for area in areas_response
+                    if area.get('cleanStatus') != 'Occupied'
+                ]
+                
+                actual_count = len(actual_available)
+                unique_categories[cat_id] = actual_count
+                
+                if actual_count != len(areas_response):
+                    filtered_out = len(areas_response) - actual_count
+                    print(f"      Category {cat_id}: {actual_count} actually available ({filtered_out} occupied filtered out)")
+                else:
+                    print(f"      Category {cat_id}: {actual_count} available")
+                    
+            except Exception as e:
+                print(f"      ⚠️ Could not verify category {cat_id}: {e}")
+                # If we can't verify, keep the original count (benefit of doubt)
+                # This prevents breaking search if one category fails
+                unique_categories[cat_id] = None  # Will use grid count
+        
+        # Update available_areas count with ACTUAL values
+        verified_available = []
+        for item in available:
+            cat_id = item['category_id']
+            actual_count = unique_categories.get(cat_id)
+            
+            if actual_count is not None:
+                # We verified this category - use actual count
+                if actual_count > 0:
+                    item['available_areas'] = actual_count
+                    verified_available.append(item)
+                else:
+                    # No areas actually available - remove from results
+                    print(f"   ❌ Removed Category {cat_id} - {item['rate_plan_name']}: Grid said {item['available_areas']}, but 0 actually available")
+            else:
+                # Couldn't verify - keep it with original count
+                verified_available.append(item)
+        
+        if len(verified_available) < len(available):
+            removed_count = len(available) - len(verified_available)
+            print(f"   ⚠️ Removed {removed_count} options that showed in grid but had no actual availability")
+        
         # Sort by price (cheapest first)
-        available.sort(key=lambda x: x['total_price'])
-        print(f"✅ Search complete: {len(available)} available options")
+        verified_available.sort(key=lambda x: x['total_price'])
+        print(f"✅ Search complete: {len(verified_available)} verified available options")
         
         return {
-            'available': available,
-            'message': f"Found {len(available)} available room(s)" if available else "No rooms available"
+            'available': verified_available,
+            'message': f"Found {len(verified_available)} available room(s)" if verified_available else "No rooms available"
         }
     
     # ==================== CREATE RESERVATION ====================
@@ -492,8 +559,8 @@ class RMSService:
             payload = {
                 "propertyId": self._property_id,
                 "categoryId": category_id,
-                "arrival": arrival,
-                "departure": departure,
+                "arrivalDate": arrival,
+                "departureDate": departure,
                 "adults": adults,
                 "children": children
             }
@@ -504,8 +571,18 @@ class RMSService:
             
             available_areas_response = await client.get_available_areas(payload)
             
-            # Extract area IDs from response
-            available_area_ids = [area.get('id') for area in available_areas_response if area.get('id')]
+            # Extract area IDs from response - FILTER OUT OCCUPIED AREAS!
+            # The API sometimes returns occupied areas, so we need to exclude them
+            all_returned_areas = len(available_areas_response)
+            available_area_ids = [
+                area.get('id') 
+                for area in available_areas_response 
+                if area.get('id') and area.get('cleanStatus') != 'Occupied'
+            ]
+            
+            occupied_count = all_returned_areas - len(available_area_ids)
+            if occupied_count > 0:
+                print(f"   ⚠️ Filtered out {occupied_count} occupied areas from API response")
             
             if not available_area_ids:
                 raise Exception(
