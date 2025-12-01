@@ -54,7 +54,7 @@ class RMSApiClient:
         """Get or generate authentication token"""
         if self._token and self._token_expiry:
             if datetime.now() < self._token_expiry:
-                print(f"🔑 Using cached token (expires: {self._token_expiry})")
+                print(f"🔒 Using cached token (expires: {self._token_expiry})")
                 return self._token
         
         print("🔄 Token expired or missing, generating new token...")
@@ -231,6 +231,69 @@ class RMSApiClient:
     
     async def get_areas(self, property_id: int) -> List[Dict]:
         return await self._make_request("GET", f"/areas?propertyId={property_id}")
+    
+    async def get_available_areas(self, payload: Dict) -> List[Dict]:
+        """
+        Get available areas/rooms for a specific date range and category.
+        Tries multiple payload formats for compatibility with different RMS instances.
+        
+        Payload example:
+        {
+            "propertyId": 123,
+            "categoryId": 5,
+            "arrivalDate": "2026-08-01",  # or dateFrom
+            "departureDate": "2026-08-02",  # or dateTo
+            "adults": 2,
+            "children": 0
+        }
+        """
+        # Try the original format first (arrivalDate/departureDate)
+        try:
+            print(f"📡 Attempting /availableAreas with arrivalDate/departureDate format...")
+            return await self._make_request("POST", "/availableAreas", json=payload)
+        except Exception as e:
+            # Extract error message from HTTP response body if available
+            error_msg = str(e).lower()
+            
+            # For HTTPStatusError, try to get the response body
+            if hasattr(e, 'response'):
+                try:
+                    error_data = e.response.json()
+                    if isinstance(error_data, dict) and 'message' in error_data:
+                        error_msg = error_data['message'].lower()
+                        print(f"   🔍 Extracted error message: {error_data['message']}")
+                except:
+                    pass
+            
+            # If error mentions dateFrom or date validation, try alternative format
+            if "datefrom" in error_msg or "dateto" in error_msg or "too many days" in error_msg:
+                print(f"⚠️ First attempt failed with date field error, trying alternative format...")
+                
+                # Convert to alternative format: dateFrom/dateTo AND categoryIds (array)
+                alternative_payload = payload.copy()
+                
+                # Convert date fields
+                if "arrivalDate" in alternative_payload:
+                    alternative_payload["dateFrom"] = alternative_payload.pop("arrivalDate")
+                if "departureDate" in alternative_payload:
+                    alternative_payload["dateTo"] = alternative_payload.pop("departureDate")
+                
+                # Convert categoryId to categoryIds (array)
+                if "categoryId" in alternative_payload:
+                    category_id = alternative_payload.pop("categoryId")
+                    alternative_payload["categoryIds"] = [category_id]
+                
+                print(f"📡 Retrying /availableAreas with dateFrom/dateTo/categoryIds format...")
+                try:
+                    return await self._make_request("POST", "/availableAreas", json=alternative_payload)
+                except Exception as e2:
+                    print(f"⚠️ Both formats failed for /availableAreas")
+                    # Re-raise the original exception
+                    raise e
+            else:
+                # Re-raise if it's not a field name issue
+                print(f"⚠️ Error doesn't seem to be field-name related, re-raising original exception")
+                raise
 
 
 # Create a default instance for backward compatibility
