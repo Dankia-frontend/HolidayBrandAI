@@ -145,6 +145,116 @@ class RMSService:
         
         return strategic
     
+    def _get_category_occupancy_info(self, category_id: int) -> Dict:
+        """
+        Get occupancy limits for a category.
+        Returns dict with maxAdults, maxChildren, maxOccupancy, and occupancyMessage
+        """
+        category = self._categories_cache.get(category_id, {})
+        
+        # Debug: Print all available fields for this category (only once per category)
+        if not hasattr(self, '_logged_categories'):
+            self._logged_categories = set()
+        
+        if category_id not in self._logged_categories:
+            print(f"\n🔍 DEBUG: Available fields for category {category_id} ({category.get('name', 'Unknown')}):")
+            for key, value in category.items():
+                if 'occup' in key.lower() or 'adult' in key.lower() or 'child' in key.lower() or 'capacity' in key.lower() or 'max' in key.lower():
+                    print(f"   {key}: {value}")
+            self._logged_categories.add(category_id)
+        
+        # RMS API field names - check multiple variations
+        # Based on RMS documentation, these are possible field names:
+        # - maxOccupantsPerArea / maxOccupantsPerCategory
+        # - maxAdults / adultCapacity
+        # - maxChildren / childCapacity / childrenCapacity
+        # - maxOccupancy / totalCapacity / capacity
+        
+        max_adults = (
+            category.get('maxAdults', 0) or 
+            category.get('adultCapacity', 0) or
+            category.get('maxAdultsPerArea', 0) or
+            category.get('adultsMax', 0) or
+            0
+        )
+        
+        max_children = (
+            category.get('maxChildren', 0) or 
+            category.get('childCapacity', 0) or
+            category.get('childrenCapacity', 0) or
+            category.get('maxChildrenPerArea', 0) or
+            category.get('childrenMax', 0) or
+            0
+        )
+        
+        max_occupancy = (
+            category.get('maxOccupancy', 0) or 
+            category.get('totalCapacity', 0) or
+            category.get('capacity', 0) or
+            category.get('maxOccupantsPerArea', 0) or
+            category.get('maxOccupantsPerCategory', 0) or
+            category.get('maxGuests', 0) or
+            category.get('maximumOccupancy', 0) or
+            0
+        )
+        
+        # If maxOccupancy not set but maxAdults is, calculate from adults + children
+        if not max_occupancy and max_adults:
+            max_occupancy = max_adults + max_children
+        
+        # If still no occupancy info, try to get from areas in this category
+        if not max_occupancy and self._areas_cache:
+            # Find areas for this category and get their occupancy
+            category_areas = [area for area in self._areas_cache if area.get('categoryId') == category_id]
+            if category_areas:
+                # Get max from first area (they should all be the same for a category)
+                first_area = category_areas[0]
+                area_max = (
+                    first_area.get('maxOccupants', 0) or
+                    first_area.get('maxOccupancy', 0) or
+                    first_area.get('capacity', 0) or
+                    0
+                )
+                if area_max:
+                    max_occupancy = area_max
+                    print(f"   ℹ️ Using area-level occupancy for category {category_id}: {area_max}")
+        
+        return {
+            'maxAdults': max_adults,
+            'maxChildren': max_children,
+            'maxOccupancy': max_occupancy,
+            'occupancyMessage': f"Max {max_adults} adults, {max_children} children (Total: {max_occupancy})" if max_occupancy else "Occupancy limits not configured"
+        }
+    
+    def _validate_occupancy(self, category_id: int, adults: int, children: int) -> tuple:
+        """
+        Validate if the requested adults and children fit within category limits.
+        Returns (is_valid, error_message)
+        """
+        occupancy_info = self._get_category_occupancy_info(category_id)
+        max_adults = occupancy_info['maxAdults']
+        max_children = occupancy_info['maxChildren']
+        max_occupancy = occupancy_info['maxOccupancy']
+        
+        # If no limits are configured, allow the booking (backwards compatibility)
+        if not max_occupancy:
+            print(f"   ⚠️ Category {category_id} has no occupancy limits configured - allowing booking")
+            return True, ""
+        
+        # Check individual limits
+        if max_adults and adults > max_adults:
+            return False, f"Number of adults ({adults}) exceeds maximum allowed ({max_adults}) for this room type"
+        
+        if max_children and children > max_children:
+            return False, f"Number of children ({children}) exceeds maximum allowed ({max_children}) for this room type"
+        
+        # Check total occupancy
+        total_guests = adults + children
+        if max_occupancy and total_guests > max_occupancy:
+            return False, f"Total guests ({total_guests}) exceeds maximum occupancy ({max_occupancy}) for this room type"
+        
+        return True, ""
+    
     async def initialize(self):
         """Initialize RMS service with property data"""
         if self._initialized and self._property_id:
@@ -288,6 +398,15 @@ class RMSService:
         if not self._initialized:
             raise Exception("RMS service not initialized")
         
+        # Validate that at least 1 adult is required for booking
+        if adults < 1:
+            print(f"❌ Validation failed: At least 1 adult is required (received: {adults} adults)")
+            return {
+                'available': [],
+                'message': "At least 1 adult is required to search for availability",
+                'error': "Minimum 1 adult required"
+            }
+        
         client = self._get_api_client()
         
         # Step 1: Find matching categories (use cache if available)
@@ -429,15 +548,27 @@ class RMSService:
                 
                 # Only include if available and has a price
                 if is_available and total_price > 0 and available_count > 0:
-                    available.append({
-                        'category_id': category_id,
-                        'category_name': category_name,
-                        'rate_plan_id': rate_id,
-                        'rate_plan_name': rate_name,
-                        'total_price': total_price,
-                        'available_areas': available_count
-                    })
-                    print(f"   Category {category_id}, Rate {rate_id}: ✅ {available_count} areas - ${total_price}")
+                    # Validate occupancy limits for this category
+                    is_valid, error_msg = self._validate_occupancy(category_id, adults, children)
+                    
+                    # Get occupancy info for the response
+                    occupancy_info = self._get_category_occupancy_info(category_id)
+                    
+                    if is_valid:
+                        available.append({
+                            'category_id': category_id,
+                            'category_name': category_name,
+                            'rate_plan_id': rate_id,
+                            'rate_plan_name': rate_name,
+                            'total_price': total_price,
+                            'available_areas': available_count,
+                            'max_occupancy': occupancy_info['maxOccupancy'],
+                            'occupancy_message': occupancy_info['occupancyMessage']
+                        })
+                        print(f"   Category {category_id}, Rate {rate_id}: ✅ {available_count} areas - ${total_price} - {occupancy_info['occupancyMessage']}")
+                    else:
+                        print(f"   Category {category_id}, Rate {rate_id}: ❌ Skipped - {error_msg}")
+
         
         # VERIFY ACTUAL AVAILABILITY - /rates/grid can be inaccurate!
         # Call /availableAreas for each unique category to get REAL availability
@@ -464,20 +595,13 @@ class RMSService:
                 print(f"   Checking category {cat_id}...")
                 areas_response = await client.get_available_areas(payload)
                 
-                # Filter out occupied areas
-                actual_available = [
-                    area for area in areas_response
-                    if area.get('cleanStatus') != 'Occupied'
-                ]
-                
-                actual_count = len(actual_available)
+                # Trust the /availableAreas API response - it already filters by date availability
+                # cleanStatus is the CURRENT status, not the status for the requested dates
+                # If the API returns an area, it means it's available for those dates
+                actual_count = len(areas_response)
                 unique_categories[cat_id] = actual_count
                 
-                if actual_count != len(areas_response):
-                    filtered_out = len(areas_response) - actual_count
-                    print(f"      Category {cat_id}: {actual_count} actually available ({filtered_out} occupied filtered out)")
-                else:
-                    print(f"      Category {cat_id}: {actual_count} available")
+                print(f"      Category {cat_id}: {actual_count} available")
                     
             except Exception as e:
                 print(f"      ⚠️ Could not verify category {cat_id}: {e}")
@@ -544,11 +668,31 @@ class RMSService:
         if not self._initialized:
             raise Exception("RMS service not initialized")
         
+        # Validate that at least 1 adult is required for booking
+        if adults < 1:
+            print(f"❌ Validation failed: At least 1 adult is required (received: {adults} adults)")
+            from fastapi import HTTPException
+            raise HTTPException(
+                status_code=400, 
+                detail="At least 1 adult is required to create a reservation"
+            )
+        
         client = self._get_api_client()
         
         print(f"\n{'='*80}")
         print(f"🎯 CREATING RESERVATION - AVAILABILITY-FIRST APPROACH")
         print(f"{'='*80}")
+        
+        # Step 0: Validate occupancy limits for the category
+        print(f"🔍 Step 0: Validating occupancy limits...")
+        is_valid, error_msg = self._validate_occupancy(category_id, adults, children)
+        if not is_valid:
+            print(f"❌ Occupancy validation failed: {error_msg}")
+            from fastapi import HTTPException
+            raise HTTPException(status_code=400, detail=error_msg)
+        
+        occupancy_info = self._get_category_occupancy_info(category_id)
+        print(f"✅ Occupancy validated: {adults} adults, {children} children - {occupancy_info['occupancyMessage']}")
         
         # Step 1: Check availability FIRST to find actually available areas
         print(f"🔍 Step 1: Checking actual availability for category {category_id}, rate {rate_plan_id}...")
@@ -571,18 +715,11 @@ class RMSService:
             
             available_areas_response = await client.get_available_areas(payload)
             
-            # Extract area IDs from response - FILTER OUT OCCUPIED AREAS!
-            # The API sometimes returns occupied areas, so we need to exclude them
-            all_returned_areas = len(available_areas_response)
-            available_area_ids = [
-                area.get('id') 
-                for area in available_areas_response 
-                if area.get('id') and area.get('cleanStatus') != 'Occupied'
-            ]
-            
-            occupied_count = all_returned_areas - len(available_area_ids)
-            if occupied_count > 0:
-                print(f"   ⚠️ Filtered out {occupied_count} occupied areas from API response")
+            # Trust the /availableAreas API - it already filters by date availability
+            # cleanStatus is the CURRENT status (e.g., occupied right now)
+            # But the API returns areas that WILL BE available for your requested dates
+            # If API returns an area, it's available for those dates regardless of current status
+            available_area_ids = [area.get('id') for area in available_areas_response if area.get('id')]
             
             if not available_area_ids:
                 raise Exception(
