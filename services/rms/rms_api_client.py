@@ -235,64 +235,50 @@ class RMSApiClient:
     async def get_available_areas(self, payload: Dict) -> List[Dict]:
         """
         Get available areas/rooms for a specific date range and category.
-        Tries multiple payload formats for compatibility with different RMS instances.
+        Uses dateFrom/dateTo format which works for most RMS instances.
         
         Payload example:
         {
             "propertyId": 123,
             "categoryId": 5,
-            "arrivalDate": "2026-08-01",  # or dateFrom
-            "departureDate": "2026-08-02",  # or dateTo
+            "arrivalDate": "2026-08-01",  # Will be converted to dateFrom
+            "departureDate": "2026-08-02",  # Will be converted to dateTo
             "adults": 2,
             "children": 0
         }
         """
-        # Try the original format first (arrivalDate/departureDate)
+        # Use dateFrom/dateTo format (works for this RMS instance)
+        # Convert the payload to the working format
+        api_payload = {
+            "propertyId": payload.get("propertyId"),
+            "adults": payload.get("adults"),
+            "children": payload.get("children"),
+            "dateFrom": payload.get("arrivalDate"),
+            "dateTo": payload.get("departureDate"),
+            "categoryIds": [payload.get("categoryId")]
+        }
+        
         try:
-            print(f"📡 Attempting /availableAreas with arrivalDate/departureDate format...")
-            return await self._make_request("POST", "/availableAreas", json=payload)
-        except Exception as e:
-            # Extract error message from HTTP response body if available
-            error_msg = str(e).lower()
-            
-            # For HTTPStatusError, try to get the response body
-            if hasattr(e, 'response'):
-                try:
-                    error_data = e.response.json()
-                    if isinstance(error_data, dict) and 'message' in error_data:
-                        error_msg = error_data['message'].lower()
-                        print(f"   🔍 Extracted error message: {error_data['message']}")
-                except:
-                    pass
-            
-            # If error mentions dateFrom or date validation, try alternative format
-            if "datefrom" in error_msg or "dateto" in error_msg or "too many days" in error_msg:
-                print(f"⚠️ First attempt failed with date field error, trying alternative format...")
+            print(f"📡 Calling /availableAreas API...")
+            return await self._make_request("POST", "/availableAreas", json=api_payload)
+        except httpx.HTTPStatusError as e:
+            # If the dateFrom/dateTo format fails, try the alternative format as fallback
+            if e.response.status_code == 400:
+                print(f"⚠️ dateFrom/dateTo format failed, trying arrivalDate/departureDate...")
                 
-                # Convert to alternative format: dateFrom/dateTo AND categoryIds (array)
-                alternative_payload = payload.copy()
+                # Try original format as fallback
+                fallback_payload = {
+                    "propertyId": payload.get("propertyId"),
+                    "categoryId": payload.get("categoryId"),
+                    "arrivalDate": payload.get("arrivalDate"),
+                    "departureDate": payload.get("departureDate"),
+                    "adults": payload.get("adults"),
+                    "children": payload.get("children")
+                }
                 
-                # Convert date fields
-                if "arrivalDate" in alternative_payload:
-                    alternative_payload["dateFrom"] = alternative_payload.pop("arrivalDate")
-                if "departureDate" in alternative_payload:
-                    alternative_payload["dateTo"] = alternative_payload.pop("departureDate")
-                
-                # Convert categoryId to categoryIds (array)
-                if "categoryId" in alternative_payload:
-                    category_id = alternative_payload.pop("categoryId")
-                    alternative_payload["categoryIds"] = [category_id]
-                
-                print(f"📡 Retrying /availableAreas with dateFrom/dateTo/categoryIds format...")
-                try:
-                    return await self._make_request("POST", "/availableAreas", json=alternative_payload)
-                except Exception as e2:
-                    print(f"⚠️ Both formats failed for /availableAreas")
-                    # Re-raise the original exception
-                    raise e
+                return await self._make_request("POST", "/availableAreas", json=fallback_payload)
             else:
-                # Re-raise if it's not a field name issue
-                print(f"⚠️ Error doesn't seem to be field-name related, re-raising original exception")
+                # Re-raise for other status codes
                 raise
 
 
