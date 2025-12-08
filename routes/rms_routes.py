@@ -102,7 +102,7 @@ async def create_reservation(
     arrival: str = Query(..., description="Arrival date (YYYY-MM-DD)"),
     departure: str = Query(..., description="Departure date (YYYY-MM-DD)"),
     adults: int = Query(..., description="Number of adults"),
-    children: int = Query(..., description="Number of children"),
+    children: Optional[int] = Query(None, description="Number of children"),
     guest_firstName: str = Query(..., description="Guest first name"),
     guest_lastName: str = Query(..., description="Guest last name"),
     guest_email: str = Query(..., description="Guest email"),
