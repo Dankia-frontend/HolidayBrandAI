@@ -385,7 +385,7 @@ def confirm_booking(
     children: str = Query(..., description="Number of children"),
     category_id: int = Query(..., description="Category ID of the room or package"),
     daily_mode: str = Query(..., description="Daily booking mode (yes/no)"),
-    amount: int = Query(..., description="Total booking amount"),
+    # amount: int = Query(..., description="Total booking amount"),
     _: str = Depends(authenticate_request),
     newbook_creds: dict = Depends(get_newbook_credentials)
 ):
@@ -427,7 +427,7 @@ def confirm_booking(
             "children": children,
             "category_id": category_id,
             "daily_mode": daily_mode,
-            "amount": amount,
+            # "amount": amount,
             "tariff_label": tariff_info["tariff_label"],
             "tariff_total": tariff_info["tariff_total"],
             "special_deal": tariff_info["special_deal"],
