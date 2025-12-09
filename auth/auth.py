@@ -20,7 +20,7 @@ def authenticate_request(x_ai_agent_key: str = Header(None)):
 def get_newbook_credentials(x_location_id: str = Header(..., alias="X-Location-ID")):
     """
     Dependency function that fetches Newbook API credentials from database based on location_id header.
-    Returns: dict with 'api_key' and 'region' (if available)
+    Returns: dict with 'api_key', 'location_id', and 'park_name' (if available)
     """
     if not x_location_id:
         raise HTTPException(status_code=400, detail="Missing X-Location-ID header")
@@ -41,8 +41,8 @@ def get_newbook_credentials(x_location_id: str = Header(..., alias="X-Location-I
     
     return {
         "api_key": instance["api_key"],
-        # "region": instance.get("region"),
-        "location_id": x_location_id
+        "location_id": x_location_id,
+        "park_name": instance.get("park_name")
     }
 
 
