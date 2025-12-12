@@ -81,7 +81,7 @@ def confirm_booking(
     children: str = Query(..., description="Number of children"),
     category_id: int = Query(..., description="Category ID of the room or package"),
     daily_mode: str = Query(..., description="Daily booking mode (yes/no)"),
-    amount: int = Query(..., description="Total booking amount"),
+    # amount: int = Query(..., description="Total booking amount"),
     _: str = Depends(authenticate_request),
     newbook_creds: dict = Depends(get_newbook_credentials)
 ):
@@ -99,7 +99,7 @@ def confirm_booking(
             children=children,
             category_id=category_id,
             daily_mode=daily_mode,
-            amount=amount
+            # amount=amount
         )
         
         # Log the booking
@@ -155,7 +155,7 @@ def confirm_booking(
             children=children_value if children_value is not None else (int(children) if children else None),
             category_id=str(category_id_value) if category_id_value else None,
             category_name=category_name_value if category_name_value else None,
-            amount=amount_value if amount_value is not None else (float(amount) if amount else None),
+            # amount=amount_value if amount_value is not None else (float(amount) if amount else None),
             booking_id=str(booking_id) if booking_id else None,
             status=str(status) if status else None
         )
