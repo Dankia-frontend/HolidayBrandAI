@@ -52,7 +52,7 @@ def create_newbook_instance(location_id, api_key, park_name):
         log.exception(f"Error creating newbook instance: {e}")
         return False
 
-def update_newbook_instance(location_id, api_key=None):
+def update_newbook_instance(location_id, api_key=None, park_name=None):
     """
     Update an existing Newbook instance.
     Only updates fields that are provided (not None).
@@ -67,6 +67,10 @@ def update_newbook_instance(location_id, api_key=None):
     if api_key is not None:
         updates.append("api_key = %s")
         params.append(api_key)
+    
+    if park_name is not None:
+        updates.append("park_name = %s")
+        params.append(park_name)
     
     if not updates:
         conn.close()
@@ -172,37 +176,63 @@ def get_newbook_booking_log(log_id: int):
     conn.close()
     return row
 
-def get_all_newbook_booking_logs(location_id: str = None):
+def get_all_newbook_booking_logs(location_id: str = None, park_name: str = None, month: int = None, year: int = None):
     """
-    Retrieve all booking logs, optionally filtered by location_id.
+    Retrieve all booking logs, optionally filtered by location_id, park_name, or month/year.
     Returns: list of dicts with booking log data
     """
     conn = mysql.connector.connect(**db_config)
     cursor = conn.cursor(dictionary=True)
     
-    if location_id:
-        cursor.execute("""
-            SELECT id, location_id, park_name, guest_firstName, guest_lastName, 
-                   guest_email, guest_phone, arrival_date, departure_date, 
-                   adults, children, category_id, category_name, 
-                   amount, booking_id, status, created_at, updated_at
-            FROM newbook_booking_logs 
-            WHERE location_id = %s
-            ORDER BY created_at DESC
-        """, (location_id,))
-    else:
-        cursor.execute("""
-            SELECT id, location_id, park_name, guest_firstName, guest_lastName, 
-                   guest_email, guest_phone, arrival_date, departure_date, 
-                   adults, children, category_id, category_name, 
-                   amount, booking_id, status, created_at, updated_at
-            FROM newbook_booking_logs 
-            ORDER BY created_at DESC
-        """)
+    conditions = []
+    params = []
     
+    if park_name:
+        conditions.append("park_name = %s")
+        params.append(park_name)
+    
+    if location_id:
+        conditions.append("location_id = %s")
+        params.append(location_id)
+    
+    if month is not None and year is not None:
+        conditions.append("arrival_date IS NOT NULL AND YEAR(arrival_date) = %s AND MONTH(arrival_date) = %s")
+        params.extend([year, month])
+    
+    where_clause = "WHERE " + " AND ".join(conditions) if conditions else ""
+    
+    query = f"""
+        SELECT id, location_id, park_name, guest_firstName, guest_lastName, 
+               guest_email, guest_phone, arrival_date, departure_date, 
+               adults, children, category_id, category_name, 
+               amount, booking_id, status, created_at, updated_at
+        FROM newbook_booking_logs 
+        {where_clause}
+        ORDER BY created_at DESC
+    """
+    
+    cursor.execute(query, tuple(params) if params else None)
     rows = cursor.fetchall()
     conn.close()
     return rows
+
+def get_all_park_names():
+    """
+    Retrieve all unique park names from booking logs.
+    Returns: list of unique park names (sorted)
+    """
+    conn = mysql.connector.connect(**db_config)
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT DISTINCT park_name 
+        FROM newbook_booking_logs 
+        WHERE park_name IS NOT NULL AND park_name != ''
+        ORDER BY park_name ASC
+    """)
+    rows = cursor.fetchall()
+    conn.close()
+    # Extract park names from tuples
+    return [row[0] for row in rows]
 
 def create_newbook_booking_log(
     location_id: str,

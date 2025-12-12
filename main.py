@@ -6,7 +6,7 @@ from routes.rms_routes import router as rms_router
 from routes.newbook_routes import router as newbook_router
 from services.rms import rms_service, rms_cache, rms_auth
 from utils.rms_db import set_current_rms_instance, get_rms_instance, create_rms_instance as create_rms_instance_db
-from utils.newbook_db import create_newbook_instance
+from utils.newbook_db import create_newbook_instance, update_newbook_instance
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 import signal
 import sys
@@ -38,6 +38,24 @@ def create_newbook_instance_endpoint(
         return {"message": "Newbook instance created successfully"}
     else:
         raise HTTPException(status_code=400, detail="Location ID already exists")
+
+
+@app.put("/newbook-instances/{location_id}")
+def update_newbook_instance_endpoint(
+    location_id: str,
+    api_key: str = Query(None),
+    park_name: str = Query(None),
+    # _: str = Depends(authenticate_request)
+):
+    """Update an existing Newbook instance. Only provided fields will be updated."""
+    if api_key is None and park_name is None:
+        raise HTTPException(status_code=400, detail="At least one field (api_key or park_name) must be provided")
+    
+    success = update_newbook_instance(location_id, api_key=api_key, park_name=park_name)
+    if success:
+        return {"message": "Newbook instance updated successfully"}
+    else:
+        raise HTTPException(status_code=404, detail="Location ID not found")
 
 
 # RMS Instance Management Endpoints

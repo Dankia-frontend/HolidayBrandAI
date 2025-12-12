@@ -315,7 +315,7 @@ class NewbookService:
         children: int,
         category_id: int,
         daily_mode: str,
-        amount: int
+        # amount: int
     ) -> Dict:
         """
         Create a new booking in Newbook.
@@ -357,7 +357,7 @@ class NewbookService:
             "children": children,
             "category_id": category_id,
             "daily_mode": daily_mode,
-            "amount": amount,
+            # "amount": amount,
             "tariff_label": tariff_info["tariff_label"],
             "tariff_total": tariff_info["tariff_total"],
             "special_deal": tariff_info["special_deal"],

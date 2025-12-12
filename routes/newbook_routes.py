@@ -191,15 +191,30 @@ def check_booking(
 
 
 # CRUD operations for booking logs
+@router.get("/park-names")
+def get_park_names(
+    _: str = Depends(authenticate_request)
+):
+    """Get all unique park names from booking logs"""
+    try:
+        from utils.newbook_db import get_all_park_names
+        park_names = get_all_park_names()
+        return {"park_names": park_names}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 @router.get("/booking-logs")
 def get_booking_logs(
     location_id: Optional[str] = Query(None, description="Filter by location_id"),
+    park_name: Optional[str] = Query(None, description="Filter by park_name (exact match)"),
+    month: Optional[int] = Query(None, description="Filter by month (1-12)"),
+    year: Optional[int] = Query(None, description="Filter by year (e.g., 2024)"),
     _: str = Depends(authenticate_request)
 ):
-    """Get all booking logs, optionally filtered by location_id"""
+    """Get all booking logs, optionally filtered by location_id, park_name, or month/year"""
     try:
         from utils.newbook_db import get_all_newbook_booking_logs
-        logs = get_all_newbook_booking_logs(location_id=location_id)
+        logs = get_all_newbook_booking_logs(location_id=location_id, park_name=park_name, month=month, year=year)
         return {"logs": logs, "count": len(logs)}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
