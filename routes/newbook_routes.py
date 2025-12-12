@@ -155,7 +155,7 @@ def confirm_booking(
             children=children_value if children_value is not None else (int(children) if children else None),
             category_id=str(category_id_value) if category_id_value else None,
             category_name=category_name_value if category_name_value else None,
-            # amount=amount_value if amount_value is not None else (float(amount) if amount else None),
+            amount=amount_value if amount_value is not None else None,
             booking_id=str(booking_id) if booking_id else None,
             status=str(status) if status else None
         )
