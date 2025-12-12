@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends, Query, Header
 from typing import Optional
 from services.rms.rms_service import RMSService
-from middleware.auth import authenticate_request
+from auth.auth import authenticate_request
 from utils.rms_db import get_rms_instance
 
 router = APIRouter(prefix="/api/rms", tags=["RMS"])
