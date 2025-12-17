@@ -1,35 +1,19 @@
-2025-12-09 07:21:00,249 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
-2025-12-09 07:24:44,966 - [INFO] - AppLogger.NewbookService - Getting tariff information for category 1
-2025-12-09 07:24:47,571 - [INFO] - AppLogger.NewbookService - Found 2 tariffs for category 1
-2025-12-09 07:24:47,572 - [INFO] - AppLogger.NewbookService - Using first available tariff: Standard
-2025-12-09 07:24:47,584 - [INFO] - AppLogger.NewbookService - Created tariffs_quoted for 3 nights
-2025-12-09 07:24:47,584 - [INFO] - AppLogger.NewbookService - Creating booking for Test Test
-2025-12-09 07:29:07,885 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
-2025-12-09 07:33:11,617 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
-2025-12-09 07:33:17,353 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
-2025-12-09 07:33:26,772 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
-2025-12-09 07:33:43,736 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
-2025-12-09 07:34:02,993 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
-2025-12-09 07:34:11,525 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
-2025-12-09 07:34:16,033 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
-2025-12-09 07:34:34,626 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
-2025-12-09 07:34:50,412 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
-2025-12-09 07:35:45,485 - [INFO] - AppLogger.NewbookService - Getting tariff information for category 1
-2025-12-09 07:35:47,927 - [INFO] - AppLogger.NewbookService - Found 2 tariffs for category 1
-2025-12-09 07:35:47,928 - [INFO] - AppLogger.NewbookService - Using first available tariff: Standard
-2025-12-09 07:35:47,932 - [INFO] - AppLogger.NewbookService - Created tariffs_quoted for 3 nights
-2025-12-09 07:35:47,932 - [INFO] - AppLogger.NewbookService - Creating booking for Test Test
-2025-12-09 07:35:51,975 - [ERROR] - AppLogger.NewbookDB - Error logging newbook booking: 1054 (42S22): Unknown column 'adults' in 'INSERT INTO'
+2025-12-17 07:07:00,498 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+2025-12-17 07:14:19,562 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+2025-12-17 07:14:24,087 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+2025-12-17 07:27:04,212 - [INFO] - AppLogger.RmsDB - Updated RMS instance for location_id: cis6U2Fl4NrIbAW9SY9l
+2025-12-17 07:36:03,342 - [INFO] - AppLogger.RmsDB - Updated RMS instance for location_id: qfXHeKmMHiZa86ZpsprL
+2025-12-17 07:36:36,294 - [ERROR] - AppLogger.RmsDB - Error getting RMS park names: 1146 (42S02): Table 'ghl_tokens.rms_booking_logs' doesn't exist
 Traceback (most recent call last):
   File "D:\Projects\HolidayBrandAI\venv\Lib\site-packages\mysql\connector\connection_cext.py", line 772, in cmd_query
     self._cmysql.query(
-_mysql_connector.MySQLInterfaceError: Unknown column 'adults' in 'INSERT INTO'
+_mysql_connector.MySQLInterfaceError: Table 'ghl_tokens.rms_booking_logs' doesn't exist
 
 The above exception was the direct cause of the following exception:
 
 Traceback (most recent call last):
-  File "D:\Projects\HolidayBrandAI\utils\newbook_db.py", line 131, in log_newbook_booking
-    cursor.execute(query, (
+  File "D:\Projects\HolidayBrandAI\utils\rms_db.py", line 446, in get_all_rms_park_names
+    cursor.execute("""
   File "D:\Projects\HolidayBrandAI\venv\Lib\site-packages\mysql\connector\cursor_cext.py", line 353, in execute
     self._connection.cmd_query(
   File "D:\Projects\HolidayBrandAI\venv\Lib\site-packages\mysql\connector\opentelemetry\context_propagation.py", line 97, in wrapper
@@ -37,11 +21,28 @@ Traceback (most recent call last):
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "D:\Projects\HolidayBrandAI\venv\Lib\site-packages\mysql\connector\connection_cext.py", line 781, in cmd_query
     raise get_mysql_exception(
-mysql.connector.errors.ProgrammingError: 1054 (42S22): Unknown column 'adults' in 'INSERT INTO'
-2025-12-09 07:39:27,308 - [INFO] - AppLogger.NewbookService - Getting tariff information for category 1
-2025-12-09 07:39:29,760 - [INFO] - AppLogger.NewbookService - Found 2 tariffs for category 1
-2025-12-09 07:39:29,761 - [INFO] - AppLogger.NewbookService - Using first available tariff: Standard
-2025-12-09 07:39:29,762 - [INFO] - AppLogger.NewbookService - Created tariffs_quoted for 3 nights
-2025-12-09 07:39:29,762 - [INFO] - AppLogger.NewbookService - Creating booking for Test Test
-2025-12-09 07:41:44,672 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
-2025-12-09 07:41:52,319 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+mysql.connector.errors.ProgrammingError: 1146 (42S02): Table 'ghl_tokens.rms_booking_logs' doesn't exist
+2025-12-17 07:42:18,639 - [INFO] - AppLogger.RmsDB - Looking up RMS instance for location_id: cis6U2Fl4NrIbAW9SY9l
+2025-12-17 07:42:21,008 - [INFO] - AppLogger.RmsDB - Found RMS instance: client_id=17431, agent_id=2
+2025-12-17 07:42:21,028 - [WARNING] - AppLogger.RmsDB - ENCRYPTION_KEY not set in environment variables
+2025-12-17 07:46:50,519 - [INFO] - AppLogger.RmsDB - Looking up RMS instance for location_id: cis6U2Fl4NrIbAW9SY9l
+2025-12-17 07:46:53,223 - [INFO] - AppLogger.RmsDB - Found RMS instance: client_id=17431, agent_id=2
+2025-12-17 07:46:53,258 - [WARNING] - AppLogger.RmsDB - ENCRYPTION_KEY not set in environment variables
+2025-12-17 07:52:40,997 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+2025-12-17 07:52:45,498 - [INFO] - AppLogger.RmsDB - Looking up RMS instance for location_id: cis6U2Fl4NrIbAW9SY9l
+2025-12-17 07:52:47,820 - [INFO] - AppLogger.RmsDB - Found RMS instance: client_id=17431, agent_id=2
+2025-12-17 07:52:47,827 - [WARNING] - AppLogger.RmsDB - ENCRYPTION_KEY not set in environment variables
+2025-12-17 07:56:57,861 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)
+2025-12-17 07:56:59,643 - [INFO] - AppLogger.RmsDB - Looking up RMS instance for location_id: cis6U2Fl4NrIbAW9SY9l
+2025-12-17 07:57:02,212 - [INFO] - AppLogger.RmsDB - Found RMS instance: client_id=17431, agent_id=2
+2025-12-17 07:59:39,582 - [INFO] - AppLogger.RmsDB - Looking up RMS instance for location_id: cis6U2Fl4NrIbAW9SY9l
+2025-12-17 07:59:42,438 - [INFO] - AppLogger.RmsDB - Found RMS instance: client_id=17431, agent_id=2
+2025-12-17 08:23:38,778 - [INFO] - AppLogger.RmsDB - Looking up RMS instance for location_id: qfXHeKmMHiZa86ZpsprL
+2025-12-17 08:23:41,137 - [INFO] - AppLogger.RmsDB - Found RMS instance: client_id=6862, agent_id=6
+2025-12-17 08:48:43,102 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Starting scheduler in background thread...
+2025-12-17 08:48:43,295 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Initializing scheduler...
+2025-12-17 08:48:43,816 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Background thread started (daemon=True)
+2025-12-17 08:48:43,845 - [INFO] - AppLogger.Scheduler - [SCHEDULER] Started successfully. Running background tasks...
+2025-12-17 08:48:44,077 - [INFO] - AppLogger.Scheduler - [SCHEDULER] - Daily cleanup scheduled: 00:00 (midnight)
+2025-12-17 08:48:44,186 - [INFO] - AppLogger.Scheduler - [SCHEDULER] - Opportunity creation scheduled: every 10 minutes
+2025-12-17 08:48:44,242 - [INFO] - AppLogger.FastAPI - ✅ RMS daily refresh scheduled (3 AM)

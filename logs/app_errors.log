@@ -1,14 +1,14 @@
-2025-12-09 07:35:51,975 - [ERROR] - AppLogger.NewbookDB - Error logging newbook booking: 1054 (42S22): Unknown column 'adults' in 'INSERT INTO'
+2025-12-17 07:36:36,294 - [ERROR] - AppLogger.RmsDB - Error getting RMS park names: 1146 (42S02): Table 'ghl_tokens.rms_booking_logs' doesn't exist
 Traceback (most recent call last):
   File "D:\Projects\HolidayBrandAI\venv\Lib\site-packages\mysql\connector\connection_cext.py", line 772, in cmd_query
     self._cmysql.query(
-_mysql_connector.MySQLInterfaceError: Unknown column 'adults' in 'INSERT INTO'
+_mysql_connector.MySQLInterfaceError: Table 'ghl_tokens.rms_booking_logs' doesn't exist
 
 The above exception was the direct cause of the following exception:
 
 Traceback (most recent call last):
-  File "D:\Projects\HolidayBrandAI\utils\newbook_db.py", line 131, in log_newbook_booking
-    cursor.execute(query, (
+  File "D:\Projects\HolidayBrandAI\utils\rms_db.py", line 446, in get_all_rms_park_names
+    cursor.execute("""
   File "D:\Projects\HolidayBrandAI\venv\Lib\site-packages\mysql\connector\cursor_cext.py", line 353, in execute
     self._connection.cmd_query(
   File "D:\Projects\HolidayBrandAI\venv\Lib\site-packages\mysql\connector\opentelemetry\context_propagation.py", line 97, in wrapper
@@ -16,4 +16,4 @@ Traceback (most recent call last):
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "D:\Projects\HolidayBrandAI\venv\Lib\site-packages\mysql\connector\connection_cext.py", line 781, in cmd_query
     raise get_mysql_exception(
-mysql.connector.errors.ProgrammingError: 1054 (42S22): Unknown column 'adults' in 'INSERT INTO'
+mysql.connector.errors.ProgrammingError: 1146 (42S02): Table 'ghl_tokens.rms_booking_logs' doesn't exist

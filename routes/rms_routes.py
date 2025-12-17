@@ -1,10 +1,38 @@
-from fastapi import APIRouter, HTTPException, Depends, Query, Header
+from fastapi import APIRouter, HTTPException, Depends, Query, Header, Body
 from typing import Optional
 from services.rms.rms_service import RMSService
 from auth.auth import authenticate_request
 from utils.rms_db import get_rms_instance
+from pydantic import BaseModel
 
 router = APIRouter(prefix="/api/rms", tags=["RMS"])
+
+
+# Pydantic models for booking log CRUD operations
+class RMSBookingLogCreate(BaseModel):
+    location_id: str
+    park_name: str
+    guest_firstName: str
+    guest_lastName: str
+    guest_email: str
+    guest_phone: Optional[str] = None
+    arrival_date: str
+    departure_date: str
+    booking_id: Optional[str] = None
+    status: Optional[str] = None
+
+class RMSBookingLogUpdate(BaseModel):
+    location_id: Optional[str] = None
+    park_name: Optional[str] = None
+    guest_firstName: Optional[str] = None
+    guest_lastName: Optional[str] = None
+    guest_email: Optional[str] = None
+    guest_phone: Optional[str] = None
+    arrival_date: Optional[str] = None
+    departure_date: Optional[str] = None
+    booking_id: Optional[str] = None
+    status: Optional[str] = None
+
 
 
 async def get_rms_credentials(x_location_id: str = Header(..., alias="X-Location-ID")):
@@ -150,6 +178,38 @@ async def create_reservation(
             guest_email=guest_email,
             guest_phone=guest_phone
         )
+        
+        # Log the booking
+        from utils.rms_db import log_rms_booking
+        
+        # Extract reservation_id (booking_id) from response
+        reservation_id = reservation.get('id') or reservation.get('reservationId')
+        booking_id = str(reservation_id) if reservation_id else None
+        
+        # Extract status from reservation
+        status = reservation.get('status') or reservation.get('reservationStatus')
+        status_str = str(status) if status else None
+        
+        # Get park_name from credentials (may be None if not set)
+        park_name = rms_credentials.get('park_name') or None
+        
+        # Format dates for database (ensure they're in DATETIME format)
+        arrival_datetime = f"{arrival} 00:00:00" if len(arrival) == 10 else arrival
+        departure_datetime = f"{departure} 00:00:00" if len(departure) == 10 else departure
+        
+        log_rms_booking(
+            location_id=rms_credentials.get('location_id'),
+            park_name=park_name,
+            guest_firstName=guest_firstName,
+            guest_lastName=guest_lastName,
+            guest_email=guest_email,
+            guest_phone=guest_phone or None,
+            arrival_date=arrival_datetime,
+            departure_date=departure_datetime,
+            booking_id=booking_id,
+            status=status_str
+        )
+        
         return reservation
     except HTTPException:
         raise
@@ -189,6 +249,159 @@ async def cancel_reservation(
         await rms_service.initialize()
         
         return await rms_service.cancel_reservation(reservation_id)
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ==================== RMS INSTANCE MANAGEMENT ====================
+
+@router.put("/instances/{location_id}")
+async def update_rms_instance(
+    location_id: str,
+    park_name: Optional[str] = Query(None, description="Park name"),
+    client_id: Optional[int] = Query(None, description="Client ID"),
+    client_pass: Optional[str] = Query(None, description="Client password"),
+    agent_id: Optional[int] = Query(None, description="Agent ID"),
+    x_ai_agent_key: str = Depends(authenticate_request)
+):
+    """Update an RMS instance (e.g., add park_name)"""
+    try:
+        from utils.rms_db import update_rms_instance
+        success = update_rms_instance(
+            location_id=location_id,
+            park_name=park_name,
+            client_id=client_id,
+            client_pass=client_pass,
+            agent_id=agent_id
+        )
+        if not success:
+            raise HTTPException(status_code=404, detail=f"RMS instance with location_id {location_id} not found")
+        return {"message": "RMS instance updated successfully", "location_id": location_id}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ==================== RMS BOOKING LOGS ====================
+
+@router.get("/park-names")
+def get_park_names(
+    _: str = Depends(authenticate_request)
+):
+    """Get all unique park names from booking logs"""
+    try:
+        from utils.rms_db import get_all_rms_park_names
+        park_names = get_all_rms_park_names()
+        return {"park_names": park_names}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/booking-logs")
+def get_booking_logs(
+    location_id: Optional[str] = Query(None, description="Filter by location_id"),
+    park_name: Optional[str] = Query(None, description="Filter by park_name (exact match)"),
+    month: Optional[int] = Query(None, description="Filter by month (1-12)"),
+    year: Optional[int] = Query(None, description="Filter by year (e.g., 2024)"),
+    _: str = Depends(authenticate_request)
+):
+    """Get all booking logs, optionally filtered by location_id, park_name, or month/year"""
+    try:
+        from utils.rms_db import get_all_rms_booking_logs
+        logs = get_all_rms_booking_logs(location_id=location_id, park_name=park_name, month=month, year=year)
+        return {"logs": logs, "count": len(logs)}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/booking-logs/{log_id}")
+def get_booking_log(
+    log_id: int,
+    _: str = Depends(authenticate_request)
+):
+    """Get a single booking log by ID"""
+    try:
+        from utils.rms_db import get_rms_booking_log
+        log_entry = get_rms_booking_log(log_id)
+        if not log_entry:
+            raise HTTPException(status_code=404, detail=f"Booking log with id {log_id} not found")
+        return log_entry
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/booking-logs")
+def create_booking_log(
+    log_data: RMSBookingLogCreate = Body(...),
+    _: str = Depends(authenticate_request)
+):
+    """Manually create a new booking log entry"""
+    try:
+        from utils.rms_db import create_rms_booking_log
+        result = create_rms_booking_log(
+            location_id=log_data.location_id,
+            park_name=log_data.park_name,
+            guest_firstName=log_data.guest_firstName,
+            guest_lastName=log_data.guest_lastName,
+            guest_email=log_data.guest_email,
+            guest_phone=log_data.guest_phone,
+            arrival_date=log_data.arrival_date,
+            departure_date=log_data.departure_date,
+            booking_id=log_data.booking_id,
+            status=log_data.status
+        )
+        if not result:
+            raise HTTPException(status_code=500, detail="Failed to create booking log")
+        return {"message": "Booking log created successfully", "log": result}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.put("/booking-logs/{log_id}")
+def update_booking_log(
+    log_id: int,
+    log_data: RMSBookingLogUpdate = Body(...),
+    _: str = Depends(authenticate_request)
+):
+    """Update an existing booking log entry"""
+    try:
+        from utils.rms_db import update_rms_booking_log
+        result = update_rms_booking_log(
+            log_id=log_id,
+            location_id=log_data.location_id,
+            park_name=log_data.park_name,
+            guest_firstName=log_data.guest_firstName,
+            guest_lastName=log_data.guest_lastName,
+            guest_email=log_data.guest_email,
+            guest_phone=log_data.guest_phone,
+            arrival_date=log_data.arrival_date,
+            departure_date=log_data.departure_date,
+            booking_id=log_data.booking_id,
+            status=log_data.status
+        )
+        if not result:
+            raise HTTPException(status_code=404, detail=f"Booking log with id {log_id} not found")
+        return {"message": "Booking log updated successfully", "log": result}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.delete("/booking-logs/{log_id}")
+def delete_booking_log(
+    log_id: int,
+    _: str = Depends(authenticate_request)
+):
+    """Delete a booking log entry"""
+    try:
+        from utils.rms_db import delete_rms_booking_log
+        success = delete_rms_booking_log(log_id)
+        if not success:
+            raise HTTPException(status_code=404, detail=f"Booking log with id {log_id} not found")
+        return {"message": f"Booking log {log_id} deleted successfully"}
     except HTTPException:
         raise
     except Exception as e:
