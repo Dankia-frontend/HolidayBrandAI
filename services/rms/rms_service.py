@@ -642,6 +642,84 @@ class RMSService:
     
     # ==================== CREATE RESERVATION ====================
     # This uses the get_available_areas API for reliable bookings
+
+    async def get_booking_price_and_details(
+        self,
+        category_id: int,
+        rate_plan_id: int,
+        arrival: str,
+        departure: str,
+        adults: int,
+        children: int
+    ) -> Dict:
+        """
+        Get the total price and details for a specific booking.
+        Returns dict with: total_price, category_name, nights
+        """
+        if not self._initialized:
+            raise Exception("RMS service not initialized")
+        
+        client = self._get_api_client()
+        
+        # Get category name from cache
+        category = self._categories_cache.get(category_id, {})
+        category_name = category.get('name', f'Category {category_id}')
+        
+        # Calculate nights
+        from datetime import datetime
+        arr_date = datetime.strptime(arrival, "%Y-%m-%d")
+        dep_date = datetime.strptime(departure, "%Y-%m-%d")
+        nights = (dep_date - arr_date).days
+        
+        # Get pricing from rates grid
+        payload = {
+            "propertyId": self._property_id,
+            "agentId": int(self.query_agent_id),
+            "arrival": arrival,
+            "departure": departure,
+            "adults": adults,
+            "children": children,
+            "categoryIds": [category_id],
+            "rateIds": [rate_plan_id],
+            "includeEstimatedRates": False,
+            "includeZeroRates": False
+        }
+        
+        try:
+            grid_response = await client.get_rates_grid(payload)
+            
+            # Extract price from grid response
+            categories = grid_response.get('categories', [])
+            if categories:
+                category_data = categories[0]
+                rates = category_data.get('rates', [])
+                if rates:
+                    rate_data = rates[0]
+                    day_breakdown = rate_data.get('dayBreakdown', [])
+                    
+                    total_price = 0
+                    for day in day_breakdown:
+                        daily_rate = day.get('dailyRate', 0)
+                        if daily_rate:
+                            total_price += daily_rate
+                    
+                    return {
+                        'total_price': total_price,
+                        'category_name': category_name,
+                        'nights': nights,
+                        'rate_name': rate_data.get('name', 'Standard Rate')
+                    }
+        except Exception as e:
+            print(f"⚠️ Could not fetch pricing: {e}")
+        
+        # Fallback if pricing fetch fails
+        return {
+            'total_price': None,
+            'category_name': category_name,
+            'nights': nights,
+            'rate_name': None
+        }
+
     async def create_reservation(
         self,
         category_id: int,

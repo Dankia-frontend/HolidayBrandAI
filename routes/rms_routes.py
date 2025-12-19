@@ -18,6 +18,11 @@ class RMSBookingLogCreate(BaseModel):
     guest_phone: Optional[str] = None
     arrival_date: str
     departure_date: str
+    adults: Optional[int] = None
+    children: Optional[int] = None
+    category_id: Optional[str] = None
+    category_name: Optional[str] = None
+    amount: Optional[float] = None
     booking_id: Optional[str] = None
     status: Optional[str] = None
 
@@ -30,6 +35,11 @@ class RMSBookingLogUpdate(BaseModel):
     guest_phone: Optional[str] = None
     arrival_date: Optional[str] = None
     departure_date: Optional[str] = None
+    adults: Optional[int] = None
+    children: Optional[int] = None
+    category_id: Optional[str] = None
+    category_name: Optional[str] = None
+    amount: Optional[float] = None
     booking_id: Optional[str] = None
     status: Optional[str] = None
 
@@ -197,6 +207,24 @@ async def create_reservation(
         arrival_datetime = f"{arrival} 00:00:00" if len(arrival) == 10 else arrival
         departure_datetime = f"{departure} 00:00:00" if len(departure) == 10 else departure
         
+        # Get pricing and category details
+        try:
+            booking_details = await rms_service.get_booking_price_and_details(
+                category_id=category_id,
+                rate_plan_id=rate_plan_id,
+                arrival=arrival,
+                departure=departure,
+                adults=adults,
+                children=children or 0
+            )
+            total_amount = booking_details.get('total_price')
+            category_name = booking_details.get('category_name')
+            print(f"📊 Booking details: {category_name} - ${total_amount}")
+        except Exception as e:
+            print(f"⚠️ Could not fetch booking details: {e}")
+            total_amount = None
+            category_name = None
+        
         log_rms_booking(
             location_id=rms_credentials.get('location_id'),
             park_name=park_name,
@@ -206,6 +234,11 @@ async def create_reservation(
             guest_phone=guest_phone or None,
             arrival_date=arrival_datetime,
             departure_date=departure_datetime,
+            adults=adults,
+            children=children or 0,
+            category_id=str(category_id),
+            category_name=category_name,
+            amount=total_amount,
             booking_id=booking_id,
             status=status_str
         )
@@ -255,8 +288,6 @@ async def cancel_reservation(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-# ==================== RMS INSTANCE MANAGEMENT ====================
-
 @router.put("/instances/{location_id}")
 async def update_rms_instance(
     location_id: str,
@@ -283,9 +314,6 @@ async def update_rms_instance(
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
-
-# ==================== RMS BOOKING LOGS ====================
 
 @router.get("/park-names")
 def get_park_names(
@@ -349,6 +377,11 @@ def create_booking_log(
             guest_phone=log_data.guest_phone,
             arrival_date=log_data.arrival_date,
             departure_date=log_data.departure_date,
+            adults=log_data.adults,
+            children=log_data.children,
+            category_id=log_data.category_id,
+            category_name=log_data.category_name,
+            amount=log_data.amount,
             booking_id=log_data.booking_id,
             status=log_data.status
         )
@@ -379,6 +412,11 @@ def update_booking_log(
             guest_phone=log_data.guest_phone,
             arrival_date=log_data.arrival_date,
             departure_date=log_data.departure_date,
+            adults=log_data.adults,
+            children=log_data.children,
+            category_id=log_data.category_id,
+            category_name=log_data.category_name,
+            amount=log_data.amount,
             booking_id=log_data.booking_id,
             status=log_data.status
         )

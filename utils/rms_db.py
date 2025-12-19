@@ -313,9 +313,6 @@ def delete_rms_instance(location_id: str) -> bool:
         if conn:
             conn.close()
 
-
-# ==================== RMS BOOKING LOGS ====================
-
 def log_rms_booking(
     location_id: str,
     park_name: str,
@@ -325,6 +322,11 @@ def log_rms_booking(
     guest_phone: str,
     arrival_date: str,
     departure_date: str,
+    adults: int = None,
+    children: int = None,
+    category_id: str = None,
+    category_name: str = None,
+    amount: float = None,
     booking_id: str = None,
     status: str = None
 ):
@@ -338,8 +340,9 @@ def log_rms_booking(
         query = """
             INSERT INTO rms_booking_logs 
             (location_id, park_name, guest_firstName, guest_lastName, guest_email, 
-             guest_phone, arrival_date, departure_date, booking_id, status)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+             guest_phone, arrival_date, departure_date, adults, children, 
+             category_id, category_name, amount, booking_id, status)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """
         cursor.execute(query, (
             location_id,
@@ -350,11 +353,17 @@ def log_rms_booking(
             guest_phone,
             arrival_date,
             departure_date,
+            adults,
+            children,
+            category_id,
+            category_name,
+            amount,
             booking_id,
             status
         ))
         conn.commit()
         conn.close()
+        log.info(f"Logged RMS booking: {booking_id} - adults={adults}, children={children}, category={category_name}, amount=${amount}")
         return True
     except Exception as e:
         log.exception(f"Error logging RMS booking: {e}")
@@ -373,6 +382,7 @@ def get_rms_booking_log(log_id: int):
         cursor.execute("""
             SELECT id, location_id, park_name, guest_firstName, guest_lastName, 
                    guest_email, guest_phone, arrival_date, departure_date, 
+                   adults, children, category_id, category_name, amount,
                    booking_id, status, created_at, updated_at
             FROM rms_booking_logs 
             WHERE id = %s
@@ -417,6 +427,7 @@ def get_all_rms_booking_logs(location_id: str = None, park_name: str = None, mon
         query = f"""
             SELECT id, location_id, park_name, guest_firstName, guest_lastName, 
                    guest_email, guest_phone, arrival_date, departure_date, 
+                   adults, children, category_id, category_name, amount,
                    booking_id, status, created_at, updated_at
             FROM rms_booking_logs 
             {where_clause}
@@ -468,6 +479,11 @@ def create_rms_booking_log(
     guest_phone: str,
     arrival_date: str,
     departure_date: str,
+    adults: int = None,
+    children: int = None,
+    category_id: str = None,
+    category_name: str = None,
+    amount: float = None,
     booking_id: str = None,
     status: str = None
 ):
@@ -482,8 +498,9 @@ def create_rms_booking_log(
         query = """
             INSERT INTO rms_booking_logs 
             (location_id, park_name, guest_firstName, guest_lastName, guest_email, 
-             guest_phone, arrival_date, departure_date, booking_id, status)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+             guest_phone, arrival_date, departure_date, adults, children, 
+             category_id, category_name, amount, booking_id, status)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """
         cursor.execute(query, (
             location_id,
@@ -494,6 +511,11 @@ def create_rms_booking_log(
             guest_phone,
             arrival_date,
             departure_date,
+            adults,
+            children,
+            category_id,
+            category_name,
+            amount,
             booking_id,
             status
         ))
@@ -504,6 +526,7 @@ def create_rms_booking_log(
         cursor.execute("""
             SELECT id, location_id, park_name, guest_firstName, guest_lastName, 
                    guest_email, guest_phone, arrival_date, departure_date, 
+                   adults, children, category_id, category_name, amount,
                    booking_id, status, created_at, updated_at
             FROM rms_booking_logs 
             WHERE id = %s
@@ -528,6 +551,11 @@ def update_rms_booking_log(
     guest_phone: str = None,
     arrival_date: str = None,
     departure_date: str = None,
+    adults: int = None,
+    children: int = None,
+    category_id: str = None,
+    category_name: str = None,
+    amount: float = None,
     booking_id: str = None,
     status: str = None
 ):
@@ -568,6 +596,21 @@ def update_rms_booking_log(
         if departure_date is not None:
             updates.append("departure_date = %s")
             params.append(departure_date)
+        if adults is not None:
+            updates.append("adults = %s")
+            params.append(adults)
+        if children is not None:
+            updates.append("children = %s")
+            params.append(children)
+        if category_id is not None:
+            updates.append("category_id = %s")
+            params.append(category_id)
+        if category_name is not None:
+            updates.append("category_name = %s")
+            params.append(category_name)
+        if amount is not None:
+            updates.append("amount = %s")
+            params.append(amount)
         if booking_id is not None:
             updates.append("booking_id = %s")
             params.append(booking_id)
@@ -594,6 +637,7 @@ def update_rms_booking_log(
             cursor.execute("""
                 SELECT id, location_id, park_name, guest_firstName, guest_lastName, 
                        guest_email, guest_phone, arrival_date, departure_date, 
+                       adults, children, category_id, category_name, amount,
                        booking_id, status, created_at, updated_at
                 FROM rms_booking_logs 
                 WHERE id = %s
