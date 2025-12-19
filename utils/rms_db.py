@@ -313,8 +313,6 @@ def delete_rms_instance(location_id: str) -> bool:
         if conn:
             conn.close()
 
-
-
 def log_rms_booking(
     location_id: str,
     park_name: str,

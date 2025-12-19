@@ -8,6 +8,7 @@ from pydantic import BaseModel
 router = APIRouter(prefix="/api/rms", tags=["RMS"])
 
 
+# Pydantic models for booking log CRUD operations
 class RMSBookingLogCreate(BaseModel):
     location_id: str
     park_name: str
@@ -313,8 +314,6 @@ async def update_rms_instance(
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
-
 
 @router.get("/park-names")
 def get_park_names(
