@@ -88,6 +88,8 @@ def get_rms_instance(location_id: str) -> dict | None:
         select_columns = ['location_id', 'client_id', 'client_pass']
         if 'agent_id' in columns:
             select_columns.append('agent_id')
+        if 'park_name' in columns:
+            select_columns.append('park_name')
         
         query = f"SELECT {', '.join(select_columns)} FROM rms_instances WHERE location_id = %s"
         print(f"   Query: {query}")
@@ -157,6 +159,8 @@ def get_all_rms_instances() -> list[dict]:
         select_columns = ['location_id', 'client_id', 'client_pass']
         if 'agent_id' in columns:
             select_columns.append('agent_id')
+        if 'park_name' in columns:
+            select_columns.append('park_name')
         
         cursor.execute(f"SELECT {', '.join(select_columns)} FROM rms_instances")
         rows = cursor.fetchall()
@@ -209,7 +213,7 @@ def create_rms_instance(location_id: str, client_id: int, client_pass: str, agen
             conn.close()
 
 
-def update_rms_instance(location_id: str, client_id: int = None, client_pass: str = None, agent_id: int = None) -> bool:
+def update_rms_instance(location_id: str, client_id: int = None, client_pass: str = None, agent_id: int = None, park_name: str = None) -> bool:
     """
     Update an existing RMS instance.
     Only updates fields that are provided (not None).
@@ -232,6 +236,10 @@ def update_rms_instance(location_id: str, client_id: int = None, client_pass: st
         if agent_id is not None:
             updates.append("agent_id = %s")
             params.append(agent_id)
+        
+        if park_name is not None:
+            updates.append("park_name = %s")
+            params.append(park_name)
         
         if not updates:
             return False
@@ -300,6 +308,369 @@ def delete_rms_instance(location_id: str) -> bool:
         return affected > 0
     except Exception as e:
         log.exception(f"Error deleting RMS instance: {e}")
+        return False
+    finally:
+        if conn:
+            conn.close()
+
+
+
+def log_rms_booking(
+    location_id: str,
+    park_name: str,
+    guest_firstName: str,
+    guest_lastName: str,
+    guest_email: str,
+    guest_phone: str,
+    arrival_date: str,
+    departure_date: str,
+    adults: int = None,
+    children: int = None,
+    category_id: str = None,
+    category_name: str = None,
+    amount: float = None,
+    booking_id: str = None,
+    status: str = None
+):
+    """
+    Log a booking created via RMS API.
+    Returns: True if successful, False otherwise
+    """
+    try:
+        conn = mysql.connector.connect(**db_config)
+        cursor = conn.cursor()
+        query = """
+            INSERT INTO rms_booking_logs 
+            (location_id, park_name, guest_firstName, guest_lastName, guest_email, 
+             guest_phone, arrival_date, departure_date, adults, children, 
+             category_id, category_name, amount, booking_id, status)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """
+        cursor.execute(query, (
+            location_id,
+            park_name,
+            guest_firstName,
+            guest_lastName,
+            guest_email,
+            guest_phone,
+            arrival_date,
+            departure_date,
+            adults,
+            children,
+            category_id,
+            category_name,
+            amount,
+            booking_id,
+            status
+        ))
+        conn.commit()
+        conn.close()
+        log.info(f"Logged RMS booking: {booking_id} - adults={adults}, children={children}, category={category_name}, amount=${amount}")
+        return True
+    except Exception as e:
+        log.exception(f"Error logging RMS booking: {e}")
+        return False
+
+
+def get_rms_booking_log(log_id: int):
+    """
+    Retrieve a booking log by ID.
+    Returns: dict with booking log data or None if not found
+    """
+    conn = None
+    try:
+        conn = mysql.connector.connect(**db_config)
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("""
+            SELECT id, location_id, park_name, guest_firstName, guest_lastName, 
+                   guest_email, guest_phone, arrival_date, departure_date, 
+                   adults, children, category_id, category_name, amount,
+                   booking_id, status, created_at, updated_at
+            FROM rms_booking_logs 
+            WHERE id = %s
+        """, (log_id,))
+        row = cursor.fetchone()
+        return row
+    except Exception as e:
+        log.exception(f"Error getting RMS booking log: {e}")
+        return None
+    finally:
+        if conn:
+            conn.close()
+
+
+def get_all_rms_booking_logs(location_id: str = None, park_name: str = None, month: int = None, year: int = None):
+    """
+    Retrieve all booking logs, optionally filtered by location_id, park_name, or month/year.
+    Returns: list of dicts with booking log data
+    """
+    conn = None
+    try:
+        conn = mysql.connector.connect(**db_config)
+        cursor = conn.cursor(dictionary=True)
+        
+        conditions = []
+        params = []
+        
+        if park_name:
+            conditions.append("park_name = %s")
+            params.append(park_name)
+        
+        if location_id:
+            conditions.append("location_id = %s")
+            params.append(location_id)
+        
+        if month is not None and year is not None:
+            conditions.append("arrival_date IS NOT NULL AND YEAR(arrival_date) = %s AND MONTH(arrival_date) = %s")
+            params.extend([year, month])
+        
+        where_clause = "WHERE " + " AND ".join(conditions) if conditions else ""
+        
+        query = f"""
+            SELECT id, location_id, park_name, guest_firstName, guest_lastName, 
+                   guest_email, guest_phone, arrival_date, departure_date, 
+                   adults, children, category_id, category_name, amount,
+                   booking_id, status, created_at, updated_at
+            FROM rms_booking_logs 
+            {where_clause}
+            ORDER BY created_at DESC
+        """
+        
+        cursor.execute(query, tuple(params) if params else None)
+        rows = cursor.fetchall()
+        return rows
+    except Exception as e:
+        log.exception(f"Error getting all RMS booking logs: {e}")
+        return []
+    finally:
+        if conn:
+            conn.close()
+
+
+def get_all_rms_park_names():
+    """
+    Retrieve all unique park names from booking logs.
+    Returns: list of unique park names (sorted)
+    """
+    conn = None
+    try:
+        conn = mysql.connector.connect(**db_config)
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT DISTINCT park_name 
+            FROM rms_booking_logs 
+            WHERE park_name IS NOT NULL AND park_name != ''
+            ORDER BY park_name ASC
+        """)
+        rows = cursor.fetchall()
+        return [row[0] for row in rows]
+    except Exception as e:
+        log.exception(f"Error getting RMS park names: {e}")
+        return []
+    finally:
+        if conn:
+            conn.close()
+
+
+def create_rms_booking_log(
+    location_id: str,
+    park_name: str,
+    guest_firstName: str,
+    guest_lastName: str,
+    guest_email: str,
+    guest_phone: str,
+    arrival_date: str,
+    departure_date: str,
+    adults: int = None,
+    children: int = None,
+    category_id: str = None,
+    category_name: str = None,
+    amount: float = None,
+    booking_id: str = None,
+    status: str = None
+):
+    """
+    Manually create a booking log entry.
+    Returns: dict with the created log entry (including id) or None if failed
+    """
+    conn = None
+    try:
+        conn = mysql.connector.connect(**db_config)
+        cursor = conn.cursor(dictionary=True)
+        query = """
+            INSERT INTO rms_booking_logs 
+            (location_id, park_name, guest_firstName, guest_lastName, guest_email, 
+             guest_phone, arrival_date, departure_date, adults, children, 
+             category_id, category_name, amount, booking_id, status)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """
+        cursor.execute(query, (
+            location_id,
+            park_name,
+            guest_firstName,
+            guest_lastName,
+            guest_email,
+            guest_phone,
+            arrival_date,
+            departure_date,
+            adults,
+            children,
+            category_id,
+            category_name,
+            amount,
+            booking_id,
+            status
+        ))
+        log_id = cursor.lastrowid
+        conn.commit()
+        
+        # Fetch the created record
+        cursor.execute("""
+            SELECT id, location_id, park_name, guest_firstName, guest_lastName, 
+                   guest_email, guest_phone, arrival_date, departure_date, 
+                   adults, children, category_id, category_name, amount,
+                   booking_id, status, created_at, updated_at
+            FROM rms_booking_logs 
+            WHERE id = %s
+        """, (log_id,))
+        result = cursor.fetchone()
+        return result
+    except Exception as e:
+        log.exception(f"Error creating RMS booking log: {e}")
+        return None
+    finally:
+        if conn:
+            conn.close()
+
+
+def update_rms_booking_log(
+    log_id: int,
+    location_id: str = None,
+    park_name: str = None,
+    guest_firstName: str = None,
+    guest_lastName: str = None,
+    guest_email: str = None,
+    guest_phone: str = None,
+    arrival_date: str = None,
+    departure_date: str = None,
+    adults: int = None,
+    children: int = None,
+    category_id: str = None,
+    category_name: str = None,
+    amount: float = None,
+    booking_id: str = None,
+    status: str = None
+):
+    """
+    Update an existing booking log entry.
+    Only updates fields that are provided (not None).
+    Returns: dict with updated log entry or None if not found
+    """
+    conn = None
+    try:
+        conn = mysql.connector.connect(**db_config)
+        cursor = conn.cursor()
+        
+        updates = []
+        params = []
+        
+        if location_id is not None:
+            updates.append("location_id = %s")
+            params.append(location_id)
+        if park_name is not None:
+            updates.append("park_name = %s")
+            params.append(park_name)
+        if guest_firstName is not None:
+            updates.append("guest_firstName = %s")
+            params.append(guest_firstName)
+        if guest_lastName is not None:
+            updates.append("guest_lastName = %s")
+            params.append(guest_lastName)
+        if guest_email is not None:
+            updates.append("guest_email = %s")
+            params.append(guest_email)
+        if guest_phone is not None:
+            updates.append("guest_phone = %s")
+            params.append(guest_phone)
+        if arrival_date is not None:
+            updates.append("arrival_date = %s")
+            params.append(arrival_date)
+        if departure_date is not None:
+            updates.append("departure_date = %s")
+            params.append(departure_date)
+        if adults is not None:
+            updates.append("adults = %s")
+            params.append(adults)
+        if children is not None:
+            updates.append("children = %s")
+            params.append(children)
+        if category_id is not None:
+            updates.append("category_id = %s")
+            params.append(category_id)
+        if category_name is not None:
+            updates.append("category_name = %s")
+            params.append(category_name)
+        if amount is not None:
+            updates.append("amount = %s")
+            params.append(amount)
+        if booking_id is not None:
+            updates.append("booking_id = %s")
+            params.append(booking_id)
+        if status is not None:
+            updates.append("status = %s")
+            params.append(status)
+        
+        if not updates:
+            return None
+        
+        params.append(log_id)
+        query = f"""
+            UPDATE rms_booking_logs
+            SET {', '.join(updates)}
+            WHERE id = %s
+        """
+        cursor.execute(query, params)
+        affected = cursor.rowcount
+        conn.commit()
+        
+        if affected > 0:
+            # Fetch the updated record
+            cursor = conn.cursor(dictionary=True)
+            cursor.execute("""
+                SELECT id, location_id, park_name, guest_firstName, guest_lastName, 
+                       guest_email, guest_phone, arrival_date, departure_date, 
+                       adults, children, category_id, category_name, amount,
+                       booking_id, status, created_at, updated_at
+                FROM rms_booking_logs 
+                WHERE id = %s
+            """, (log_id,))
+            result = cursor.fetchone()
+            return result
+        else:
+            return None
+    except Exception as e:
+        log.exception(f"Error updating RMS booking log: {e}")
+        return None
+    finally:
+        if conn:
+            conn.close()
+
+
+def delete_rms_booking_log(log_id: int):
+    """
+    Delete a booking log entry.
+    Returns: True if successful, False if log_id not found
+    """
+    conn = None
+    try:
+        conn = mysql.connector.connect(**db_config)
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM rms_booking_logs WHERE id = %s", (log_id,))
+        affected = cursor.rowcount
+        conn.commit()
+        return affected > 0
+    except Exception as e:
+        log.exception(f"Error deleting RMS booking log: {e}")
         return False
     finally:
         if conn:
