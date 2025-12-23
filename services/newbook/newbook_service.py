@@ -146,6 +146,7 @@ class NewbookService:
 
                     filtered["data"][category_id] = {
                         "category_name": category_name,
+                        "category_type_id": category_data.get("category_type_id"),
                         "price": price,
                         "sites_message": sites_message,
                     }
