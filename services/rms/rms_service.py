@@ -308,6 +308,15 @@ class RMSService:
                 for cat in categories:
                     self._categories_cache[cat['id']] = cat
                 print(f"✅ Cached {len(categories)} categories")
+                
+                # Debug: Log category class info for each category
+                print(f"Category Class Information:")
+                for cat in categories:
+                    cat_id = cat.get('id')
+                    cat_name = cat.get('name', 'Unknown')
+                    cat_class = cat.get('categoryClass', 'Unknown')
+                    print(f"   Category {cat_id} ({cat_name}): class={cat_class}")
+                        
             except Exception as e:
                 print(f"⚠️ Warning: Could not cache categories: {e}")
             
@@ -478,7 +487,7 @@ class RMSService:
             "adults": adults,
             "children": children,
             "categoryIds": category_ids,
-            "rateIds": all_rate_ids,  # MUST include rate IDs!
+            "rateIds": all_rate_ids,
             "includeEstimatedRates": False,
             "includeZeroRates": False
         }
@@ -504,7 +513,7 @@ class RMSService:
         available = []
         
         categories = grid_response.get('categories', [])
-        print(f"📊 Rates grid returned {len(categories)} categories")
+        print(f"Rates grid returned {len(categories)} categories")
         
         if not categories:
             return {
@@ -555,9 +564,13 @@ class RMSService:
                     occupancy_info = self._get_category_occupancy_info(category_id)
                     
                     if is_valid:
+                        cached_category = self._categories_cache.get(category_id, {})
+                        category_class = cached_category.get('categoryClass', '')
+                        
                         available.append({
                             'category_id': category_id,
                             'category_name': category_name,
+                            'category_class': category_class,  # "Site" or "Accommodation"
                             'rate_plan_id': rate_id,
                             'rate_plan_name': rate_name,
                             'total_price': total_price,
@@ -565,7 +578,7 @@ class RMSService:
                             'max_occupancy': occupancy_info['maxOccupancy'],
                             'occupancy_message': occupancy_info['occupancyMessage']
                         })
-                        print(f"   Category {category_id}, Rate {rate_id}: ✅ {available_count} areas - ${total_price} - {occupancy_info['occupancyMessage']}")
+                        print(f"   Category {category_id}, Rate {rate_id}: ✅ {available_count} areas - ${total_price} - Class: {category_class} - {occupancy_info['occupancyMessage']}")
                     else:
                         print(f"   Category {category_id}, Rate {rate_id}: ❌ Skipped - {error_msg}")
 
