@@ -530,6 +530,10 @@ class RMSService:
                 rate_id = rate.get('rateId')
                 rate_name = rate.get('name', 'Unknown')
                 
+                # Filter: Only include "Normal Rate" rate plans
+                if rate_name != "Normal Rate":
+                    continue
+                
                 day_breakdown = rate.get('dayBreakdown', [])
                 if not day_breakdown:
                     continue
