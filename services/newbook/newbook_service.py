@@ -381,24 +381,26 @@ class NewbookService:
     
     def check_booking(
         self,
-        first_name: str,
-        last_name: str,
-        email: str,
+        booking_id: str,
         period_from: Optional[str] = None,
         period_to: Optional[str] = None
     ) -> Dict:
         """
-        Check if a booking exists for the given guest information.
-        Returns validation result with booking existence status.
+        Check if a booking exists for the given booking_id.
+        Searches through the list of bookings returned by the API.
+        
+        Args:
+            booking_id: The booking ID to search for
+            period_from: Optional booking start date filter
+            period_to: Optional booking end date filter
+        
+        Returns:
+            Dictionary with "exists" key containing boolean indicating if booking_id was found
         """
         client = self._get_api_client()
-        
-        first_name = first_name.strip()
-        last_name = last_name.strip()
-        email = email.strip()
 
-        if not first_name or not last_name or not email:
-            raise ValueError("Missing required fields: name, email")
+        if not booking_id:
+            raise ValueError("Missing required fields: booking_id")
 
         # Build request payload
         payload = {
@@ -409,254 +411,51 @@ class NewbookService:
             "list_type": "staying"
         }
 
-        log.info(f"Checking booking for {first_name} {last_name} ({email})")
-
         try:
             result = client.list_bookings(payload)
 
-            # Extract and validate guest information from response
-            validation_result = self._extract_and_validate_guest_info(
-                result,
-                first_name,
-                last_name,
-                email,
-                period_from,
-                period_to
-            )
-            
-            # Log validation results
-            booking_id = validation_result.get("booking_id") or "unknown"
-            if validation_result["matches"]:
-                log.info(f"Guest info validation passed for booking {booking_id}")
-            else:
-                log.warning(f"Guest info validation mismatch for booking {booking_id}: {validation_result['mismatches']}")
+            # Check if the API call was successful
+            if not result.get("success") or result.get("success") != "true":
+                log.warning(f"API call returned unsuccessful result: {result.get('success')}")
+                return {"exists": False}
 
-            # Return simple boolean response indicating if booking exists
-            return {"exists": validation_result["matches"]}
+            # Extract the data array from the result
+            bookings_data = result.get("data", [])
+            
+            if not isinstance(bookings_data, list):
+                log.warning(f"Expected data to be a list, got {type(bookings_data)}")
+                return {"exists": False}
+
+            # Convert booking_id to int for comparison (API returns booking_id as int)
+            try:
+                target_booking_id = int(booking_id)
+            except (ValueError, TypeError):
+                log.error(f"Invalid booking_id format: {booking_id}")
+                return {"exists": False}
+
+            # Search for the booking_id in the data array
+            booking_exists = False
+            for booking in bookings_data:
+                booking_id_in_result = booking.get("booking_id")
+                # Handle both int and string comparisons
+                if booking_id_in_result is not None:
+                    if isinstance(booking_id_in_result, int):
+                        if booking_id_in_result == target_booking_id:
+                            booking_exists = True
+                            break
+                    elif isinstance(booking_id_in_result, str):
+                        try:
+                            if int(booking_id_in_result) == target_booking_id:
+                                booking_exists = True
+                                break
+                        except (ValueError, TypeError):
+                            continue
+
+            log.info(f"Booking ID {booking_id} {'exists' if booking_exists else 'does not exist'} in the results")
+            return {"exists": booking_exists}
             
         except Exception as e:
             log.error(f"Error checking booking: {str(e)}")
             raise
-    
-    def _extract_and_validate_guest_info(
-        self,
-        response_data: dict,
-        input_firstname: str,
-        input_lastname: str,
-        input_email: str,
-        period_from: Optional[str] = None,
-        period_to: Optional[str] = None
-    ) -> dict:
-        """
-        Extract guest information from booking response and validate against input parameters.
-        Handles both single booking and multiple bookings in the response by finding the matching booking.
-        
-        Args:
-            response_data: The booking response from NewBook API (can be single booking or array of bookings)
-            input_firstname: First name passed to the API
-            input_lastname: Last name passed to the API
-            input_email: Email passed to the API
-            period_from: Optional booking start date to validate against booking_arrival
-            period_to: Optional booking end date to validate against booking_departure
-        
-        Returns:
-            Dictionary with validation results including extracted values and mismatches
-        """
-        validation = {
-            "matches": True,
-            "mismatches": [],
-            "extracted": {
-                "firstname": None,
-                "lastname": None,
-                "email": None
-            },
-            "input": {
-                "firstname": input_firstname.strip(),
-                "lastname": input_lastname.strip(),
-                "email": input_email.strip().lower()
-            },
-            "booking_id": None
-        }
-        
-        try:
-            # Normalize input values for comparison
-            input_firstname_norm = validation["input"]["firstname"].lower()
-            input_lastname_norm = validation["input"]["lastname"].lower()
-            input_email_norm = validation["input"]["email"]
-            
-            # Handle different response structures
-            bookings = []
-            if isinstance(response_data, list):
-                # Response is an array of bookings
-                bookings = response_data
-            elif isinstance(response_data, dict):
-                # Check if response has a data array
-                if "data" in response_data and isinstance(response_data["data"], list):
-                    bookings = response_data["data"]
-                # Check if response has a bookings array
-                elif "bookings" in response_data and isinstance(response_data["bookings"], list):
-                    bookings = response_data["bookings"]
-                # Otherwise, treat as single booking object
-                else:
-                    bookings = [response_data]
-            else:
-                validation["matches"] = False
-                validation["mismatches"].append("Invalid response format")
-                return validation
-            
-            if not bookings:
-                validation["matches"] = False
-                validation["mismatches"].append("No bookings found in response")
-                return validation
-            
-            # Find the booking that matches the input guest information
-            matching_booking = None
-            matching_guest = None
-            
-            for booking in bookings:
-                guests = booking.get("guests", [])
-                if not guests:
-                    continue
-                
-                # Find primary guest in this booking
-                primary_guest = None
-                for guest in guests:
-                    if guest.get("primary_client") == "1" or guest.get("primary_client") == 1:
-                        primary_guest = guest
-                        break
-                
-                # If no primary client marked, use first guest
-                if not primary_guest:
-                    primary_guest = guests[0]
-                
-                # Extract guest info for comparison
-                guest_firstname = primary_guest.get("firstname", "").strip().lower()
-                guest_lastname = primary_guest.get("lastname", "").strip().lower()
-                
-                # Extract email from contact_details
-                guest_email = None
-                contact_details = primary_guest.get("contact_details", [])
-                for contact in contact_details:
-                    if contact.get("type") == "email":
-                        guest_email = contact.get("content", "").strip().lower()
-                        break
-                
-                # Check if this guest matches the input (email is most reliable)
-                email_match = guest_email == input_email_norm if guest_email else False
-                firstname_match = guest_firstname == input_firstname_norm
-                lastname_match = guest_lastname == input_lastname_norm
-                
-                # Prioritize email match, but also check name matches
-                if email_match or (firstname_match and lastname_match):
-                    matching_booking = booking
-                    matching_guest = primary_guest
-                    validation["booking_id"] = booking.get("booking_id")
-                    break
-            
-            # If no matching booking found, use the first booking and log warning
-            if not matching_booking:
-                matching_booking = bookings[0]
-                guests = matching_booking.get("guests", [])
-                if guests:
-                    for guest in guests:
-                        if guest.get("primary_client") == "1" or guest.get("primary_client") == 1:
-                            matching_guest = guest
-                            break
-                    if not matching_guest:
-                        matching_guest = guests[0]
-                log.warning(f"Could not find exact matching booking for guest {input_firstname} {input_lastname} ({input_email}), using first booking")
-            
-            if not matching_guest:
-                validation["matches"] = False
-                validation["mismatches"].append("No guests found in matching booking")
-                return validation
-            
-            # Extract firstname and lastname
-            extracted_firstname = matching_guest.get("firstname", "").strip()
-            extracted_lastname = matching_guest.get("lastname", "").strip()
-            
-            # Extract email from contact_details
-            extracted_email = None
-            contact_details = matching_guest.get("contact_details", [])
-            for contact in contact_details:
-                if contact.get("type") == "email":
-                    extracted_email = contact.get("content", "").strip().lower()
-                    break
-            
-            # Store extracted values
-            validation["extracted"]["firstname"] = extracted_firstname
-            validation["extracted"]["lastname"] = extracted_lastname
-            validation["extracted"]["email"] = extracted_email
-            
-            # Compare values (case-insensitive for names, exact match for email)
-            if extracted_firstname.lower() != input_firstname_norm:
-                validation["matches"] = False
-                validation["mismatches"].append({
-                    "field": "firstname",
-                    "input": validation["input"]["firstname"],
-                    "extracted": extracted_firstname
-                })
-            
-            if extracted_lastname.lower() != input_lastname_norm:
-                validation["matches"] = False
-                validation["mismatches"].append({
-                    "field": "lastname",
-                    "input": validation["input"]["lastname"],
-                    "extracted": extracted_lastname
-                })
-            
-            if extracted_email and extracted_email != input_email_norm:
-                validation["matches"] = False
-                validation["mismatches"].append({
-                    "field": "email",
-                    "input": validation["input"]["email"],
-                    "extracted": extracted_email
-                })
-            elif not extracted_email:
-                validation["matches"] = False
-                validation["mismatches"].append({
-                    "field": "email",
-                    "input": validation["input"]["email"],
-                    "extracted": "Not found in response"
-                })
-            
-            # Validate booking dates if period_from and period_to are provided
-            if period_from and period_to:
-                def normalize_date(date_str: str) -> str:
-                    """Extract just the date part (YYYY-MM-DD) from datetime string"""
-                    if not date_str:
-                        return ""
-                    # Handle formats like "2025-12-19 14:00:00" or "2025-12-19"
-                    return date_str.strip().split()[0] if " " in date_str else date_str.strip()
-                
-                booking_arrival = matching_booking.get("booking_arrival", "")
-                booking_departure = matching_booking.get("booking_departure", "")
-                
-                normalized_arrival = normalize_date(booking_arrival)
-                normalized_departure = normalize_date(booking_departure)
-                normalized_period_from = normalize_date(period_from)
-                normalized_period_to = normalize_date(period_to)
-                
-                if normalized_arrival != normalized_period_from:
-                    validation["matches"] = False
-                    validation["mismatches"].append({
-                        "field": "arrival_date",
-                        "input": normalized_period_from,
-                        "extracted": normalized_arrival
-                    })
-                
-                if normalized_departure != normalized_period_to:
-                    validation["matches"] = False
-                    validation["mismatches"].append({
-                        "field": "departure_date",
-                        "input": normalized_period_to,
-                        "extracted": normalized_departure
-                    })
-            
-        except Exception as e:
-            log.error(f"Error extracting guest info: {str(e)}")
-            validation["matches"] = False
-            validation["mismatches"].append(f"Error during extraction: {str(e)}")
-        
-        return validation
+
 

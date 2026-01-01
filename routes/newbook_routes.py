@@ -167,9 +167,7 @@ def confirm_booking(
 
 @router.get("/check-booking")
 def check_booking(
-    first_name: str = Query(..., description="Guest first name"),
-    last_name: str = Query(..., description="Guest last name"),
-    email: str = Query(..., description="Guest email"),
+    booking_id: str = Query(..., description="Booking ID"),
     period_from: Optional[str] = Query(None, description="Optional booking date (YYYY-MM-DD)"),
     period_to: Optional[str] = Query(None, description="Optional booking date (YYYY-MM-DD)"),
     _: str = Depends(authenticate_request),
@@ -177,12 +175,10 @@ def check_booking(
 ):
     """Check if a booking exists for the given guest information"""
     try:
-        email = unquote(email)
+        # email = unquote(email)
         service = NewbookService(newbook_creds)
         return service.check_booking(
-            first_name=first_name,
-            last_name=last_name,
-            email=email,
+            booking_id=booking_id,
             period_from=period_from,
             period_to=period_to
         )
