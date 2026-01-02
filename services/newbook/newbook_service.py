@@ -76,6 +76,19 @@ class NewbookService:
         try:
             data = client.get_availability(payload)
             
+            # Filter categories by occupancy limits before processing
+            if "data" in data and isinstance(data["data"], dict):
+                filtered_categories = {}
+                for category_id, category_data in data["data"].items():
+                    # Check if this category can accommodate the requested occupancy
+                    if self._can_accommodate_occupancy(category_data, adults, children):
+                        filtered_categories[category_id] = category_data
+                    else:
+                        log.debug(f"Filtering out category {category_id} - cannot accommodate {adults} adults and {children} children")
+                
+                # Replace data with filtered categories
+                data["data"] = filtered_categories
+            
             # Sort categories by highest amount first (descending order)
             if "data" in data and isinstance(data["data"], dict):
                 # Convert categories to list of tuples (category_id, category_data, max_amount)
@@ -272,6 +285,88 @@ class NewbookService:
             return base_max_adults, base_max_children
         except (StopIteration, AttributeError, TypeError):
             return None, None
+    
+    def _extract_occupancy_limits(self, tariffs_quoted: dict) -> tuple:
+        """
+        Helper to extract all occupancy limits from tariffs_quoted.
+        Returns tuple (base_max_combined, base_max_adults, base_max_children) or (None, None, None) if not found.
+        """
+        if not isinstance(tariffs_quoted, dict) or not tariffs_quoted:
+            return None, None, None
+        
+        try:
+            first_date_key = next(iter(tariffs_quoted.keys()))
+            quote_data = tariffs_quoted.get(first_date_key) or {}
+            base_max_combined = quote_data.get("base_max_combined")
+            base_max_adults = quote_data.get("base_max_adults")
+            base_max_children = quote_data.get("base_max_children")
+            return base_max_combined, base_max_adults, base_max_children
+        except (StopIteration, AttributeError, TypeError):
+            return None, None, None
+    
+    def _can_accommodate_occupancy(self, category_data: dict, adults: int, children: int) -> bool:
+        """
+        Check if a category can accommodate the requested number of adults and children.
+        
+        Args:
+            category_data: Category data from API response
+            adults: Requested number of adults
+            children: Requested number of children
+            
+        Returns:
+            True if the category can accommodate the occupancy, False otherwise
+        """
+        tariffs_available = category_data.get("tariffs_available", [])
+        
+        if not tariffs_available:
+            # If no tariffs available, we can't determine capacity, so exclude it
+            return False
+        
+        # Check all tariffs - if any tariff can accommodate, the category is valid
+        for tariff in tariffs_available:
+            tariffs_quoted = tariff.get("tariffs_quoted", {})
+            base_max_combined, base_max_adults, base_max_children = self._extract_occupancy_limits(tariffs_quoted)
+            
+            # If we can't extract any limits, skip this tariff
+            if base_max_combined is None and base_max_adults is None and base_max_children is None:
+                continue
+            
+            # Check combined limit (total guests)
+            if base_max_combined is not None:
+                try:
+                    # Handle both string and numeric inputs
+                    max_combined = int(float(str(base_max_combined)))
+                    total_guests = adults + children
+                    if total_guests > max_combined:
+                        continue  # This tariff doesn't work, check next one
+                except (ValueError, TypeError):
+                    pass  # Invalid value, skip this check
+            
+            # Check adults limit
+            if base_max_adults is not None:
+                try:
+                    # Handle both string and numeric inputs
+                    max_adults = int(float(str(base_max_adults)))
+                    if adults > max_adults:
+                        continue  # This tariff doesn't work, check next one
+                except (ValueError, TypeError):
+                    pass  # Invalid value, skip this check
+            
+            # Check children limit (only if not null)
+            if base_max_children is not None:
+                try:
+                    # Handle both string and numeric inputs
+                    max_children = int(float(str(base_max_children)))
+                    if children > max_children:
+                        continue  # This tariff doesn't work, check next one
+                except (ValueError, TypeError):
+                    pass  # Invalid value, skip this check
+            
+            # If we get here, this tariff can accommodate the occupancy
+            return True
+        
+        # No tariff could accommodate the occupancy
+        return False
     
     def create_tariffs_quoted(self, period_from: str, period_to: str, tariff_total: float, tariff_id: int) -> dict:
         """
