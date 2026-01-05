@@ -440,11 +440,12 @@ class RMSService:
                 categories = await self._get_all_categories()
         
         # Filter to only active categories with areas (prevent issues)
+        # Only exclude if explicitly marked as unavailable to IBE
         active_categories = [
             cat for cat in categories 
             if not cat.get('inactive', False) 
             and cat.get('numberOfAreas', 0) > 0
-            and cat.get('availableToIbe', False)  # Only include categories available for online booking
+            and cat.get('availableToIbe') is not False  # Include if True or not set
         ]
         
         category_ids = [cat['id'] for cat in active_categories]
@@ -505,6 +506,51 @@ class RMSService:
                 'error': str(e)
             }
     
+    def _is_standard_rate(self, rate_name: str) -> bool:
+        """
+        Determine if a rate plan is a standard/normal rate (not promotional or discount).
+        
+        Returns True for rates like:
+        - "Normal Rate"
+        - "Standard Rate" 
+        - "Standard Rate 2"
+        - "Standard Rate 2021 Onwards"
+        - "BAR" (Best Available Rate)
+        
+        Returns False for promotional/discount rates like:
+        - "Weekly Discount"
+        - "Member 10% Disc"
+        - "Stay 7 Pay 5"
+        - "Bookeasy"
+        - "G'Day Member"
+        - "OTA" rates
+        """
+        rate_name_lower = rate_name.lower()
+        
+        # Keywords that indicate a standard rate
+        standard_keywords = [
+            'normal rate',
+            'standard rate',
+            'bar'  # Best Available Rate
+        ]
+        
+        # Keywords that indicate promotional/discount rates (should be excluded)
+        exclude_keywords = [
+            'discount', 'disc', 'weekly', 'stay', 'pay',
+            'member', 'bookeasy', 'ota', 'promo', 'special',
+            'corporate', 'corp', 'extended', "g'day", 'hrs'
+        ]
+        
+        # Check if it matches a standard rate keyword
+        for keyword in standard_keywords:
+            if keyword in rate_name_lower:
+                # Make sure it doesn't also have an exclude keyword
+                has_exclude = any(excl in rate_name_lower for excl in exclude_keywords)
+                if not has_exclude:
+                    return True
+        
+        return False
+    
     async def _simplify_grid_response(self, grid_response: Dict, arrival: str, departure: str, adults: int, children: int) -> Dict:
         """
         Simplify the rates grid response into a clean format.
@@ -530,9 +576,13 @@ class RMSService:
                 rate_id = rate.get('rateId')
                 rate_name = rate.get('name', 'Unknown')
                 
-                # Filter: Only include "Normal Rate" rate plans
-                if rate_name != "Normal Rate":
+                # Filter: Only include standard rate plans (not promotional/discount rates)
+                # This works across all parks with different rate naming conventions
+                if not self._is_standard_rate(rate_name):
+                    print(f"   ⏭️  Skipping promotional rate: {rate_name} (ID: {rate_id})")
                     continue
+                
+                print(f"   ✓ Processing standard rate: {rate_name} (ID: {rate_id})")
                 
                 day_breakdown = rate.get('dayBreakdown', [])
                 if not day_breakdown:
@@ -558,9 +608,11 @@ class RMSService:
                     daily_rate = day.get('dailyRate', 0)
                     if daily_rate:
                         total_price += daily_rate
-                
+                print(f"IS AVAILABLE: {is_available}, TOTAL PRICE: {total_price} , AVAILABLE COUNT: {available_count}")
+
                 # Only include if available and has a price
                 if is_available and total_price > 0 and available_count > 0:
+                    
                     # Validate occupancy limits for this category
                     is_valid, error_msg = self._validate_occupancy(category_id, adults, children)
                     
