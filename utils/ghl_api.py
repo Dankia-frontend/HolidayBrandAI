@@ -560,7 +560,7 @@ def send_to_ghl(booking, access_token, guest_info=None):
                 {"id": "adults", "field_value": str(booking.get("booking_adults", ""))},
                 {"id": "children", "field_value": str(booking.get("booking_children", ""))},
                 {"id": "infants", "field_value": str(booking.get("booking_infants", ""))},
-                {"id": "site_id", "field_value": str(booking.get("site_id", ""))},
+                {"id": "site_id", "field_value": str(booking.get("site_name", ""))},
                 {"id": "total_spend", "field_value": str(booking.get("booking_total", ""))},
                 {"id": "promo_code", "field_value": booking.get("discount_code", "")},
                 {"id": "booking_status", "field_value": booking.get("booking_status", "")},
