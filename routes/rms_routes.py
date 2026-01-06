@@ -271,9 +271,18 @@ async def get_reservation(
         
         reservation = await rms_service.get_reservation(reservation_id)
         
+        # Enrich with category_name for Voice AI
+        category_id = reservation.get('categoryId')
+        if category_id and hasattr(rms_service, '_categories_cache'):
+            category = rms_service._categories_cache.get(category_id, {})
+            category_name = category.get('name', 'Unknown')
+            reservation['category_name'] = category_name
+            print(f"   📋 Added category_name: {category_name}")
+        
         # Log key details for debugging
         print(f"✅ Reservation found:")
         print(f"   Status: {reservation.get('status')}")
+        print(f"   Category: {reservation.get('category_name', 'N/A')}")
         print(f"   Arrival: {reservation.get('arrivalDate')}")
         print(f"   Departure: {reservation.get('departureDate')}")
         print(f"   Adults: {reservation.get('adults')}, Children: {reservation.get('children')}")
