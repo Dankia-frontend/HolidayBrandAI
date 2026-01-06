@@ -77,17 +77,17 @@ class NewbookService:
             data = client.get_availability(payload)
             
             # Filter categories by occupancy limits before processing
-            if "data" in data and isinstance(data["data"], dict):
-                filtered_categories = {}
-                for category_id, category_data in data["data"].items():
-                    # Check if this category can accommodate the requested occupancy
-                    if self._can_accommodate_occupancy(category_data, adults, children):
-                        filtered_categories[category_id] = category_data
-                    else:
-                        log.debug(f"Filtering out category {category_id} - cannot accommodate {adults} adults and {children} children")
+            # if "data" in data and isinstance(data["data"], dict):
+            #     filtered_categories = {}
+            #     for category_id, category_data in data["data"].items():
+            #         # Check if this category can accommodate the requested occupancy
+            #         if self._can_accommodate_occupancy(category_data, adults, children):
+            #             filtered_categories[category_id] = category_data
+            #         else:
+            #             log.debug(f"Filtering out category {category_id} - cannot accommodate {adults} adults and {children} children")
                 
-                # Replace data with filtered categories
-                data["data"] = filtered_categories
+            #     # Replace data with filtered categories
+            #     data["data"] = filtered_categories
             
             # Sort categories by highest amount first (descending order)
             if "data" in data and isinstance(data["data"], dict):
