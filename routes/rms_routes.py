@@ -250,22 +250,40 @@ async def create_reservation(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/reservations/{reservation_id}")
+@router.get("/reservations")
 async def get_reservation(
-    reservation_id: int,
+    reservation_id: int = Query(..., description="Reservation ID to retrieve"),
     x_ai_agent_key: str = Depends(authenticate_request),
     rms_credentials: dict = Depends(get_rms_credentials)
 ):
-    """Get reservation details"""
+    """Get reservation details by ID - for Voice AI compatibility"""
+    print(f"\n{'='*80}")
+    print(f"🔍 GET RESERVATION REQUEST")
+    print(f"{'='*80}")
+    print(f"Reservation ID: {reservation_id} (type: {type(reservation_id).__name__})")
+    print(f"Location: {rms_credentials.get('location_id')}")
+    print(f"{'='*80}\n")
+    
     try:
         # Create a new RMSService instance with the credentials from the header
         rms_service = RMSService(rms_credentials)
         await rms_service.initialize()
         
-        return await rms_service.get_reservation(reservation_id)
+        reservation = await rms_service.get_reservation(reservation_id)
+        
+        # Log key details for debugging
+        print(f"✅ Reservation found:")
+        print(f"   Status: {reservation.get('status')}")
+        print(f"   Arrival: {reservation.get('arrivalDate')}")
+        print(f"   Departure: {reservation.get('departureDate')}")
+        print(f"   Adults: {reservation.get('adults')}, Children: {reservation.get('children')}")
+        print()
+        
+        return reservation
     except HTTPException:
         raise
     except Exception as e:
+        print(f"❌ Error retrieving reservation: {e}")
         raise HTTPException(status_code=404, detail=str(e))
 
 
