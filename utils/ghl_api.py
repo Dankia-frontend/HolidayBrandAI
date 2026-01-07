@@ -256,31 +256,12 @@ def create_opportunities_from_newbook():
                     # write_bucket_file(bucket, bookings)
                     for b in bookings:
                         if bucket != "cancelled":
-                            # --- Delete from GHL if already exists before sending ---
                             guests_list = b.get("guests", [])
                             if not guests_list:
                                 log.warning(f"[OPPORTUNITY JOB] Booking {b.get('booking_id', 'unknown')} has no guests, skipping")
                                 opportunities_failed += 1
                                 continue
-                            guest = guests_list[0]
-                            guest_firstname = guest.get("firstname", "")
-                            guest_lastname = guest.get("lastname", "")
-                            site_name = b.get("site_name", "")
-                            booking_arrival = b.get("booking_arrival", "")
-                            # Delete by booking_id (custom field) and by details (name match) before sending
-                            delete_opportunity_by_booking_id(
-                                b["booking_id"],
-                                guest_firstname=guest_firstname,
-                                guest_lastname=guest_lastname,
-                                site_name=site_name,
-                                booking_arrival=booking_arrival
-                            )
-                            delete_opportunity_by_booking_details(
-                                guest_firstname,
-                                guest_lastname,
-                                site_name,
-                                booking_arrival
-                            )
+                            
                             access_token = get_valid_access_token(GHL_CLIENT_ID, GHL_CLIENT_SECRET)
                             if not access_token:
                                 log.error(f"[OPPORTUNITY JOB] Failed to get valid access token for booking {b['booking_id']}. Skipping GHL sync.")
@@ -289,9 +270,10 @@ def create_opportunities_from_newbook():
                                 continue  # Skip this booking instead of sending with None token
                             
                             try:
+                                # send_to_ghl will check for existing opportunity and update it, or create new one
                                 send_to_ghl(b, access_token)
                                 opportunities_created += 1
-                                log.info(f"[OPPORTUNITY JOB] Successfully sent booking {b['booking_id']} to GHL")
+                                log.info(f"[OPPORTUNITY JOB] Successfully processed booking {b['booking_id']} in GHL")
                             except Exception as e:
                                 log.error(f"[OPPORTUNITY JOB] Failed to send booking {b['booking_id']} to GHL: {e}")
                                 opportunities_failed += 1
@@ -488,6 +470,8 @@ def send_to_ghl(booking, access_token, guest_info=None):
         return
 
     try:
+        booking_id = booking.get('booking_id')
+        
         # Use guest_info if provided, else fallback to booking['guests'][0]
         if guest_info:
             first_name = guest_info.get("firstName", "")
@@ -505,7 +489,6 @@ def send_to_ghl(booking, access_token, guest_info=None):
             last_name = guest.get("lastname", "")
             email = next((g.get("content") for g in guest.get("contact_details", []) if g["type"] == "email"), "")
             phone = next((g.get("content") for g in guest.get("contact_details", []) if g["type"] == "mobile"), "")
-
 
         # 🔹 Get or create contact in GHL
         contact_id = get_contact_id(access_token, GHL_LOCATION_ID, first_name, last_name, email, phone)
@@ -531,59 +514,104 @@ def send_to_ghl(booking, access_token, guest_info=None):
                 stage_id = 'fc60b2fa-8c2d-4202-9347-ac2dd32a0e43'
             elif booking.get("booking_status", "").lower() == "departed":
                 stage_id = '8b54e5e5-27f3-463a-9d81-890c6dfd27eb'
-        print(f"Contact ID: {contact_id}, Stage ID: {stage_id}")
-        ghl_payload = {
-            "name": f"{guest.get('firstname', '').strip()} {guest.get('lastname', '').strip()} - {booking.get('site_name', '')} - {booking.get('booking_arrival', '').split(' ')[0]}",
-            "status": "open",  # must be one of: open, won, lost, abandoned
-            "contactId": contact_id,  # <-- must be a valid contact ID
-            "locationId": GHL_LOCATION_ID,
-            "pipelineId": GHL_PIPELINE_ID,
-            "pipelineStageId": stage_id,
-            "monetaryValue": float(booking.get("booking_total", 0)),
-
-            # ✅ All custom fields must go here
-            "customFields": [
-                {
-                    "id": "arrival_date",
-                    "field_value": (
-                        datetime.strptime(booking.get("booking_arrival"), "%Y-%m-%d %H:%M:%S").date().isoformat()
-                        if booking.get("booking_arrival") else ""
-                    )
-                },
-                {
-                    "id": "departure_date",
-                    "field_value": (
-                        datetime.strptime(booking.get("booking_departure"), "%Y-%m-%d %H:%M:%S").date().isoformat()
-                        if booking.get("booking_departure") else ""
-                    )
-                },
-                {"id": "adults", "field_value": str(booking.get("booking_adults", ""))},
-                {"id": "children", "field_value": str(booking.get("booking_children", ""))},
-                {"id": "infants", "field_value": str(booking.get("booking_infants", ""))},
-                {"id": "site_id", "field_value": str(booking.get("site_name", ""))},
-                {"id": "total_spend", "field_value": str(booking.get("booking_total", ""))},
-                {"id": "promo_code", "field_value": booking.get("discount_code", "")},
-                {"id": "booking_status", "field_value": booking.get("booking_status", "")},
-                {"id": "pets", "field_value": booking.get("pets", "")},
-            ]
-        }
-        print(f"Api key {ghl_payload}")
-        headers = {
-            "Authorization": f"Bearer {access_token}",
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-            "Version": "2021-07-28"
-        }
         
-        print(f"[GHL] Sending booking {booking.get('booking_id')} to GHL...")
-        log.info(f"Sending data to GHL for booking: {ghl_payload.get('name')}")
-        response = requests.post(GHL_OPPORTUNITY_URL, json=ghl_payload, headers=headers)
-
-        if response.status_code >= 400:
-            print(f"[GHL ERROR] {response.status_code}: {response.text}")
-            log.error(f"GHL Error Response: {response.text}")
+        # Build custom fields
+        custom_fields = [
+            {
+                "id": "booking_id",
+                "field_value": str(booking_id)
+            },
+            {
+                "id": "arrival_date",
+                "field_value": (
+                    datetime.strptime(booking.get("booking_arrival"), "%Y-%m-%d %H:%M:%S").date().isoformat()
+                    if booking.get("booking_arrival") else ""
+                )
+            },
+            {
+                "id": "departure_date",
+                "field_value": (
+                    datetime.strptime(booking.get("booking_departure"), "%Y-%m-%d %H:%M:%S").date().isoformat()
+                    if booking.get("booking_departure") else ""
+                )
+            },
+            {"id": "adults", "field_value": str(booking.get("booking_adults", ""))},
+            {"id": "children", "field_value": str(booking.get("booking_children", ""))},
+            {"id": "infants", "field_value": str(booking.get("booking_infants", ""))},
+            {"id": "site_id", "field_value": str(booking.get("site_name", ""))},
+            {"id": "total_spend", "field_value": str(booking.get("booking_total", ""))},
+            {"id": "promo_code", "field_value": booking.get("discount_code", "")},
+            {"id": "booking_status", "field_value": booking.get("booking_status", "")},
+            {"id": "pets", "field_value": booking.get("pets", "")},
+        ]
+        
+        # Check if opportunity already exists
+        existing_opp = find_opportunity_by_booking_id(booking_id, access_token)
+        
+        if existing_opp:
+            # Update existing opportunity
+            opp_id = existing_opp.get('id')
+            current_stage_id = existing_opp.get('pipelineStageId')
+            
+            print(f"[GHL] Found existing opportunity {opp_id} for booking {booking_id}. Current stage: {current_stage_id}, New stage: {stage_id}")
+            log.info(f"Updating existing opportunity {opp_id} for booking {booking_id}")
+            
+            # Only update if stage has changed or if we need to update custom fields
+            if stage_id and stage_id != current_stage_id:
+                print(f"[GHL] Moving opportunity {opp_id} from stage {current_stage_id} to {stage_id}")
+                success = update_opportunity(
+                    opp_id, 
+                    access_token, 
+                    stage_id=stage_id,
+                    custom_fields=custom_fields,
+                    monetary_value=float(booking.get("booking_total", 0))
+                )
+                if success:
+                    print(f"[GHL] Opportunity {opp_id} updated successfully ✅")
+                else:
+                    print(f"[GHL] Failed to update opportunity {opp_id}")
+            else:
+                # Update custom fields even if stage hasn't changed
+                success = update_opportunity(
+                    opp_id,
+                    access_token,
+                    custom_fields=custom_fields,
+                    monetary_value=float(booking.get("booking_total", 0))
+                )
+                if success:
+                    print(f"[GHL] Opportunity {opp_id} custom fields updated successfully ✅")
         else:
-            print(f"[GHL] Booking {booking.get('booking_id')} sent successfully ✅")
+            # Create new opportunity
+            print(f"Contact ID: {contact_id}, Stage ID: {stage_id}")
+            # Build opportunity name using first_name and last_name
+            opportunity_name = f"{first_name.strip()} {last_name.strip()} - {booking.get('site_name', '')} - {booking.get('booking_arrival', '').split(' ')[0]}"
+            ghl_payload = {
+                "name": opportunity_name,
+                "status": "open",  # must be one of: open, won, lost, abandoned
+                "contactId": contact_id,  # <-- must be a valid contact ID
+                "locationId": GHL_LOCATION_ID,
+                "pipelineId": GHL_PIPELINE_ID,
+                "pipelineStageId": stage_id,
+                "monetaryValue": float(booking.get("booking_total", 0)),
+                "customFields": custom_fields
+            }
+            print(f"Api key {ghl_payload}")
+            headers = {
+                "Authorization": f"Bearer {access_token}",
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                "Version": "2021-07-28"
+            }
+            
+            print(f"[GHL] Creating new opportunity for booking {booking_id}...")
+            log.info(f"Creating new opportunity in GHL for booking: {ghl_payload.get('name')}")
+            response = requests.post(GHL_OPPORTUNITY_URL, json=ghl_payload, headers=headers)
+
+            if response.status_code >= 400:
+                print(f"[GHL ERROR] {response.status_code}: {response.text}")
+                log.error(f"GHL Error Response: {response.text}")
+            else:
+                print(f"[GHL] Booking {booking_id} opportunity created successfully ✅")
 
     except Exception as e:
         log.exception("Error during GHL integration")
@@ -648,6 +676,85 @@ def delete_opportunities_in_stage(stage_id):
             del_url = f"{base_url}/opportunities/{opp_id}"
             resp = requests.delete(del_url, headers=headers)
             print(f"Deleted {name} (ID: {opp_id}): {'Success' if resp.status_code == 200 else 'Failed'}")
+
+def find_opportunity_by_booking_id(booking_id, access_token=None):
+    """
+    Finds an existing opportunity in GHL by booking_id stored in custom fields.
+    Returns the opportunity object if found, None otherwise.
+    """
+    if not access_token:
+        access_token = get_ghl_token()
+    if not access_token:
+        print("No valid access token. Cannot search for opportunity with booking_id:", booking_id)
+        return None
+
+    base_url = 'https://services.leadconnectorhq.com'
+    headers = {
+        'Authorization': f'Bearer {access_token}',
+        'Version': '2021-07-28'
+    }
+    url = f"{base_url}/opportunities/search?location_id={GHL_LOCATION_ID}&pipeline_id={GHL_PIPELINE_ID}&limit=100"
+
+    while url:
+        resp = requests.get(url, headers=headers)
+        if resp.status_code != 200:
+            print(f"[GHL SEARCH] Failed to fetch opportunities: {resp.status_code} {resp.text}")
+            break
+        data = resp.json()
+        for opp in data.get('opportunities', []):
+            # Match by booking_id in custom fields
+            custom_match = any(
+                (str(f.get('field_value')) == str(booking_id))
+                for f in opp.get('customFields', [])
+                if f.get('id') == 'booking_id'
+            )
+            if custom_match:
+                print(f"[GHL SEARCH] Found existing opportunity for booking_id {booking_id}: {opp.get('id')}")
+                return opp
+        url = data.get('meta', {}).get('nextPageUrl')
+    
+    print(f"[GHL SEARCH] No existing opportunity found for booking_id {booking_id}.")
+    return None
+
+def update_opportunity(opportunity_id, access_token, stage_id=None, custom_fields=None, monetary_value=None):
+    """
+    Updates an existing opportunity in GHL.
+    """
+    base_url = 'https://services.leadconnectorhq.com'
+    url = f"{base_url}/opportunities/{opportunity_id}"
+    headers = {
+        'Authorization': f'Bearer {access_token}',
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Version': '2021-07-28'
+    }
+    
+    payload = {}
+    if stage_id:
+        payload['pipelineStageId'] = stage_id
+    if custom_fields:
+        payload['customFields'] = custom_fields
+    if monetary_value is not None:
+        payload['monetaryValue'] = float(monetary_value)
+    
+    if not payload:
+        print(f"[GHL UPDATE] No fields to update for opportunity {opportunity_id}")
+        return False
+    
+    try:
+        response = requests.put(url, json=payload, headers=headers)
+        if response.status_code >= 400:
+            print(f"[GHL UPDATE ERROR] {response.status_code}: {response.text}")
+            log.error(f"GHL Update Error Response: {response.text}")
+            return False
+        else:
+            print(f"[GHL UPDATE] Opportunity {opportunity_id} updated successfully ✅")
+            log.info(f"Updated opportunity {opportunity_id} in GHL")
+            return True
+    except Exception as e:
+        log.exception(f"Error updating opportunity {opportunity_id}")
+        print(f"[GHL UPDATE ERROR] Failed to update opportunity {opportunity_id}: {e}")
+        return False
 
 def delete_opportunity_by_booking_id(booking_id, guest_firstname=None, guest_lastname=None, site_name=None, booking_arrival=None):
     """
