@@ -124,8 +124,9 @@ def create_opportunities_from_newbook():
         # --- Track deleted booking_ids to avoid duplicate deletes ---
         deleted_booking_ids = set()
 
-        # --- Remove opportunities for bookings that are no longer present or changed stage ---
-        for b in removed + updated:
+        # --- Remove opportunities ONLY for bookings that are no longer present (removed) ---
+        # Updated bookings should be updated, not deleted
+        for b in removed:
             booking_id = b["booking_id"]
             guests_list = b.get("guests", [])
             if not guests_list:
@@ -137,6 +138,7 @@ def create_opportunities_from_newbook():
             site_name = b.get("site_name", "")
             booking_arrival = b.get("booking_arrival", "")
             # Delete by booking_id (custom field) and by details (name match)
+            print(f"[REMOVED] Booking {booking_id} no longer exists, deleting opportunity from GHL.")
             delete_opportunity_by_booking_id(
                 booking_id,
                 guest_firstname=guest_firstname,
@@ -189,6 +191,7 @@ def create_opportunities_from_newbook():
             deleted_booking_ids.add(booking_id)
 
         # --- Filter out bookings not for today or future in arriving_today ---
+        # Note: We don't delete these - they will be updated to the correct stage by send_to_ghl
         filtered_arriving_today = []
         for b in bucket_dict["arriving_today"]:
             arrival_str = b.get("booking_arrival")
@@ -199,14 +202,13 @@ def create_opportunities_from_newbook():
                     filtered_arriving_today.append(b)
                     arriving_today_ids.add(b["booking_id"])
                 else:
-                    print(f"[CLEANUP] Booking {b['booking_id']} in arriving_today is for previous/future day ({arrival_dt.date()}), deleting opportunity.")
-                    delete_opportunity_by_booking_id(b["booking_id"])
+                    print(f"[INFO] Booking {b['booking_id']} in arriving_today is for previous/future day ({arrival_dt.date()}), will be updated to correct stage.")
             else:
-                print(f"[CLEANUP] Booking {b['booking_id']} in arriving_today has no arrival date, deleting opportunity.")
-                delete_opportunity_by_booking_id(b["booking_id"])
+                print(f"[INFO] Booking {b['booking_id']} in arriving_today has no arrival date, will be processed normally.")
         bucket_dict["arriving_today"] = filtered_arriving_today
 
         # --- Filter out bookings not for future in arriving_soon ---
+        # Note: We don't delete these - they will be updated to the correct stage by send_to_ghl
         filtered_arriving_soon = []
         for b in bucket_dict["arriving_soon"]:
             arrival_str = b.get("booking_arrival")
@@ -217,71 +219,81 @@ def create_opportunities_from_newbook():
                     filtered_arriving_soon.append(b)
                     arriving_soon_ids.add(b["booking_id"])
                 else:
-                    print(f"[CLEANUP] Booking {b['booking_id']} in arriving_soon is for today/past ({arrival_dt.date()}), deleting opportunity.")
-                    delete_opportunity_by_booking_id(b["booking_id"])
+                    print(f"[INFO] Booking {b['booking_id']} in arriving_soon is for today/past ({arrival_dt.date()}), will be updated to correct stage.")
             else:
-                print(f"[CLEANUP] Booking {b['booking_id']} in arriving_soon has no arrival date, deleting opportunity.")
-                delete_opportunity_by_booking_id(b["booking_id"])
+                print(f"[INFO] Booking {b['booking_id']} in arriving_soon has no arrival date, will be processed normally.")
         bucket_dict["arriving_soon"] = filtered_arriving_soon
 
-        # --- Remove from arriving_soon if now in arriving_today ---
-        for booking_id in arriving_soon_ids & arriving_today_ids:
-            print(f"[CLEANUP] Booking {booking_id} moved from arriving_soon to arriving_today, deleting from arriving_soon stage.")
-            delete_opportunity_by_booking_id(booking_id)
+        # --- Note: When bookings move between stages, send_to_ghl will update them automatically ---
+        # No need to delete - the update will move them to the correct stage
 
-        # --- Remove from arriving_today if person was supposed to arrive yesterday but did not ---
-        yesterday = today - timedelta(days=1)
-        for b in bucket_dict["arriving_today"]:
-            arrival_str = b.get("booking_arrival")
-            if arrival_str:
-                arrival_dt = datetime.strptime(arrival_str, "%Y-%m-%d %H:%M:%S")
-                if arrival_dt.date() == yesterday.date() and b.get("booking_status", "").lower() != "arrived":
-                    print(f"[CLEANUP] Booking {b['booking_id']} was supposed to arrive yesterday but did not, deleting from arriving_today stage.")
-                    delete_opportunity_by_booking_id(b["booking_id"])
-
-        # --- Process Changes ---
-        if not (added or updated):
-            log.info("[OPPORTUNITY JOB] No new or updated bookings detected — cache is up to date.")
-            print("[TEST] No new or updated bookings detected — cache is up to date.")
+        # --- Process ALL bookings (new, updated, and existing) to ensure they're in the correct stage ---
+        # This ensures opportunities are updated when bookings move between stages
+        log.info(f"[OPPORTUNITY JOB] Processing {len(added)} new bookings, {len(updated)} updated bookings, and existing bookings to ensure correct stages")
+        
+        # Process all bookings that should have opportunities (not cancelled)
+        all_active_bookings = [b for b in completed_bookings if b.get("booking_status", "").lower() not in ["cancelled", "no_show", "no show"]]
+        bucket_dict_all = bucket_bookings(all_active_bookings)
+        
+        opportunities_created = 0
+        opportunities_updated = 0
+        opportunities_failed = 0
+        
+        access_token = get_valid_access_token(GHL_CLIENT_ID, GHL_CLIENT_SECRET)
+        if not access_token:
+            log.error("[OPPORTUNITY JOB] Failed to get valid access token. Skipping all GHL sync.")
+            print("[GHL ERROR] No valid access token available. Cannot process bookings.")
         else:
-            log.info(f"[OPPORTUNITY JOB] Found {len(added)} new bookings and {len(updated)} updated bookings")
-            all_changes = added + updated
-            bucket_dict_changes = bucket_bookings(all_changes)
-            
-            opportunities_created = 0
-            opportunities_failed = 0
-            
-            for bucket, bookings in bucket_dict_changes.items():
-                if bookings:
+            for bucket, bookings in bucket_dict_all.items():
+                if bookings and bucket != "cancelled":
                     # write_bucket_file(bucket, bookings)
                     for b in bookings:
-                        if bucket != "cancelled":
-                            guests_list = b.get("guests", [])
-                            if not guests_list:
-                                log.warning(f"[OPPORTUNITY JOB] Booking {b.get('booking_id', 'unknown')} has no guests, skipping")
-                                opportunities_failed += 1
-                                continue
+                        if b["booking_id"] in deleted_booking_ids:
+                            continue  # Skip if already deleted (removed bookings)
+                        
+                        guests_list = b.get("guests", [])
+                        if not guests_list:
+                            log.warning(f"[OPPORTUNITY JOB] Booking {b.get('booking_id', 'unknown')} has no guests, skipping")
+                            opportunities_failed += 1
+                            continue
+                        
+                        try:
+                            # send_to_ghl will check for existing opportunity and update it, or create new one
+                            booking_id = b["booking_id"]
                             
-                            access_token = get_valid_access_token(GHL_CLIENT_ID, GHL_CLIENT_SECRET)
-                            if not access_token:
-                                log.error(f"[OPPORTUNITY JOB] Failed to get valid access token for booking {b['booking_id']}. Skipping GHL sync.")
-                                print(f"[GHL ERROR] No valid access token available. Skipping booking {b['booking_id']}")
-                                opportunities_failed += 1
-                                continue  # Skip this booking instead of sending with None token
+                            # Check if opportunity exists before calling send_to_ghl (for logging purposes)
+                            guests_list_for_search = b.get("guests", [])
+                            guest_firstname = None
+                            guest_lastname = None
+                            if guests_list_for_search:
+                                guest = guests_list_for_search[0]
+                                guest_firstname = guest.get("firstname", "")
+                                guest_lastname = guest.get("lastname", "")
                             
-                            try:
-                                # send_to_ghl will check for existing opportunity and update it, or create new one
-                                send_to_ghl(b, access_token)
+                            existing_opp = find_opportunity_by_booking_id(
+                                booking_id, 
+                                access_token,
+                                guest_firstname=guest_firstname,
+                                guest_lastname=guest_lastname,
+                                site_name=b.get("site_name", ""),
+                                booking_arrival=b.get("booking_arrival", "")
+                            )
+                            
+                            # send_to_ghl will check again and update/create as needed
+                            send_to_ghl(b, access_token)
+                            
+                            if existing_opp:
+                                opportunities_updated += 1
+                                log.info(f"[OPPORTUNITY JOB] Successfully updated booking {booking_id} in GHL")
+                            else:
                                 opportunities_created += 1
-                                log.info(f"[OPPORTUNITY JOB] Successfully processed booking {b['booking_id']} in GHL")
-                            except Exception as e:
-                                log.error(f"[OPPORTUNITY JOB] Failed to send booking {b['booking_id']} to GHL: {e}")
-                                opportunities_failed += 1
-                        else:
-                            log.debug(f"[OPPORTUNITY JOB] Skipping cancelled booking {b['booking_id']}")
-                            print(f"[SKIP] Booking {b['booking_id']} is cancelled or no-show, skipping...")
+                                log.info(f"[OPPORTUNITY JOB] Successfully created opportunity for booking {booking_id} in GHL")
+                        except Exception as e:
+                            log.error(f"[OPPORTUNITY JOB] Failed to process booking {b['booking_id']} in GHL: {e}")
+                            opportunities_failed += 1
 
-            log.info(f"[OPPORTUNITY JOB] Job completed: {opportunities_created} opportunities created, {opportunities_failed} failed")
+            log.info(f"[OPPORTUNITY JOB] Job completed: {opportunities_created} opportunities created, {opportunities_updated} opportunities updated, {opportunities_failed} failed")
+            print(f"[TEST] Job completed: {opportunities_created} created, {opportunities_updated} updated, {opportunities_failed} failed")
 
             # --- Update Cache ---
             with open(CACHE_FILE, "w") as f:
@@ -546,7 +558,23 @@ def send_to_ghl(booking, access_token, guest_info=None):
         ]
         
         # Check if opportunity already exists
-        existing_opp = find_opportunity_by_booking_id(booking_id, access_token)
+        # Try to get guest info for better matching
+        guests_list = booking.get('guests', [])
+        guest_firstname = None
+        guest_lastname = None
+        if guests_list:
+            guest = guests_list[0]
+            guest_firstname = guest.get("firstname", "")
+            guest_lastname = guest.get("lastname", "")
+        
+        existing_opp = find_opportunity_by_booking_id(
+            booking_id, 
+            access_token,
+            guest_firstname=guest_firstname,
+            guest_lastname=guest_lastname,
+            site_name=booking.get("site_name", ""),
+            booking_arrival=booking.get("booking_arrival", "")
+        )
         
         if existing_opp:
             # Update existing opportunity
@@ -556,30 +584,35 @@ def send_to_ghl(booking, access_token, guest_info=None):
             print(f"[GHL] Found existing opportunity {opp_id} for booking {booking_id}. Current stage: {current_stage_id}, New stage: {stage_id}")
             log.info(f"Updating existing opportunity {opp_id} for booking {booking_id}")
             
-            # Only update if stage has changed or if we need to update custom fields
-            if stage_id and stage_id != current_stage_id:
+            # Always update to ensure booking_id is in custom fields and stage is correct
+            # Update stage if it has changed, and always update custom fields
+            update_stage = (stage_id and stage_id != current_stage_id)
+            
+            if update_stage:
                 print(f"[GHL] Moving opportunity {opp_id} from stage {current_stage_id} to {stage_id}")
-                success = update_opportunity(
-                    opp_id, 
-                    access_token, 
-                    stage_id=stage_id,
-                    custom_fields=custom_fields,
-                    monetary_value=float(booking.get("booking_total", 0))
-                )
-                if success:
-                    print(f"[GHL] Opportunity {opp_id} updated successfully ✅")
-                else:
-                    print(f"[GHL] Failed to update opportunity {opp_id}")
             else:
-                # Update custom fields even if stage hasn't changed
-                success = update_opportunity(
-                    opp_id,
-                    access_token,
-                    custom_fields=custom_fields,
-                    monetary_value=float(booking.get("booking_total", 0))
-                )
-                if success:
+                print(f"[GHL] Updating opportunity {opp_id} (stage unchanged: {current_stage_id})")
+            
+            success = update_opportunity(
+                opp_id, 
+                access_token, 
+                stage_id=stage_id if update_stage else None,
+                custom_fields=custom_fields,
+                monetary_value=float(booking.get("booking_total", 0))
+            )
+            
+            if success:
+                if update_stage:
+                    print(f"[GHL] Opportunity {opp_id} moved to stage {stage_id} and updated successfully ✅")
+                else:
                     print(f"[GHL] Opportunity {opp_id} custom fields updated successfully ✅")
+                log.info(f"Updated opportunity {opp_id} for booking {booking_id}")
+            else:
+                error_msg = f"[GHL] Failed to update opportunity {opp_id} for booking {booking_id}"
+                print(error_msg)
+                log.error(error_msg)
+                # Don't create a new one if update fails - this would cause duplicates
+                raise Exception(f"Failed to update existing opportunity {opp_id}")
         else:
             # Create new opportunity
             print(f"Contact ID: {contact_id}, Stage ID: {stage_id}")
@@ -677,9 +710,10 @@ def delete_opportunities_in_stage(stage_id):
             resp = requests.delete(del_url, headers=headers)
             print(f"Deleted {name} (ID: {opp_id}): {'Success' if resp.status_code == 200 else 'Failed'}")
 
-def find_opportunity_by_booking_id(booking_id, access_token=None):
+def find_opportunity_by_booking_id(booking_id, access_token=None, guest_firstname=None, guest_lastname=None, site_name=None, booking_arrival=None):
     """
     Finds an existing opportunity in GHL by booking_id stored in custom fields.
+    Also tries to match by opportunity name as a fallback for older opportunities.
     Returns the opportunity object if found, None otherwise.
     """
     if not access_token:
@@ -694,6 +728,11 @@ def find_opportunity_by_booking_id(booking_id, access_token=None):
         'Version': '2021-07-28'
     }
     url = f"{base_url}/opportunities/search?location_id={GHL_LOCATION_ID}&pipeline_id={GHL_PIPELINE_ID}&limit=100"
+    
+    # Build expected name if all info provided (for fallback matching)
+    expected_name = None
+    if guest_firstname and guest_lastname and site_name and booking_arrival:
+        expected_name = f"{guest_firstname.strip()} {guest_lastname.strip()} - {site_name} - {booking_arrival.split(' ')[0]}"
 
     while url:
         resp = requests.get(url, headers=headers)
@@ -702,14 +741,21 @@ def find_opportunity_by_booking_id(booking_id, access_token=None):
             break
         data = resp.json()
         for opp in data.get('opportunities', []):
-            # Match by booking_id in custom fields
+            # Primary match: booking_id in custom fields
             custom_match = any(
                 (str(f.get('field_value')) == str(booking_id))
                 for f in opp.get('customFields', [])
                 if f.get('id') == 'booking_id'
             )
-            if custom_match:
-                print(f"[GHL SEARCH] Found existing opportunity for booking_id {booking_id}: {opp.get('id')}")
+            
+            # Fallback match: opportunity name (for opportunities created before booking_id was added)
+            name_match = False
+            if expected_name:
+                opp_name = opp.get('name', '')
+                name_match = (opp_name == expected_name)
+            
+            if custom_match or name_match:
+                print(f"[GHL SEARCH] Found existing opportunity for booking_id {booking_id}: {opp.get('id')} (matched by: {'custom field' if custom_match else 'name'})")
                 return opp
         url = data.get('meta', {}).get('nextPageUrl')
     
