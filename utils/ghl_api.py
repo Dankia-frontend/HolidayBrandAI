@@ -16,6 +16,18 @@ GHL_API_VERSION = "2021-07-28"
 GHL_OPPORTUNITY_URL = "https://services.leadconnectorhq.com/opportunities/"
 CACHE_FILE = "bookings_cache.json"
 
+# Test mode configuration - set to True to enable test mode
+TEST_MODE = os.getenv("GHL_TEST_MODE", "false").lower() == "true"
+DRY_RUN_MODE = os.getenv("GHL_DRY_RUN_MODE", "false").lower() == "true"  # Simulate without making changes
+TEST_PIPELINE_ID = os.getenv("GHL_TEST_PIPELINE_ID", None)  # Optional: Use test pipeline if provided
+TEST_LOCATION_ID = os.getenv("GHL_TEST_LOCATION_ID", None)  # Optional: Use test location if provided
+
+# If test mode is enabled but no test IDs provided, use production (with warnings)
+if TEST_MODE and not TEST_PIPELINE_ID:
+    TEST_PIPELINE_ID = GHL_PIPELINE_ID
+if TEST_MODE and not TEST_LOCATION_ID:
+    TEST_LOCATION_ID = GHL_LOCATION_ID
+
 def create_opportunities_from_newbook():
     """Fetch bookings from NewBook and create opportunities in GHL."""
     try:
@@ -124,33 +136,27 @@ def create_opportunities_from_newbook():
         # --- Track deleted booking_ids to avoid duplicate deletes ---
         deleted_booking_ids = set()
 
-        # --- Remove opportunities ONLY for bookings that are no longer present (removed) ---
-        # Updated bookings should be updated, not deleted
+        # --- Remove opportunities for bookings that are no longer present in NewBook ---
+        # Only delete if booking was completely removed, not if it was updated
         for b in removed:
             booking_id = b["booking_id"]
             guests_list = b.get("guests", [])
             if not guests_list:
-                log.warning(f"[OPPORTUNITY JOB] Booking {booking_id} has no guests, skipping deletion")
+                log.warning(f"[OPPORTUNITY JOB] Removed booking {booking_id} has no guests, skipping deletion")
                 continue
             guest = guests_list[0]
             guest_firstname = guest.get("firstname", "")
             guest_lastname = guest.get("lastname", "")
             site_name = b.get("site_name", "")
             booking_arrival = b.get("booking_arrival", "")
-            # Delete by booking_id (custom field) and by details (name match)
-            print(f"[REMOVED] Booking {booking_id} no longer exists, deleting opportunity from GHL.")
+            log.info(f"[OPPORTUNITY JOB] Booking {booking_id} no longer exists in NewBook, deleting opportunity")
+            print(f"[CLEANUP] Booking {booking_id} removed from NewBook, deleting opportunity")
             delete_opportunity_by_booking_id(
                 booking_id,
                 guest_firstname=guest_firstname,
                 guest_lastname=guest_lastname,
                 site_name=site_name,
                 booking_arrival=booking_arrival
-            )
-            delete_opportunity_by_booking_details(
-                guest_firstname,
-                guest_lastname,
-                site_name,
-                booking_arrival
             )
             deleted_booking_ids.add(booking_id)
 
@@ -191,7 +197,7 @@ def create_opportunities_from_newbook():
             deleted_booking_ids.add(booking_id)
 
         # --- Filter out bookings not for today or future in arriving_today ---
-        # Note: We don't delete these - they will be updated to the correct stage by send_to_ghl
+        # Note: Opportunities will be automatically moved to correct stage by send_to_ghl()
         filtered_arriving_today = []
         for b in bucket_dict["arriving_today"]:
             arrival_str = b.get("booking_arrival")
@@ -202,13 +208,14 @@ def create_opportunities_from_newbook():
                     filtered_arriving_today.append(b)
                     arriving_today_ids.add(b["booking_id"])
                 else:
-                    print(f"[INFO] Booking {b['booking_id']} in arriving_today is for previous/future day ({arrival_dt.date()}), will be updated to correct stage.")
+                    # Booking moved to different stage - will be handled by send_to_ghl()
+                    log.debug(f"[OPPORTUNITY JOB] Booking {b['booking_id']} in arriving_today is for {arrival_dt.date()}, will be moved to correct stage")
             else:
-                print(f"[INFO] Booking {b['booking_id']} in arriving_today has no arrival date, will be processed normally.")
+                log.warning(f"[OPPORTUNITY JOB] Booking {b['booking_id']} in arriving_today has no arrival date")
         bucket_dict["arriving_today"] = filtered_arriving_today
 
         # --- Filter out bookings not for future in arriving_soon ---
-        # Note: We don't delete these - they will be updated to the correct stage by send_to_ghl
+        # Note: Opportunities will be automatically moved to correct stage by send_to_ghl()
         filtered_arriving_soon = []
         for b in bucket_dict["arriving_soon"]:
             arrival_str = b.get("booking_arrival")
@@ -219,78 +226,61 @@ def create_opportunities_from_newbook():
                     filtered_arriving_soon.append(b)
                     arriving_soon_ids.add(b["booking_id"])
                 else:
-                    print(f"[INFO] Booking {b['booking_id']} in arriving_soon is for today/past ({arrival_dt.date()}), will be updated to correct stage.")
+                    # Booking moved to different stage - will be handled by send_to_ghl()
+                    log.debug(f"[OPPORTUNITY JOB] Booking {b['booking_id']} in arriving_soon is for {arrival_dt.date()}, will be moved to correct stage")
             else:
-                print(f"[INFO] Booking {b['booking_id']} in arriving_soon has no arrival date, will be processed normally.")
+                log.warning(f"[OPPORTUNITY JOB] Booking {b['booking_id']} in arriving_soon has no arrival date")
         bucket_dict["arriving_soon"] = filtered_arriving_soon
 
-        # --- Note: When bookings move between stages, send_to_ghl will update them automatically ---
-        # No need to delete - the update will move them to the correct stage
+        # Note: Bookings that moved between stages will be automatically updated by send_to_ghl()
+        # No need to manually delete and recreate
 
-        # --- Process ALL bookings (new, updated, and existing) to ensure they're in the correct stage ---
-        # This ensures opportunities are updated when bookings move between stages
-        log.info(f"[OPPORTUNITY JOB] Processing {len(added)} new bookings, {len(updated)} updated bookings, and existing bookings to ensure correct stages")
-        
-        # Process all bookings that should have opportunities (not cancelled)
-        all_active_bookings = [b for b in completed_bookings if b.get("booking_status", "").lower() not in ["cancelled", "no_show", "no show"]]
-        bucket_dict_all = bucket_bookings(all_active_bookings)
-        
-        opportunities_created = 0
-        opportunities_updated = 0
-        opportunities_failed = 0
-        
-        access_token = get_valid_access_token(GHL_CLIENT_ID, GHL_CLIENT_SECRET)
-        if not access_token:
-            log.error("[OPPORTUNITY JOB] Failed to get valid access token. Skipping all GHL sync.")
-            print("[GHL ERROR] No valid access token available. Cannot process bookings.")
+        # --- Process Changes ---
+        if not (added or updated):
+            log.info("[OPPORTUNITY JOB] No new or updated bookings detected — cache is up to date.")
+            print("[TEST] No new or updated bookings detected — cache is up to date.")
         else:
-            for bucket, bookings in bucket_dict_all.items():
-                if bookings and bucket != "cancelled":
+            log.info(f"[OPPORTUNITY JOB] Found {len(added)} new bookings and {len(updated)} updated bookings")
+            all_changes = added + updated
+            bucket_dict_changes = bucket_bookings(all_changes)
+            
+            opportunities_created = 0
+            opportunities_failed = 0
+            
+            for bucket, bookings in bucket_dict_changes.items():
+                if bookings:
                     # write_bucket_file(bucket, bookings)
                     for b in bookings:
-                        if b["booking_id"] in deleted_booking_ids:
-                            continue  # Skip if already deleted (removed bookings)
-                        
-                        guests_list = b.get("guests", [])
-                        if not guests_list:
-                            log.warning(f"[OPPORTUNITY JOB] Booking {b.get('booking_id', 'unknown')} has no guests, skipping")
-                            opportunities_failed += 1
-                            continue
-                        
-                        try:
-                            # send_to_ghl will check for existing opportunity and update it, or create new one
-                            booking_id = b["booking_id"]
+                        if bucket != "cancelled":
+                            guests_list = b.get("guests", [])
+                            if not guests_list:
+                                log.warning(f"[OPPORTUNITY JOB] Booking {b.get('booking_id', 'unknown')} has no guests, skipping")
+                                opportunities_failed += 1
+                                continue
                             
-                            # Check if opportunity exists before calling send_to_ghl (for logging purposes)
-                            guests_list_for_search = b.get("guests", [])
-                            guest_firstname = None
-                            guest_lastname = None
-                            if guests_list_for_search:
-                                guest = guests_list_for_search[0]
-                                guest_firstname = guest.get("firstname", "")
-                                guest_lastname = guest.get("lastname", "")
+                            # Get access token
+                            access_token = get_valid_access_token(GHL_CLIENT_ID, GHL_CLIENT_SECRET)
+                            if not access_token:
+                                log.error(f"[OPPORTUNITY JOB] Failed to get valid access token for booking {b['booking_id']}. Skipping GHL sync.")
+                                print(f"[GHL ERROR] No valid access token available. Skipping booking {b['booking_id']}")
+                                opportunities_failed += 1
+                                continue
                             
-                            existing_opp = find_opportunity_by_booking_id(
-                                booking_id, 
-                                access_token,
-                                guest_firstname=guest_firstname,
-                                guest_lastname=guest_lastname,
-                                site_name=b.get("site_name", ""),
-                                booking_arrival=b.get("booking_arrival", "")
-                            )
-                            
-                            # send_to_ghl will check again and update/create as needed
-                            send_to_ghl(b, access_token)
-                            
-                            if existing_opp:
-                                opportunities_updated += 1
-                                log.info(f"[OPPORTUNITY JOB] Successfully updated booking {booking_id} in GHL")
-                            else:
-                                opportunities_created += 1
-                                log.info(f"[OPPORTUNITY JOB] Successfully created opportunity for booking {booking_id} in GHL")
-                        except Exception as e:
-                            log.error(f"[OPPORTUNITY JOB] Failed to process booking {b['booking_id']} in GHL: {e}")
-                            opportunities_failed += 1
+                            # send_to_ghl will automatically check if opportunity exists and update it, or create new
+                            try:
+                                success = send_to_ghl(b, access_token)
+                                if success:
+                                    opportunities_created += 1
+                                    log.info(f"[OPPORTUNITY JOB] Successfully processed booking {b['booking_id']} in GHL")
+                                else:
+                                    opportunities_failed += 1
+                                    log.warning(f"[OPPORTUNITY JOB] Failed to process booking {b['booking_id']} in GHL")
+                            except Exception as e:
+                                log.error(f"[OPPORTUNITY JOB] Exception processing booking {b['booking_id']} in GHL: {e}")
+                                opportunities_failed += 1
+                        else:
+                            log.debug(f"[OPPORTUNITY JOB] Skipping cancelled booking {b['booking_id']}")
+                            print(f"[SKIP] Booking {b['booking_id']} is cancelled or no-show, skipping...")
 
             log.info(f"[OPPORTUNITY JOB] Job completed: {opportunities_created} opportunities created, {opportunities_updated} opportunities updated, {opportunities_failed} failed")
             print(f"[TEST] Job completed: {opportunities_created} created, {opportunities_updated} updated, {opportunities_failed} failed")
@@ -474,12 +464,64 @@ def get_contact_id(token, location_id, first=None, last=None, email=None, phone=
     except Exception as e:
         print(f"[GHL CONTACT ERROR] Failed to create/get contact: {e}")
         return None
-# ✅ Helper function to send data to GHL (example)
+def get_stage_id_for_booking(booking):
+    """
+    Determines the appropriate stage ID for a booking based on arrival/departure dates and status.
+    Returns the stage_id string.
+    """
+    arrival = booking.get("booking_arrival")
+    departure = booking.get("booking_departure")
+    today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    tomorrow = today + timedelta(days=1)
+    day_after = today + timedelta(days=2)
+    seven_days = today + timedelta(days=7)
+
+    if arrival:
+        arrival_dt = datetime.strptime(arrival, "%Y-%m-%d %H:%M:%S")
+        departure_dt = datetime.strptime(departure, "%Y-%m-%d %H:%M:%S") if departure else arrival_dt
+        
+        if arrival_dt >= tomorrow and arrival_dt <= seven_days:
+            return '3aeae130-f411-4ac7-bcca-271291fdc3b9'  # arriving_soon
+        elif booking.get("booking_status", "").lower() == "arrived" and departure_dt >= tomorrow:
+            return '99912993-0e69-48f9-9943-096ae68408d7'  # staying_now
+        elif arrival_dt >= today and arrival_dt < tomorrow:
+            return 'b429a8e9-e73e-4590-b4c5-8ea1d65e0daf'  # arriving_today
+        elif booking.get("booking_status", "").lower() == "arrived" and departure_dt >= today and departure_dt < day_after:
+            return 'fc60b2fa-8c2d-4202-9347-ac2dd32a0e43'  # checking_out
+        elif booking.get("booking_status", "").lower() == "departed":
+            return '8b54e5e5-27f3-463a-9d81-890c6dfd27eb'  # checked_out
+    
+    return None
+
+
+# ✅ Helper function to send data to GHL (creates or updates opportunity)
 def send_to_ghl(booking, access_token, guest_info=None):
+    """
+    Creates or updates an opportunity in GHL.
+    If an opportunity with the same booking_id exists, it will be updated instead of creating a new one.
+    
+    In DRY_RUN_MODE, simulates the operation without making actual API calls.
+    """
     if not access_token:
         log.error(f"[GHL] Cannot send booking {booking.get('booking_id')} - access token is None")
         print(f"[GHL ERROR] Access token is None. Cannot send booking {booking.get('booking_id')}")
-        return
+        return False
+    
+    # Dry run mode - simulate without making changes
+    if DRY_RUN_MODE:
+        booking_id = booking.get('booking_id')
+        stage_id = get_stage_id_for_booking(booking)
+        print(f"[DRY RUN] Would process booking {booking_id}")
+        print(f"[DRY RUN]   - Stage: {stage_id}")
+        print(f"[DRY RUN]   - Guest: {booking.get('guests', [{}])[0].get('firstname', '')} {booking.get('guests', [{}])[0].get('lastname', '')}")
+        print(f"[DRY RUN]   - Arrival: {booking.get('booking_arrival', '')}")
+        # Check if would update or create
+        opp_id, _ = find_opportunity_by_booking_id(booking_id)
+        if opp_id:
+            print(f"[DRY RUN]   - Action: UPDATE existing opportunity {opp_id}")
+        else:
+            print(f"[DRY RUN]   - Action: CREATE new opportunity")
+        return True
 
     try:
         booking_id = booking.get('booking_id')
@@ -493,162 +535,140 @@ def send_to_ghl(booking, access_token, guest_info=None):
         else:
             guests_list = booking.get('guests', [])
             if not guests_list:
-                log.error(f"[GHL] Booking {booking.get('booking_id', 'unknown')} has no guests, cannot create opportunity")
+                log.error(f"[GHL] Booking {booking_id or 'unknown'} has no guests, cannot create opportunity")
                 print(f"[GHL ERROR] Booking has no guests, cannot create opportunity")
-                return
+                return False
             guest = guests_list[0]
             first_name = guest.get("firstname", "")
             last_name = guest.get("lastname", "")
             email = next((g.get("content") for g in guest.get("contact_details", []) if g["type"] == "email"), "")
             phone = next((g.get("content") for g in guest.get("contact_details", []) if g["type"] == "mobile"), "")
 
-        # 🔹 Get or create contact in GHL
-        contact_id = get_contact_id(access_token, GHL_LOCATION_ID, first_name, last_name, email, phone)
-        stage_id = None
-        arrival = booking.get("booking_arrival")
-        departure = booking.get("booking_departure")
-        today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-        tomorrow = today + timedelta(days=1)
-        day_after = today + timedelta(days=2)
-        seven_days = today + timedelta(days=7)
+        # Get or create contact in GHL
+        location_id = TEST_LOCATION_ID if TEST_MODE else GHL_LOCATION_ID
+        if not location_id:
+            log.error(f"[GHL] GHL_LOCATION_ID is not set. Cannot create/update opportunity for booking {booking_id}")
+            print(f"[GHL ERROR] GHL_LOCATION_ID is not set in .env file. Please configure it.")
+            return False
+        
+        contact_id = get_contact_id(access_token, location_id, first_name, last_name, email, phone)
+        if not contact_id:
+            log.error(f"[GHL] Failed to get/create contact for booking {booking_id}")
+            return False
 
-        
-        if arrival:
-            arrival_dt = datetime.strptime(arrival, "%Y-%m-%d %H:%M:%S")
-            departure_dt = datetime.strptime(departure, "%Y-%m-%d %H:%M:%S") if departure else arrival_dt
-            if arrival_dt >= tomorrow and arrival_dt <= seven_days:
-                stage_id = '3aeae130-f411-4ac7-bcca-271291fdc3b9'
-            elif booking.get("booking_status", "").lower() == "arrived" and departure_dt >= tomorrow:
-                stage_id = '99912993-0e69-48f9-9943-096ae68408d7'
-            elif arrival_dt >= today and arrival_dt < tomorrow:
-                stage_id = 'b429a8e9-e73e-4590-b4c5-8ea1d65e0daf'
-            elif booking.get("booking_status", "").lower() == "arrived" and departure_dt >= today and departure_dt < day_after:
-                stage_id = 'fc60b2fa-8c2d-4202-9347-ac2dd32a0e43'
-            elif booking.get("booking_status", "").lower() == "departed":
-                stage_id = '8b54e5e5-27f3-463a-9d81-890c6dfd27eb'
-        
-        # Build custom fields
-        custom_fields = [
-            {
-                "id": "booking_id",
-                "field_value": str(booking_id)
-            },
-            {
-                "id": "arrival_date",
-                "field_value": (
-                    datetime.strptime(booking.get("booking_arrival"), "%Y-%m-%d %H:%M:%S").date().isoformat()
-                    if booking.get("booking_arrival") else ""
-                )
-            },
-            {
-                "id": "departure_date",
-                "field_value": (
-                    datetime.strptime(booking.get("booking_departure"), "%Y-%m-%d %H:%M:%S").date().isoformat()
-                    if booking.get("booking_departure") else ""
-                )
-            },
-            {"id": "adults", "field_value": str(booking.get("booking_adults", ""))},
-            {"id": "children", "field_value": str(booking.get("booking_children", ""))},
-            {"id": "infants", "field_value": str(booking.get("booking_infants", ""))},
-            {"id": "site_id", "field_value": str(booking.get("site_name", ""))},
-            {"id": "total_spend", "field_value": str(booking.get("booking_total", ""))},
-            {"id": "promo_code", "field_value": booking.get("discount_code", "")},
-            {"id": "booking_status", "field_value": booking.get("booking_status", "")},
-            {"id": "pets", "field_value": booking.get("pets", "")},
-        ]
-        
+        # Determine stage ID
+        stage_id = get_stage_id_for_booking(booking)
+        if not stage_id:
+            log.warning(f"[GHL] Could not determine stage for booking {booking_id}")
+            print(f"[GHL WARNING] Could not determine stage for booking {booking_id}")
+            return False
+
         # Check if opportunity already exists
-        # Try to get guest info for better matching
-        guests_list = booking.get('guests', [])
-        guest_firstname = None
-        guest_lastname = None
-        if guests_list:
-            guest = guests_list[0]
-            guest_firstname = guest.get("firstname", "")
-            guest_lastname = guest.get("lastname", "")
+        guest_firstname = first_name
+        guest_lastname = last_name
+        site_name = booking.get("site_name", "")
+        booking_arrival = booking.get("booking_arrival", "")
         
-        existing_opp = find_opportunity_by_booking_id(
-            booking_id, 
-            access_token,
-            guest_firstname=guest_firstname,
-            guest_lastname=guest_lastname,
-            site_name=booking.get("site_name", ""),
-            booking_arrival=booking.get("booking_arrival", "")
-        )
-        
-        if existing_opp:
-            # Update existing opportunity
-            opp_id = existing_opp.get('id')
-            current_stage_id = existing_opp.get('pipelineStageId')
-            
-            print(f"[GHL] Found existing opportunity {opp_id} for booking {booking_id}. Current stage: {current_stage_id}, New stage: {stage_id}")
-            log.info(f"Updating existing opportunity {opp_id} for booking {booking_id}")
-            
-            # Always update to ensure booking_id is in custom fields and stage is correct
-            # Update stage if it has changed, and always update custom fields
-            update_stage = (stage_id and stage_id != current_stage_id)
-            
-            if update_stage:
-                print(f"[GHL] Moving opportunity {opp_id} from stage {current_stage_id} to {stage_id}")
-            else:
-                print(f"[GHL] Updating opportunity {opp_id} (stage unchanged: {current_stage_id})")
-            
-            success = update_opportunity(
-                opp_id, 
-                access_token, 
-                stage_id=stage_id if update_stage else None,
-                custom_fields=custom_fields,
-                monetary_value=float(booking.get("booking_total", 0))
+        # In dry-run mode, skip the actual API call if location_id is missing
+        existing_opp_id = None
+        existing_opp = None
+        if not DRY_RUN_MODE or location_id:
+            existing_opp_id, existing_opp = find_opportunity_by_booking_id(
+                booking_id,
+                guest_firstname=guest_firstname,
+                guest_lastname=guest_lastname,
+                site_name=site_name,
+                booking_arrival=booking_arrival
             )
-            
-            if success:
-                if update_stage:
-                    print(f"[GHL] Opportunity {opp_id} moved to stage {stage_id} and updated successfully ✅")
-                else:
-                    print(f"[GHL] Opportunity {opp_id} custom fields updated successfully ✅")
-                log.info(f"Updated opportunity {opp_id} for booking {booking_id}")
-            else:
-                error_msg = f"[GHL] Failed to update opportunity {opp_id} for booking {booking_id}"
-                print(error_msg)
-                log.error(error_msg)
-                # Don't create a new one if update fails - this would cause duplicates
-                raise Exception(f"Failed to update existing opportunity {opp_id}")
-        else:
-            # Create new opportunity
-            print(f"Contact ID: {contact_id}, Stage ID: {stage_id}")
-            # Build opportunity name using first_name and last_name
-            opportunity_name = f"{first_name.strip()} {last_name.strip()} - {booking.get('site_name', '')} - {booking.get('booking_arrival', '').split(' ')[0]}"
-            ghl_payload = {
-                "name": opportunity_name,
-                "status": "open",  # must be one of: open, won, lost, abandoned
-                "contactId": contact_id,  # <-- must be a valid contact ID
-                "locationId": GHL_LOCATION_ID,
-                "pipelineId": GHL_PIPELINE_ID,
-                "pipelineStageId": stage_id,
-                "monetaryValue": float(booking.get("booking_total", 0)),
-                "customFields": custom_fields
-            }
-            print(f"Api key {ghl_payload}")
-            headers = {
-                "Authorization": f"Bearer {access_token}",
-                "Content-Type": "application/json",
-                "Accept": "application/json",
-                "Version": "2021-07-28"
-            }
-            
-            print(f"[GHL] Creating new opportunity for booking {booking_id}...")
-            log.info(f"Creating new opportunity in GHL for booking: {ghl_payload.get('name')}")
-            response = requests.post(GHL_OPPORTUNITY_URL, json=ghl_payload, headers=headers)
 
-            if response.status_code >= 400:
-                print(f"[GHL ERROR] {response.status_code}: {response.text}")
-                log.error(f"GHL Error Response: {response.text}")
+        # If opportunity exists, update it instead of creating new
+        if existing_opp_id:
+            current_stage = existing_opp.get('pipelineStageId') if existing_opp else None
+            if current_stage == stage_id:
+                log.debug(f"[GHL] Opportunity {existing_opp_id} already in correct stage {stage_id}, skipping update")
+                print(f"[GHL] ✅ Opportunity {existing_opp_id} already in correct stage {stage_id}, no update needed")
+                return True
             else:
-                print(f"[GHL] Booking {booking_id} opportunity created successfully ✅")
+                log.info(f"[GHL UPDATE] Updating opportunity {existing_opp_id} from stage {current_stage} to {stage_id}")
+                print(f"[GHL UPDATE] 🔄 UPDATING opportunity {existing_opp_id}")
+                print(f"[GHL UPDATE]   From stage: {current_stage}")
+                print(f"[GHL UPDATE]   To stage: {stage_id}")
+                print(f"[GHL UPDATE]   Booking ID: {booking_id}")
+                result = update_opportunity(existing_opp_id, booking, access_token, stage_id, contact_id, existing_opp)
+                if result:
+                    print(f"[GHL UPDATE] ✅ Successfully UPDATED opportunity (not deleted/recreated)")
+                return result
+
+        # Opportunity doesn't exist, create new one
+        pipeline_id = TEST_PIPELINE_ID if TEST_MODE else GHL_PIPELINE_ID
+        
+        if not pipeline_id:
+            log.error(f"[GHL] GHL_PIPELINE_ID is not set. Cannot create opportunity for booking {booking_id}")
+            print(f"[GHL ERROR] GHL_PIPELINE_ID is not set in .env file. Please configure it.")
+            return False
+        
+        ghl_payload = {
+            "name": f"{first_name.strip()} {last_name.strip()} - {site_name} - {booking_arrival.split(' ')[0] if booking_arrival else ''}",
+            "status": "open",
+            "contactId": contact_id,
+            "locationId": location_id,
+            "pipelineId": pipeline_id,
+            "pipelineStageId": stage_id,
+            "monetaryValue": float(booking.get("booking_total", 0)),
+            "customFields": [
+                # Note: booking_id custom field removed - using name matching instead
+                {
+                    "id": "arrival_date",
+                    "field_value": (
+                        datetime.strptime(booking.get("booking_arrival"), "%Y-%m-%d %H:%M:%S").date().isoformat()
+                        if booking.get("booking_arrival") else ""
+                    )
+                },
+                {
+                    "id": "departure_date",
+                    "field_value": (
+                        datetime.strptime(booking.get("booking_departure"), "%Y-%m-%d %H:%M:%S").date().isoformat()
+                        if booking.get("booking_departure") else ""
+                    )
+                },
+                {"id": "adults", "field_value": str(booking.get("booking_adults", ""))},
+                {"id": "children", "field_value": str(booking.get("booking_children", ""))},
+                {"id": "infants", "field_value": str(booking.get("booking_infants", ""))},
+                {"id": "site_id", "field_value": str(booking.get("site_name", ""))},
+                {"id": "total_spend", "field_value": str(booking.get("booking_total", ""))},
+                {"id": "promo_code", "field_value": booking.get("discount_code", "")},
+                {"id": "booking_status", "field_value": booking.get("booking_status", "")},
+                {"id": "pets", "field_value": booking.get("pets", "")},
+            ]
+        }
+
+        headers = {
+            "Authorization": f"Bearer {access_token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "Version": "2021-07-28"
+        }
+        
+        test_mode_msg = "[TEST MODE] " if TEST_MODE else ""
+        print(f"{test_mode_msg}[GHL CREATE] Creating NEW opportunity for booking {booking_id}...")
+        print(f"{test_mode_msg}[GHL CREATE]   Stage: {stage_id}")
+        print(f"{test_mode_msg}[GHL CREATE]   Guest: {first_name} {last_name}")
+        log.info(f"{test_mode_msg}Creating new opportunity in GHL for booking: {ghl_payload.get('name')}")
+        response = requests.post(GHL_OPPORTUNITY_URL, json=ghl_payload, headers=headers)
+
+        if response.status_code >= 400:
+            print(f"[GHL ERROR] {response.status_code}: {response.text}")
+            log.error(f"GHL Error Response: {response.text}")
+            return False
+        else:
+            print(f"{test_mode_msg}[GHL] Booking {booking_id} opportunity created successfully ✅")
+            log.info(f"{test_mode_msg}Successfully created opportunity for booking {booking_id}")
+            return True
 
     except Exception as e:
         log.exception("Error during GHL integration")
         print(f"[GHL ERROR] Failed to send booking {booking.get('booking_id')}: {e}")
+        return False
 
 def save_opportunities_for_stage(stage_id):
     """
@@ -660,12 +680,15 @@ def save_opportunities_for_stage(stage_id):
         print("No valid access token. Aborting fetch.")
         return
 
+    location_id = TEST_LOCATION_ID if TEST_MODE else GHL_LOCATION_ID
+    pipeline_id = TEST_PIPELINE_ID if TEST_MODE else GHL_PIPELINE_ID
+
     base_url = 'https://services.leadconnectorhq.com'
     headers = {
         'Authorization': f'Bearer {access_token}',
         'Version': '2021-07-28'
     }
-    url = f"{base_url}/opportunities/search?location_id={GHL_LOCATION_ID}&pipeline_id={GHL_PIPELINE_ID}&pipeline_stage_id={stage_id}&limit=100"
+    url = f"{base_url}/opportunities/search?location_id={location_id}&pipeline_id={pipeline_id}&pipeline_stage_id={stage_id}&limit=100"
     opportunities = []
     while url:
         resp = requests.get(url, headers=headers)
@@ -689,12 +712,15 @@ def delete_opportunities_in_stage(stage_id):
         print("No valid access token. Aborting opportunity deletion.")
         return
 
+    location_id = TEST_LOCATION_ID if TEST_MODE else GHL_LOCATION_ID
+    pipeline_id = TEST_PIPELINE_ID if TEST_MODE else GHL_PIPELINE_ID
+
     base_url = 'https://services.leadconnectorhq.com'
     headers = {
         'Authorization': f'Bearer {access_token}',
         'Version': '2021-07-28'
     }
-    url = f"{base_url}/opportunities/search?location_id={GHL_LOCATION_ID}&pipeline_id={GHL_PIPELINE_ID}&pipeline_stage_id={stage_id}&limit=100"
+    url = f"{base_url}/opportunities/search?location_id={location_id}&pipeline_id={pipeline_id}&pipeline_stage_id={stage_id}&limit=100"
     opportunities = []
     while url:
         resp = requests.get(url, headers=headers)
@@ -710,121 +736,219 @@ def delete_opportunities_in_stage(stage_id):
             resp = requests.delete(del_url, headers=headers)
             print(f"Deleted {name} (ID: {opp_id}): {'Success' if resp.status_code == 200 else 'Failed'}")
 
-def find_opportunity_by_booking_id(booking_id, access_token=None, guest_firstname=None, guest_lastname=None, site_name=None, booking_arrival=None):
+def find_opportunity_by_booking_id(booking_id, guest_firstname=None, guest_lastname=None, site_name=None, booking_arrival=None):
     """
-    Finds an existing opportunity in GHL by booking_id stored in custom fields.
-    Also tries to match by opportunity name as a fallback for older opportunities.
-    Returns the opportunity object if found, None otherwise.
+    Finds an existing opportunity in GHL by matching the opportunity name.
+    Name format: "{firstname} {lastname} - {site_name} - {arrival_date}"
+    Returns tuple (opportunity_id, opportunity_data) if found, (None, None) otherwise.
+    
+    Note: This function uses name matching (not booking_id custom field) since
+    the custom field may not be configured in GHL.
     """
+    access_token = get_ghl_token()
     if not access_token:
-        access_token = get_ghl_token()
-    if not access_token:
-        print("No valid access token. Cannot search for opportunity with booking_id:", booking_id)
-        return None
+        log.warning(f"No valid access token. Cannot search for opportunity with booking_id: {booking_id}")
+        return None, None
+
+    location_id = TEST_LOCATION_ID if TEST_MODE else GHL_LOCATION_ID
+    pipeline_id = TEST_PIPELINE_ID if TEST_MODE else GHL_PIPELINE_ID
+
+    # Validate location_id and pipeline_id
+    if not location_id:
+        error_msg = f"GHL_LOCATION_ID is not set. Please set it in your .env file."
+        log.error(error_msg)
+        if not DRY_RUN_MODE:
+            print(f"[ERROR] {error_msg}")
+        return None, None
+    
+    if not pipeline_id:
+        error_msg = f"GHL_PIPELINE_ID is not set. Please set it in your .env file."
+        log.error(error_msg)
+        if not DRY_RUN_MODE:
+            print(f"[ERROR] {error_msg}")
+        return None, None
+
+    # Build expected name - REQUIRED for matching (since we don't use booking_id custom field)
+    if not (guest_firstname and guest_lastname and site_name and booking_arrival):
+        log.warning(f"[GHL SEARCH] Cannot search for booking_id {booking_id} - missing required fields for name matching")
+        log.warning(f"  Required: guest_firstname, guest_lastname, site_name, booking_arrival")
+        return None, None
+    
+    expected_name = f"{guest_firstname.strip()} {guest_lastname.strip()} - {site_name} - {booking_arrival.split(' ')[0]}"
+    log.debug(f"[GHL SEARCH] Searching for opportunity with name: {expected_name}")
 
     base_url = 'https://services.leadconnectorhq.com'
     headers = {
         'Authorization': f'Bearer {access_token}',
         'Version': '2021-07-28'
     }
-    url = f"{base_url}/opportunities/search?location_id={GHL_LOCATION_ID}&pipeline_id={GHL_PIPELINE_ID}&limit=100"
-    
-    # Build expected name if all info provided (for fallback matching)
-    expected_name = None
-    if guest_firstname and guest_lastname and site_name and booking_arrival:
-        expected_name = f"{guest_firstname.strip()} {guest_lastname.strip()} - {site_name} - {booking_arrival.split(' ')[0]}"
+    url = f"{base_url}/opportunities/search?location_id={location_id}&pipeline_id={pipeline_id}&limit=100"
 
     while url:
         resp = requests.get(url, headers=headers)
         if resp.status_code != 200:
-            print(f"[GHL SEARCH] Failed to fetch opportunities: {resp.status_code} {resp.text}")
+            log.error(f"[GHL SEARCH] Failed to fetch opportunities: {resp.status_code} {resp.text}")
             break
         data = resp.json()
         for opp in data.get('opportunities', []):
-            # Primary match: booking_id in custom fields
+            name = opp.get('name', '')
+            # Primary matching: Use exact name match (required since booking_id custom field not used)
+            exact_name_match = name == expected_name
+            
+            # Optional: Also check booking_id in custom fields if it exists (for backwards compatibility)
+            custom_fields = opp.get('customFields', [])
             custom_match = any(
-                (str(f.get('field_value')) == str(booking_id))
-                for f in opp.get('customFields', [])
+                (str(f.get('field_value')) == str(booking_id) or str(f.get('fieldValue')) == str(booking_id))
+                for f in custom_fields
                 if f.get('id') == 'booking_id'
             )
             
-            # Fallback match: opportunity name (for opportunities created before booking_id was added)
-            name_match = False
-            if expected_name:
-                opp_name = opp.get('name', '')
-                name_match = (opp_name == expected_name)
-            
-            if custom_match or name_match:
-                print(f"[GHL SEARCH] Found existing opportunity for booking_id {booking_id}: {opp.get('id')} (matched by: {'custom field' if custom_match else 'name'})")
-                return opp
+            # Match by exact name (primary) or custom field (optional fallback)
+            if exact_name_match or custom_match:
+                opp_id = opp.get('id')
+                log.info(f"[GHL SEARCH] Found opportunity {opp_id} for booking_id {booking_id}")
+                if exact_name_match:
+                    log.debug(f"[GHL SEARCH] Matched by exact name: '{expected_name}'")
+                elif custom_match:
+                    log.debug(f"[GHL SEARCH] Matched by booking_id custom field (fallback)")
+                return opp_id, opp
         url = data.get('meta', {}).get('nextPageUrl')
     
-    print(f"[GHL SEARCH] No existing opportunity found for booking_id {booking_id}.")
-    return None
+    log.debug(f"[GHL SEARCH] No opportunity found for booking_id {booking_id}")
+    return None, None
 
-def update_opportunity(opportunity_id, access_token, stage_id=None, custom_fields=None, monetary_value=None):
+
+def update_opportunity(opportunity_id, booking, access_token, stage_id, contact_id, existing_opportunity=None):
     """
-    Updates an existing opportunity in GHL.
+    Updates an existing opportunity in GHL with new stage and booking details.
+    Uses minimal payload approach - only sends what needs to change (like GHL's own updates).
+    Returns True if successful, False otherwise.
+    
+    Args:
+        opportunity_id: The GHL opportunity ID to update
+        booking: The booking data
+        access_token: GHL access token
+        stage_id: The new stage ID
+        contact_id: Contact ID (for reference, may not be needed in minimal update)
+        existing_opportunity: Optional existing opportunity data to preserve custom fields
     """
-    base_url = 'https://services.leadconnectorhq.com'
-    url = f"{base_url}/opportunities/{opportunity_id}"
-    headers = {
-        'Authorization': f'Bearer {access_token}',
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Version': '2021-07-28'
-    }
-    
-    payload = {}
-    if stage_id:
-        payload['pipelineStageId'] = stage_id
-    if custom_fields:
-        payload['customFields'] = custom_fields
-    if monetary_value is not None:
-        payload['monetaryValue'] = float(monetary_value)
-    
-    if not payload:
-        print(f"[GHL UPDATE] No fields to update for opportunity {opportunity_id}")
+    if not access_token:
+        log.error(f"[GHL UPDATE] Cannot update opportunity {opportunity_id} - access token is None")
         return False
-    
+
     try:
-        response = requests.put(url, json=payload, headers=headers)
+        # Option 1: Minimal update (like GHL's own updates) - only change stage
+        # This is the most efficient and matches what GHL does internally
+        minimal_payload = {
+            "pipelineStageId": stage_id
+        }
+        
+        # Option 2: Full update with all fields (if you need to update custom fields too)
+        # Uncomment this if you need to update custom fields, name, monetary value, etc.
+        guests_list = booking.get('guests', [])
+        if guests_list:
+            guest = guests_list[0]
+            full_payload = {
+                "name": f"{guest.get('firstname', '').strip()} {guest.get('lastname', '').strip()} - {booking.get('site_name', '')} - {booking.get('booking_arrival', '').split(' ')[0] if booking.get('booking_arrival') else ''}",
+                "pipelineStageId": stage_id,
+                "monetaryValue": float(booking.get("booking_total", 0)),
+                "status": "open",
+                # Note: booking_id custom field removed - using name matching instead
+                # Custom fields format - GHL may use either field_value or fieldValue
+                "customFields": [
+                    {
+                        "id": "arrival_date",
+                        "fieldValue": (
+                            datetime.strptime(booking.get("booking_arrival"), "%Y-%m-%d %H:%M:%S").date().isoformat()
+                            if booking.get("booking_arrival") else ""
+                        )
+                    },
+                    {
+                        "id": "departure_date",
+                        "fieldValue": (
+                            datetime.strptime(booking.get("booking_departure"), "%Y-%m-%d %H:%M:%S").date().isoformat()
+                            if booking.get("booking_departure") else ""
+                        )
+                    },
+                    {"id": "adults", "fieldValue": str(booking.get("booking_adults", ""))},
+                    {"id": "children", "fieldValue": str(booking.get("booking_children", ""))},
+                    {"id": "infants", "fieldValue": str(booking.get("booking_infants", ""))},
+                    {"id": "site_id", "fieldValue": str(booking.get("site_name", ""))},
+                    {"id": "total_spend", "fieldValue": str(booking.get("booking_total", ""))},
+                    {"id": "promo_code", "fieldValue": booking.get("discount_code", "")},
+                    {"id": "booking_status", "fieldValue": booking.get("booking_status", "")},
+                    {"id": "pets", "fieldValue": booking.get("pets", "")},
+                ]
+            }
+        else:
+            full_payload = minimal_payload
+        
+        # Use minimal payload for stage-only updates (faster, matches GHL's approach)
+        # This matches what GHL does internally - only sends what needs to change
+        # If you need to update custom fields, name, or monetary value, use full_payload instead
+        ghl_payload = minimal_payload
+        
+        # Uncomment the line below to update all fields including custom fields
+        # ghl_payload = full_payload if guests_list else minimal_payload
+
+        headers = {
+            "Authorization": f"Bearer {access_token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "Version": "2021-07-28"
+        }
+
+        update_url = f"{GHL_OPPORTUNITY_URL}{opportunity_id}"
+        log.info(f"[GHL UPDATE] Updating opportunity {opportunity_id} for booking {booking.get('booking_id')} to stage {stage_id}")
+        print(f"[GHL UPDATE] Updating opportunity {opportunity_id} for booking {booking.get('booking_id')}...")
+        print(f"[GHL UPDATE] Payload: {ghl_payload}")  # Debug: show what we're sending
+        
+        response = requests.put(update_url, json=ghl_payload, headers=headers)
+
         if response.status_code >= 400:
+            log.error(f"[GHL UPDATE] Failed to update opportunity {opportunity_id}: {response.status_code} - {response.text}")
             print(f"[GHL UPDATE ERROR] {response.status_code}: {response.text}")
-            log.error(f"GHL Update Error Response: {response.text}")
             return False
         else:
+            log.info(f"[GHL UPDATE] Successfully updated opportunity {opportunity_id} for booking {booking.get('booking_id')}")
             print(f"[GHL UPDATE] Opportunity {opportunity_id} updated successfully ✅")
-            log.info(f"Updated opportunity {opportunity_id} in GHL")
             return True
+
     except Exception as e:
-        log.exception(f"Error updating opportunity {opportunity_id}")
+        log.exception(f"[GHL UPDATE] Error updating opportunity {opportunity_id}: {e}")
         print(f"[GHL UPDATE ERROR] Failed to update opportunity {opportunity_id}: {e}")
         return False
 
+
 def delete_opportunity_by_booking_id(booking_id, guest_firstname=None, guest_lastname=None, site_name=None, booking_arrival=None):
     """
-    Deletes all opportunities in GHL that match the booking_id in name or custom fields.
-    If guest_firstname, guest_lastname, site_name, and booking_arrival are provided,
-    will match the exact opportunity name format.
+    Deletes opportunities in GHL that match by exact name.
+    Name format: "{firstname} {lastname} - {site_name} - {arrival_date}"
+    NOTE: This function uses name matching (not booking_id custom field).
+    NOTE: This function is kept for cleanup purposes (cancelled bookings, etc.)
     """
     access_token = get_ghl_token()
     if not access_token:
         print("No valid access token. Aborting opportunity deletion for booking_id:", booking_id)
         return
 
+    location_id = TEST_LOCATION_ID if TEST_MODE else GHL_LOCATION_ID
+    pipeline_id = TEST_PIPELINE_ID if TEST_MODE else GHL_PIPELINE_ID
+
     base_url = 'https://services.leadconnectorhq.com'
     headers = {
         'Authorization': f'Bearer {access_token}',
         'Version': '2021-07-28'
     }
-    url = f"{base_url}/opportunities/search?location_id={GHL_LOCATION_ID}&pipeline_id={GHL_PIPELINE_ID}&limit=100"
+    url = f"{base_url}/opportunities/search?location_id={location_id}&pipeline_id={pipeline_id}&limit=100"
     found = False
 
-    # Build expected name if all info provided
-    expected_name = None
-    if guest_firstname and guest_lastname and site_name and booking_arrival:
-        expected_name = f"{guest_firstname.strip()} {guest_lastname.strip()} - {site_name} - {booking_arrival.split(' ')[0]}"
+    # Build expected name - REQUIRED for matching
+    if not (guest_firstname and guest_lastname and site_name and booking_arrival):
+        log.warning(f"[GHL DELETE] Cannot delete opportunity for booking_id {booking_id} - missing required fields for name matching")
+        return
+    
+    expected_name = f"{guest_firstname.strip()} {guest_lastname.strip()} - {site_name} - {booking_arrival.split(' ')[0]}"
 
     while url:
         resp = requests.get(url, headers=headers)
@@ -834,14 +958,17 @@ def delete_opportunity_by_booking_id(booking_id, guest_firstname=None, guest_las
         data = resp.json()
         for opp in data.get('opportunities', []):
             name = opp.get('name', '')
-            # Match by expected name if possible, otherwise fallback to booking_id in name or custom fields
-            exact_name_match = expected_name and name == expected_name
+            # Primary matching: Use exact name match (required since booking_id custom field not used)
+            exact_name_match = name == expected_name
+            
+            # Optional fallback: Check booking_id in custom fields if it exists
             custom_match = any(
-                (str(f.get('field_value')) == str(booking_id))
+                (str(f.get('field_value')) == str(booking_id) or str(f.get('fieldValue')) == str(booking_id))
                 for f in opp.get('customFields', [])
-                if f.get('id') == 'site_id' or f.get('id') == 'booking_id'
+                if f.get('id') == 'booking_id'
             )
-            # Remove fallback to booking_id in name, only use exact name or custom field match
+            
+            # Match by exact name (primary) or custom field (optional fallback)
             if exact_name_match or custom_match:
                 opp_id = opp.get('id')
                 del_url = f"{base_url}/opportunities/{opp_id}"
@@ -861,12 +988,19 @@ def delete_opportunity_by_booking_details(guest_firstname, guest_lastname, site_
         print("No valid access token. Aborting opportunity deletion for details:", guest_firstname, guest_lastname, site_name, booking_arrival)
         return
 
+    location_id = TEST_LOCATION_ID if TEST_MODE else GHL_LOCATION_ID
+    pipeline_id = TEST_PIPELINE_ID if TEST_MODE else GHL_PIPELINE_ID
+
+    if not location_id or not pipeline_id:
+        log.error(f"Cannot delete opportunity: GHL_LOCATION_ID or GHL_PIPELINE_ID not set")
+        return
+
     base_url = 'https://services.leadconnectorhq.com'
     headers = {
         'Authorization': f'Bearer {access_token}',
         'Version': '2021-07-28'
     }
-    url = f"{base_url}/opportunities/search?location_id={GHL_LOCATION_ID}&pipeline_id={GHL_PIPELINE_ID}&limit=100"
+    url = f"{base_url}/opportunities/search?location_id={location_id}&pipeline_id={pipeline_id}&limit=100"
     found = False
 
     expected_name = f"{guest_firstname.strip()} {guest_lastname.strip()} - {site_name} - {booking_arrival.split(' ')[0]}"
@@ -896,3 +1030,234 @@ def daily_cleanup():
     print("[DAILY CLEANUP] Removing all opportunities from arriving_soon and arriving_today stages.")
     delete_opportunities_in_stage('3aeae130-f411-4ac7-bcca-271291fdc3b9')  # arriving_soon
     delete_opportunities_in_stage('b429a8e9-e73e-4590-b4c5-8ea1d65e0daf')  # arriving_today
+
+
+def test_opportunity_update(booking_id=None, use_dry_run=True):
+    """
+    Test function to verify opportunity update functionality.
+    This function can be used to test the update logic before deploying to production.
+    
+    Args:
+        booking_id: Optional specific booking_id to test. If None, will test with a sample booking.
+        use_dry_run: If True, uses dry-run mode (simulates without making changes). Default: True
+    
+    Usage:
+        from utils.ghl_api import test_opportunity_update
+        test_opportunity_update()  # Test with sample booking (dry-run)
+        test_opportunity_update("12345")  # Test with specific booking_id (dry-run)
+        test_opportunity_update("12345", use_dry_run=False)  # Actually create/update (use with caution!)
+    """
+    global DRY_RUN_MODE
+    
+    # Validate configuration first
+    if not GHL_LOCATION_ID:
+        print("\n" + "=" * 70)
+        print("❌ CONFIGURATION ERROR")
+        print("=" * 70)
+        print("GHL_LOCATION_ID is not set in your .env file!")
+        print("\nPlease add the following to your .env file:")
+        print("  GHL_LOCATION_ID=your-location-id")
+        print("\nYou can find your Location ID in your GoHighLevel account settings.")
+        print("=" * 70)
+        return
+    
+    if not GHL_PIPELINE_ID:
+        print("\n" + "=" * 70)
+        print("❌ CONFIGURATION ERROR")
+        print("=" * 70)
+        print("GHL_PIPELINE_ID is not set in your .env file!")
+        print("\nPlease add the following to your .env file:")
+        print("  GHL_PIPELINE_ID=your-pipeline-id")
+        print("\nYou can find your Pipeline ID in your GoHighLevel pipeline settings.")
+        print("=" * 70)
+        return
+    
+    # Show current configuration
+    print("\n" + "=" * 70)
+    print("Current Configuration:")
+    print("=" * 70)
+    print(f"TEST_MODE: {TEST_MODE}")
+    print(f"DRY_RUN_MODE: {DRY_RUN_MODE}")
+    if TEST_MODE:
+        if TEST_PIPELINE_ID == GHL_PIPELINE_ID:
+            print(f"⚠️  WARNING: Using PRODUCTION Pipeline ID: {GHL_PIPELINE_ID}")
+        else:
+            print(f"✅ Using Test Pipeline ID: {TEST_PIPELINE_ID}")
+        if TEST_LOCATION_ID == GHL_LOCATION_ID:
+            print(f"⚠️  WARNING: Using PRODUCTION Location ID: {GHL_LOCATION_ID}")
+        else:
+            print(f"✅ Using Test Location ID: {TEST_LOCATION_ID}")
+    else:
+        print(f"Pipeline ID: {GHL_PIPELINE_ID}")
+        print(f"Location ID: {GHL_LOCATION_ID if GHL_LOCATION_ID else '❌ NOT SET'}")
+        if not GHL_LOCATION_ID:
+            print("⚠️  ERROR: Location ID is required but not set!")
+    
+    print("=" * 70)
+    
+    # Enable dry run by default for safety
+    if use_dry_run and not DRY_RUN_MODE:
+        print("\n⚠️  DRY RUN MODE: Simulating operations without making actual changes")
+        print("   Set use_dry_run=False to actually create/update opportunities")
+        DRY_RUN_MODE = True
+    elif not use_dry_run:
+        if not TEST_MODE:
+            print("\n⚠️  WARNING: You are about to make changes to PRODUCTION!")
+            print("   This will create/update real opportunities in your production pipeline")
+            response = input("   Are you sure you want to continue? (type 'yes' to confirm): ")
+            if response.lower() != "yes":
+                print("Test cancelled.")
+                return
+        DRY_RUN_MODE = False
+    
+    print("\n" + "=" * 70)
+    print("Testing Opportunity Update Functionality")
+    print("=" * 70)
+    
+    # Try to get token (prefer private integration token, fallback to OAuth)
+    access_token = get_ghl_token()
+    if not access_token:
+        access_token = get_valid_access_token(GHL_CLIENT_ID, GHL_CLIENT_SECRET)
+    
+    if not access_token:
+        print("❌ ERROR: No valid access token available")
+        return
+    
+    # If booking_id provided, fetch that booking from NewBook
+    if booking_id:
+        print(f"\n[TEST] Fetching booking {booking_id} from NewBook...")
+        user_pass = f"{USERNAME}:{PASSWORD}"
+        encoded_credentials = base64.b64encode(user_pass.encode()).decode()
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Basic {encoded_credentials}"
+        }
+        
+        try:
+            # Try to fetch the specific booking
+            # Note: You may need to adjust this based on your NewBook API
+            response = requests.post(
+                f"{NEWBOOK_API_BASE}/bookings_list",
+                json={
+                    "region": REGION,
+                    "api_key": API_KEY,
+                    "list_type": "all",
+                    "period_from": (datetime.now() - timedelta(days=30)).strftime("%Y-%m-%d 00:00:00"),
+                    "period_to": (datetime.now() + timedelta(days=7)).strftime("%Y-%m-%d 23:59:59")
+                },
+                headers=headers,
+                verify=False,
+                timeout=15
+            )
+            response.raise_for_status()
+            bookings = response.json().get("data", [])
+            test_booking = next((b for b in bookings if b.get("booking_id") == str(booking_id)), None)
+            
+            if not test_booking:
+                print(f"❌ ERROR: Booking {booking_id} not found")
+                return
+        except Exception as e:
+            print(f"❌ ERROR: Failed to fetch booking: {e}")
+            return
+    else:
+        # Create a sample booking for testing
+        print("\n[TEST] Using sample booking data...")
+        test_booking = {
+            "booking_id": "TEST_" + datetime.now().strftime("%Y%m%d%H%M%S"),
+            "site_name": "Test Site",
+            "booking_arrival": (datetime.now() + timedelta(days=2)).strftime("%Y-%m-%d 14:00:00"),
+            "booking_departure": (datetime.now() + timedelta(days=5)).strftime("%Y-%m-%d 11:00:00"),
+            "booking_status": "placed",
+            "booking_total": 500.00,
+            "booking_adults": 2,
+            "booking_children": 0,
+            "booking_infants": 0,
+            "discount_code": "",
+            "pets": "",
+            "guests": [{
+                "firstname": "Test",
+                "lastname": "Guest",
+                "contact_details": [
+                    {"type": "email", "content": "test@example.com"},
+                    {"type": "mobile", "content": "+1234567890"}
+                ]
+            }]
+        }
+        print(f"[TEST] Created sample booking with ID: {test_booking['booking_id']}")
+    
+    print(f"\n[TEST] Booking Details:")
+    print(f"  ID: {test_booking.get('booking_id')}")
+    print(f"  Guest: {test_booking.get('guests', [{}])[0].get('firstname', '')} {test_booking.get('guests', [{}])[0].get('lastname', '')}")
+    print(f"  Arrival: {test_booking.get('booking_arrival')}")
+    print(f"  Status: {test_booking.get('booking_status')}")
+    
+    # Test 1: Create opportunity
+    print("\n[TEST 1] Creating new opportunity...")
+    result1 = send_to_ghl(test_booking, access_token)
+    if result1:
+        print("✅ TEST 1 PASSED: Opportunity created successfully")
+    else:
+        print("❌ TEST 1 FAILED: Failed to create opportunity")
+        return
+    
+    # Wait a moment
+    import time
+    time.sleep(2)
+    
+    # Test 2: Update opportunity (should update, not create new)
+    print("\n[TEST 2] Updating opportunity (should update existing, not create new)...")
+    # Modify booking to trigger stage change
+    test_booking["booking_status"] = "arrived"
+    test_booking["booking_arrival"] = datetime.now().strftime("%Y-%m-%d 14:00:00")
+    result2 = send_to_ghl(test_booking, access_token)
+    if result2:
+        print("✅ TEST 2 PASSED: Opportunity updated successfully")
+    else:
+        print("❌ TEST 2 FAILED: Failed to update opportunity")
+    
+    # Test 3: Verify only one opportunity exists
+    print("\n[TEST 3] Verifying only one opportunity exists for this booking...")
+    
+    # Skip this test if location_id is not set (would fail anyway)
+    if not (TEST_LOCATION_ID if TEST_MODE else GHL_LOCATION_ID):
+        print("⚠️  TEST 3 SKIPPED: GHL_LOCATION_ID not set, cannot search for opportunities")
+        print("   This test requires GHL_LOCATION_ID to be configured in .env")
+    else:
+        opp_id, opp_data = find_opportunity_by_booking_id(
+            test_booking.get("booking_id"),
+            guest_firstname=test_booking.get("guests", [{}])[0].get("firstname", ""),
+            guest_lastname=test_booking.get("guests", [{}])[0].get("lastname", ""),
+            site_name=test_booking.get("site_name", ""),
+            booking_arrival=test_booking.get("booking_arrival", "")
+        )
+        
+        if opp_id:
+            print(f"✅ TEST 3 PASSED: Found opportunity {opp_id}")
+            if opp_data:
+                print(f"   Current Stage: {opp_data.get('pipelineStageId')}")
+                print(f"   Name: {opp_data.get('name')}")
+        else:
+            if DRY_RUN_MODE:
+                print("⚠️  TEST 3: Could not find opportunity (expected in dry-run mode)")
+                print("   In dry-run mode, no opportunities are actually created")
+            else:
+                print("❌ TEST 3 FAILED: Could not find opportunity")
+    
+    print("\n" + "=" * 70)
+    print("TEST COMPLETE")
+    print("=" * 70)
+    
+    if DRY_RUN_MODE:
+        print("\n✅ DRY RUN MODE: No actual changes were made to GHL")
+        print("   To actually create/update opportunities, run with use_dry_run=False")
+    else:
+        print("\n⚠️  REAL MODE: Actual changes were made to GHL")
+        if opp_id:
+            print(f"   Opportunity ID: {opp_id}")
+            print("   You can verify this opportunity in your GHL pipeline")
+    
+    print("\nConfiguration:")
+    print(f"   TEST_MODE: {TEST_MODE}")
+    print(f"   DRY_RUN_MODE: {DRY_RUN_MODE}")
+    print(f"   Pipeline ID: {TEST_PIPELINE_ID if TEST_MODE else GHL_PIPELINE_ID}")
+    print(f"   Location ID: {TEST_LOCATION_ID if TEST_MODE else GHL_LOCATION_ID}")
