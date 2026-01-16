@@ -508,28 +508,55 @@ def get_stage_id_for_booking(booking):
     """
     Determines the appropriate stage ID for a booking based on arrival/departure dates and status.
     Returns the stage_id string.
+    
+    Priority order (most specific to least specific):
+    1. Checked out (departed status)
+    2. Checking out (arrived + departing today/tomorrow)
+    3. Staying now (arrived + departing after tomorrow)
+    4. Arriving today (arrival is today, not yet arrived)
+    5. Arriving soon (arrival is 1-7 days away, not yet arrived)
     """
     arrival = booking.get("booking_arrival")
     departure = booking.get("booking_departure")
+    booking_status = (booking.get("booking_status") or "").lower().strip()
     today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
     tomorrow = today + timedelta(days=1)
     day_after = today + timedelta(days=2)
     seven_days = today + timedelta(days=7)
 
-    if arrival:
-        arrival_dt = datetime.strptime(arrival, "%Y-%m-%d %H:%M:%S")
-        departure_dt = datetime.strptime(departure, "%Y-%m-%d %H:%M:%S") if departure else arrival_dt
-        
-        if arrival_dt >= tomorrow and arrival_dt <= seven_days:
-            return '3aeae130-f411-4ac7-bcca-271291fdc3b9'  # arriving_soon
-        elif booking.get("booking_status", "").lower() == "arrived" and departure_dt >= tomorrow:
-            return '99912993-0e69-48f9-9943-096ae68408d7'  # staying_now
-        elif arrival_dt >= today and arrival_dt < tomorrow:
-            return 'b429a8e9-e73e-4590-b4c5-8ea1d65e0daf'  # arriving_today
-        elif booking.get("booking_status", "").lower() == "arrived" and departure_dt >= today and departure_dt < day_after:
-            return 'fc60b2fa-8c2d-4202-9347-ac2dd32a0e43'  # checking_out
-        elif booking.get("booking_status", "").lower() == "departed":
-            return '8b54e5e5-27f3-463a-9d81-890c6dfd27eb'  # checked_out
+    if not arrival:
+        return None
+    
+    arrival_dt = datetime.strptime(arrival, "%Y-%m-%d %H:%M:%S")
+    departure_dt = datetime.strptime(departure, "%Y-%m-%d %H:%M:%S") if departure else arrival_dt
+    arrival_date = arrival_dt.date()
+    departure_date = departure_dt.date()
+    today_date = today.date()
+    tomorrow_date = tomorrow.date()
+    day_after_date = day_after.date()
+    seven_days_date = seven_days.date()
+    
+    # Priority 1: Checked out (departed status takes highest priority)
+    if booking_status == "departed":
+        return '8b54e5e5-27f3-463a-9d81-890c6dfd27eb'  # checked_out
+    
+    # Priority 2: Checking out (arrived + departing today or tomorrow)
+    if booking_status == "arrived" and departure_date >= today_date and departure_date < day_after_date:
+        return 'fc60b2fa-8c2d-4202-9347-ac2dd32a0e43'  # checking_out
+    
+    # Priority 3: Staying now (arrived + departing after tomorrow)
+    if booking_status == "arrived" and departure_date >= day_after_date:
+        return '99912993-0e69-48f9-9943-096ae68408d7'  # staying_now
+    
+    # Priority 4: Arriving today (arrival is today, not yet arrived)
+    # Only check this if booking hasn't arrived yet
+    if booking_status not in ["arrived", "departed"] and arrival_date == today_date:
+        return 'b429a8e9-e73e-4590-b4c5-8ea1d65e0daf'  # arriving_today
+    
+    # Priority 5: Arriving soon (arrival is 1-7 days away, not yet arrived)
+    # Only check this if booking hasn't arrived yet
+    if booking_status not in ["arrived", "departed"] and arrival_date >= tomorrow_date and arrival_date <= seven_days_date:
+        return '3aeae130-f411-4ac7-bcca-271291fdc3b9'  # arriving_soon
     
     return None
 
