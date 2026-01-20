@@ -236,23 +236,25 @@ class RMSService:
         max_children = occupancy_info['maxChildren']
         max_occupancy = occupancy_info['maxOccupancy']
         
-        # If no limits are configured, allow the booking (backwards compatibility)
+        # If no limits are configured, allow the booking
         if not max_occupancy:
-            print(f"   ⚠️ Category {category_id} has no occupancy limits configured - allowing booking")
+            print(f"   ⚠️ Category {category_id}: No occupancy limits configured - allowing booking")
             return True, ""
         
-        # Check individual limits
-        if max_adults and adults > max_adults:
-            return False, f"Number of adults ({adults}) exceeds maximum allowed ({max_adults}) for this room type"
+        # IMPROVED: Only validate individual limits if they're actually set (> 0)
+        # Site categories often have maxAdults=0, maxChildren=0 but maxOccupancy=6
+        if max_adults > 0 and adults > max_adults:
+            return False, f"Number of adults ({adults}) exceeds maximum allowed ({max_adults})"
         
-        if max_children and children > max_children:
-            return False, f"Number of children ({children}) exceeds maximum allowed ({max_children}) for this room type"
+        if max_children > 0 and children > max_children:
+            return False, f"Number of children ({children}) exceeds maximum allowed ({max_children})"
         
-        # Check total occupancy
+        # Check total occupancy (this is the main validation for site categories)
         total_guests = adults + children
-        if max_occupancy and total_guests > max_occupancy:
-            return False, f"Total guests ({total_guests}) exceeds maximum occupancy ({max_occupancy}) for this room type"
+        if total_guests > max_occupancy:
+            return False, f"Total guests ({total_guests}) exceeds maximum occupancy ({max_occupancy})"
         
+        print(f"   ✅ Occupancy valid for category {category_id}: {total_guests} guests <= {max_occupancy} max")
         return True, ""
     
     async def initialize(self):
@@ -439,20 +441,25 @@ class RMSService:
             else:
                 categories = await self._get_all_categories()
         
-        # Filter to only active categories with areas (prevent issues)
-        # Only exclude if explicitly marked as unavailable to IBE
+        # Filter to only active categories with areas
+        # REMOVED IBE filter - was excluding site-type categories
+        print(f"\n🔍 Filtering categories...")
+        print(f"   Total categories: {len(categories)}")
+        
         active_categories = [
             cat for cat in categories 
             if not cat.get('inactive', False) 
             and cat.get('numberOfAreas', 0) > 0
-            and cat.get('availableToIbe') is not False  # Include if True or not set
+            # Removed: and cat.get('availableToIbe') is not False
+            # This was filtering out powered/unpowered sites
         ]
         
         category_ids = [cat['id'] for cat in active_categories]
-        print(f"📋 Found {len(active_categories)} active bookable categories: {category_ids}")
+        print(f"📋 Active bookable categories ({len(active_categories)}): {category_ids}")
         
         for cat in active_categories:
-            print(f"   Category {cat['id']}: {cat.get('name', 'Unknown')}")
+            cat_class = cat.get('categoryClass', 'Unknown')
+            print(f"   Category {cat['id']}: {cat.get('name', 'Unknown')} (Class: {cat_class})")
         
         # Step 2: Get all rate plans for these categories
         # CRITICAL: RMS API requires BOTH categoryIds AND rateIds or it returns 500 error!
@@ -682,19 +689,32 @@ class RMSService:
         verified_available = []
         for item in available:
             cat_id = item['category_id']
+            cat_class = item.get('category_class', '')
             actual_count = unique_categories.get(cat_id)
+            grid_count = item['available_areas']
             
             if actual_count is not None:
-                # We verified this category - use actual count
+                # We verified this category
                 if actual_count > 0:
+                    # API confirms availability
                     item['available_areas'] = actual_count
                     verified_available.append(item)
+                    print(f"   ✅ Category {cat_id} verified: {actual_count} areas available")
                 else:
-                    # No areas actually available - remove from results
-                    print(f"   ❌ Removed Category {cat_id} - {item['rate_plan_name']}: Grid said {item['available_areas']}, but 0 actually available")
+                    # API says 0 available
+                    # SPECIAL CASE: For site-type categories, trust the rates grid
+                    # Agent ID might not have permission to query sites via /availableAreas
+                    if cat_class == "Site" and grid_count > 0:
+                        print(f"   ⚠️ Category {cat_id} (Site): /availableAreas returned 0, but rates grid says {grid_count}")
+                        print(f"      → Keeping site category (agent permission issue with /availableAreas)")
+                        verified_available.append(item)
+                    else:
+                        # For accommodation, remove if 0
+                        print(f"   ❌ Removed Category {cat_id} - {item['rate_plan_name']}: Grid said {grid_count}, but 0 actually available")
             else:
                 # Couldn't verify - keep it with original count
                 verified_available.append(item)
+                print(f"   ⚠️ Category {cat_id}: Could not verify, keeping with grid count ({grid_count})")
         
         if len(verified_available) < len(available):
             removed_count = len(available) - len(verified_available)
