@@ -1,3 +1,5 @@
+from urllib.parse import unquote
+
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 from utils.issues_db import create_issue, get_issue, get_all_issues
@@ -25,13 +27,14 @@ def create_issue_endpoint(
     """
     Create a new issue. Saves issue title, description, location_id, park_name, and date to the DB.
     Returns the created issue with its assigned id.
+    Query params are URL-decoded so values from GHL/voice AI are stored correctly.
     """
     result = create_issue(
-        issue_title=issue_title,
-        issue_description=issue_description,
-        location_id=location_id,
-        park_name=park_name,
-        date=date,
+        issue_title=unquote(issue_title),
+        issue_description=unquote(issue_description),
+        location_id=unquote(location_id),
+        park_name=unquote(park_name),
+        date=unquote(date),
     )
     if result is None:
         raise HTTPException(status_code=500, detail="Failed to create issue")
