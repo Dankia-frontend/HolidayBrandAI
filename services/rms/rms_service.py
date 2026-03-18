@@ -820,7 +820,8 @@ class RMSService:
         guest_firstName: str,
         guest_lastName: str,
         guest_email: str,
-        guest_phone: Optional[str] = None
+        guest_phone: Optional[str] = None,
+        guest_membership_id: Optional[int] = None,
     ) -> Dict:
         """
         Create reservation by checking availability FIRST before attempting to book.
@@ -991,6 +992,8 @@ class RMSService:
                 "paymentMethod": "PayLater",
                 "sendConfirmationEmail": True,
             }
+            if guest_membership_id is not None:
+                payload["guestMembershipId"] = guest_membership_id
             
             try:
                 reservation = await client.create_reservation(payload)
@@ -1053,7 +1056,176 @@ class RMSService:
         print(f"   {error_detail}")
         print(f"{'='*80}\n")
         raise Exception(error_detail)
-    
+
+    async def create_reservation_group(
+        self,
+        bookings: List[Dict],
+    ) -> Dict:
+        """
+        Create multiple reservations in a single group (Add Reservation Group).
+        Each booking dict must have: category_id, rate_plan_id, arrival, departure,
+        adults, children, guest_firstName, guest_lastName, guest_email, guest_phone (optional),
+        guest_membership_id (optional).
+        Builds one RMS reservation payload per booking (with guest lookup and area selection),
+        then calls RMS addReservationGroup in one API call.
+        """
+        if not self._initialized:
+            raise Exception("RMS service not initialized")
+        if not bookings:
+            from fastapi import HTTPException
+            raise HTTPException(status_code=400, detail="At least one booking is required for group reservation")
+
+        client = self._get_api_client()
+        reservation_payloads = []
+
+        print(f"\n{'='*80}")
+        print(f"CREATING GROUP RESERVATION ({len(bookings)} booking(s))")
+        print(f"{'='*80}")
+
+        for idx, b in enumerate(bookings, 1):
+            category_id = b.get("category_id")
+            rate_plan_id = b.get("rate_plan_id")
+            arrival = b.get("arrival")
+            departure = b.get("departure")
+            adults = int(b.get("adults", 1))
+            children = int(b.get("children", 0))
+            guest_firstName = b.get("guest_firstName", "").strip()
+            guest_lastName = b.get("guest_lastName", "").strip()
+            guest_email = b.get("guest_email", "").strip()
+            guest_phone = (b.get("guest_phone") or "").strip() or None
+            raw_membership = b.get("guest_membership_id")
+            guest_membership_id = None
+            if raw_membership is not None and raw_membership != "":
+                try:
+                    guest_membership_id = int(raw_membership)
+                except (TypeError, ValueError):
+                    guest_membership_id = None
+
+            if adults < 1:
+                raise Exception(f"Booking {idx}: at least 1 adult is required")
+            if not category_id or not rate_plan_id or not arrival or not departure:
+                raise Exception(f"Booking {idx}: category_id, rate_plan_id, arrival, departure are required")
+            if not guest_firstName or not guest_lastName or not guest_email:
+                raise Exception(f"Booking {idx}: guest first name, last name and email are required")
+
+            # Validate occupancy
+            is_valid, error_msg = self._validate_occupancy(category_id, adults, children)
+            if not is_valid:
+                raise Exception(f"Booking {idx}: {error_msg}")
+
+            # Get available areas for this booking
+            payload_av = {
+                "propertyId": self._property_id,
+                "categoryId": category_id,
+                "arrivalDate": arrival,
+                "departureDate": departure,
+                "adults": adults,
+                "children": children,
+            }
+            try:
+                areas_response = await client.get_available_areas(payload_av)
+                available_area_ids = [a.get("id") for a in areas_response if a.get("id")]
+            except Exception as e:
+                raise Exception(f"Booking {idx}: could not check availability: {e}")
+            if not available_area_ids:
+                raise Exception(
+                    f"Booking {idx}: no areas available for category {category_id} between {arrival} and {departure}"
+                )
+            area_id = available_area_ids[0]
+
+            # Find or create guest
+            guest = {
+                "firstName": guest_firstName,
+                "lastName": guest_lastName,
+                "email": guest_email,
+                "phone": guest_phone,
+            }
+            guest_id = await self._find_or_create_guest(guest)
+            if not guest_id:
+                raise Exception(f"Booking {idx}: failed to create/find guest")
+
+            arrival_date = datetime.fromisoformat(arrival)
+            departure_date = datetime.fromisoformat(departure)
+            nights = (departure_date - arrival_date).days
+
+            one = {
+                "propertyId": self._property_id,
+                "agentId": int(self.query_agent_id),
+                "arrivalDate": arrival,
+                "departureDate": departure,
+                "adults": adults,
+                "children": children,
+                "infants": 0,
+                "categoryId": category_id,
+                "rateTypeId": rate_plan_id,
+                "status": "Confirmed",
+                "source": "API",
+                "areaId": area_id,
+                "nights": nights,
+                "guestId": guest_id,
+                "paymentMethod": "PayLater",
+                "sendConfirmationEmail": True,
+            }
+            if guest_membership_id is not None and isinstance(guest_membership_id, int):
+                one["guestMembershipId"] = guest_membership_id
+            reservation_payloads.append(one)
+            print(f"Booking {idx}: guest {guest_id}, area {area_id}, {arrival}–{departure}")
+
+        try:
+            result = await client.create_reservation_group(reservation_payloads)
+            print(f"\n GROUP RESERVATION CREATED ({len(reservation_payloads)} reservation(s))")
+            print(f"{'='*80}\n")
+            return result
+        except Exception as e:
+            import httpx
+
+            message = str(e)
+            if isinstance(e, httpx.HTTPStatusError):
+                try:
+                    data = e.response.json()
+                    if isinstance(data, dict) and "message" in data:
+                        message = data["message"]
+                except Exception:
+                    pass
+
+            msg_lower = message.lower()
+            area_blocked = "area" in msg_lower and "not available" in msg_lower
+            more_than_one = "more than one reservation is required" in msg_lower
+
+            if not (area_blocked or more_than_one):
+                # Unexpected error – surface it
+                raise
+
+            print(f"\n RMS group booking failed: {message}")
+            print("   Falling back to creating individual reservations sequentially...")
+
+            # Use robust single-reservation logic (rotates areas, handles blocks)
+            fallback_results: List[Dict] = []
+            for idx, b in enumerate(bookings, 1):
+                try:
+                    res = await self.create_reservation(
+                        category_id=b["category_id"],
+                        rate_plan_id=b["rate_plan_id"],
+                        arrival=b["arrival"],
+                        departure=b["departure"],
+                        adults=b["adults"],
+                        children=b.get("children") or 0,
+                        guest_firstName=b["guest_firstName"],
+                        guest_lastName=b["guest_lastName"],
+                        guest_email=b["guest_email"],
+                        guest_phone=b.get("guest_phone"),
+                        guest_membership_id=b.get("guest_membership_id"),
+                    )
+                    fallback_results.append(res)
+                    print(f"Fallback booking {idx} created via single reservation API")
+                except Exception as sub_e:
+                    print(f"Fallback booking {idx} failed: {sub_e}")
+                    raise
+
+            print(f"\n Completed {len(fallback_results)} fallback reservations (not RMS-grouped but all confirmed)")
+            print(f"{'='*80}\n")
+            return {"reservations": fallback_results}
+
     async def _find_or_create_guest(self, guest: Dict) -> Optional[int]:
         """Find existing guest by email or create new one"""
         client = self._get_api_client()
@@ -1073,7 +1245,7 @@ class RMSService:
                     print(f"   Found existing guest: {guest_id}")
                     return guest_id
             except Exception as e:
-                print(f"   ⚠️ Guest search failed (will create new): {e}")
+                print(f"Guest search failed (will create new): {e}")
         
         # Create new guest
         create_payload = {
@@ -1090,10 +1262,9 @@ class RMSService:
             print(f"   Created new guest: {guest_id}")
             return guest_id
         except Exception as e:
-            print(f"   ❌ Failed to create guest: {e}")
+            print(f"Failed to create guest: {e}")
             return None
     
-    # ==================== RESERVATION MANAGEMENT ====================
     async def get_reservation(self, reservation_id: int) -> Dict:
         """Get reservation details by ID"""
         if not self._initialized:
@@ -1109,6 +1280,114 @@ class RMSService:
         
         client = self._get_api_client()
         return await client.cancel_reservation(reservation_id)
+
+    async def get_guest_memberships(self, guest_id: int) -> List[Dict]:
+        """
+        Fetch memberships for a guest from RMS.
+        Proxies RMS GET /guests/{id}/memberships.
+        """
+        client = self._get_api_client()
+        return await client.get_guest_memberships(guest_id)
+
+    async def verify_membership_number(
+        self,
+        guest_id: int,
+        membership_number: str,
+        program: Optional[str] = None
+    ) -> Dict:
+        """
+        Verify that a given membership number exists and is active for a guest.
+        Optionally filter by program (e.g. 'gday', 'big4') using membershipTypeName.
+        """
+        memberships = await self.get_guest_memberships(guest_id)
+
+        normalized_program = program.lower().strip() if program else None
+        matched = []
+
+        for m in memberships:
+            if m.get("inactive"):
+                continue
+            if str(m.get("number")).strip() != membership_number.strip():
+                continue
+
+            if normalized_program:
+                type_name = (m.get("membershipTypeName") or "").lower()
+
+                if normalized_program == "gday":
+                    if "g'day" not in type_name and "gday" not in type_name and "g day" not in type_name:
+                        continue
+                elif normalized_program == "big4":
+                    if "big4" not in type_name and "big 4" not in type_name and "big-4" not in type_name:
+                        continue
+
+            matched.append(m)
+
+        return {
+            "guestId": guest_id,
+            "membershipNumber": membership_number,
+            "program": program,
+            "is_valid": len(matched) > 0,
+            "memberships": matched,
+        }
+
+    async def verify_membership_by_email(
+        self,
+        guest_email: str,
+        membership_number: str,
+        program: Optional[str] = None
+    ) -> Dict:
+        """
+        Verify a membership number for a guest identified by email (no guest_id needed).
+        Looks up the guest in RMS by email, then checks their memberships against the
+        given membership_number. Returns verification result and matched membership
+        details so the caller can apply the RMS discount (e.g. when creating a reservation).
+        """
+        await self.initialize()
+        client = self._get_api_client()
+
+        search_payload = {
+            "propertyId": self._property_id,
+            "email": guest_email.strip(),
+        }
+        try:
+            results = await client.search_guests(search_payload)
+        except Exception as e:
+            return {
+                "guestId": None,
+                "membershipNumber": membership_number,
+                "program": program,
+                "is_valid": False,
+                "memberships": [],
+                "message": f"Guest lookup failed: {e}",
+            }
+
+        if not results or len(results) == 0:
+            return {
+                "guestId": None,
+                "membershipNumber": membership_number,
+                "program": program,
+                "is_valid": False,
+                "memberships": [],
+                "message": "No guest found with this email.",
+            }
+
+        guest_id = results[0].get("id")
+        if not guest_id:
+            return {
+                "guestId": None,
+                "membershipNumber": membership_number,
+                "program": program,
+                "is_valid": False,
+                "memberships": [],
+                "message": "Guest record has no id.",
+            }
+
+        result = await self.verify_membership_number(
+            guest_id=guest_id,
+            membership_number=membership_number,
+            program=program,
+        )
+        return result
 
 
 # Create a default instance for backward compatibility (will use env vars)

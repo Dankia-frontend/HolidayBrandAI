@@ -1,5 +1,5 @@
 import httpx
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Union
 import os
 from datetime import datetime, timedelta
 
@@ -209,10 +209,26 @@ class RMSApiClient:
     
     async def get_rates_grid(self, payload: Dict) -> Dict:
         return await self._make_request("POST", "/rates/grid", json=payload)
+
+    async def get_guest_memberships(self, guest_id: int) -> List[Dict]:
+        """
+        Get memberships for a specific guest.
+        Mirrors RMS GET /guests/{id}/memberships.
+        """
+        return await self._make_request("GET", f"/guests/{guest_id}/memberships")
     
     async def create_reservation(self, payload: Dict) -> Dict:
         endpoint = "/reservations?ignoreMandatoryFieldWarnings=true&useIbeDepositRules=true"
         return await self._make_request("POST", endpoint, json=payload)
+
+    async def create_reservation_group(self, payload: Union[Dict, List]) -> Dict:
+        """
+        Create multiple reservations in a single group (Add Reservation Group).
+        """
+        # RMS REST API Add Reservation Group: body must be array of reservations (not wrapped in {"reservations": ...})
+        endpoint = "/reservations/group?ignoreMandatoryFieldWarnings=true&useIbeDepositRules=true"
+        body = payload if isinstance(payload, list) else payload.get("reservations", [])
+        return await self._make_request("POST", endpoint, json=body)
     
     async def get_reservation(self, reservation_id: int) -> Dict:
         return await self._make_request("GET", f"/reservations/{reservation_id}")

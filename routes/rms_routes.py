@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Depends, Query, Header, Body
-from typing import Optional
+from typing import Optional, List
 from services.rms.rms_service import RMSService
 from auth.auth import authenticate_request
 from utils.rms_db import get_rms_instance
@@ -43,6 +43,23 @@ class RMSBookingLogUpdate(BaseModel):
     booking_id: Optional[str] = None
     status: Optional[str] = None
 
+
+class RMSGuestMembership(BaseModel):
+    guestId: int
+    id: int
+    inactive: bool
+    level: Optional[int] = None
+    membershipTypeId: Optional[int] = None
+    membershipTypeName: Optional[str] = None
+    number: str
+
+
+class RMSMembershipVerifyResponse(BaseModel):
+    guestId: Optional[int] = None
+    membershipNumber: str
+    program: Optional[str] = None
+    is_valid: bool
+    memberships: List[RMSGuestMembership]
 
 
 async def get_rms_credentials(x_location_id: str = Header(..., alias="X-Location-ID")):
@@ -145,6 +162,7 @@ async def create_reservation(
     guest_lastName: str = Query(..., description="Guest last name"),
     guest_email: str = Query(..., description="Guest email"),
     guest_phone: Optional[str] = Query(None, description="Guest phone number"),
+    guest_membership_id: Optional[int] = Query(None, description="Optional RMS guest membership id from /memberships/verify to apply member discount"),
     x_ai_agent_key: str = Depends(authenticate_request),
     rms_credentials: dict = Depends(get_rms_credentials)
 ):
@@ -186,7 +204,8 @@ async def create_reservation(
             guest_firstName=guest_firstName,
             guest_lastName=guest_lastName,
             guest_email=guest_email,
-            guest_phone=guest_phone
+            guest_phone=guest_phone,
+            guest_membership_id=guest_membership_id,
         )
         
         # Log the booking
@@ -244,6 +263,166 @@ async def create_reservation(
         )
         
         return reservation
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+MAX_GROUP_BOOKINGS = 5
+
+
+@router.post("/reservations/group")
+async def create_reservation_group(
+    booking_count: int = Query(..., ge=1, le=MAX_GROUP_BOOKINGS, description="Number of bookings in the group (1–5)"),
+    category_id_1: int = Query(..., description="Category ID (booking 1)"),
+    rate_plan_id_1: int = Query(..., description="Rate plan ID (booking 1)"),
+    arrival_1: str = Query(..., description="Arrival date (YYYY-MM-DD) (booking 1)"),
+    departure_1: str = Query(..., description="Departure date (YYYY-MM-DD) (booking 1)"),
+    adults_1: int = Query(..., description="Number of adults (booking 1)"),
+    children_1: Optional[int] = Query(None, description="Number of children (booking 1)"),
+    guest_firstName_1: str = Query(..., description="Guest first name (booking 1)"),
+    guest_lastName_1: str = Query(..., description="Guest last name (booking 1)"),
+    guest_email_1: str = Query(..., description="Guest email (booking 1)"),
+    guest_phone_1: Optional[str] = Query(None, description="Guest phone number (booking 1)"),
+    guest_membership_id_1: Optional[int] = Query(None, description="Optional RMS guest membership id from /memberships/verify (booking 1)"),
+    category_id_2: Optional[int] = Query(None, description="Category ID (booking 2)"),
+    rate_plan_id_2: Optional[int] = Query(None, description="Rate plan ID (booking 2)"),
+    arrival_2: Optional[str] = Query(None, description="Arrival date (YYYY-MM-DD) (booking 2)"),
+    departure_2: Optional[str] = Query(None, description="Departure date (YYYY-MM-DD) (booking 2)"),
+    adults_2: Optional[int] = Query(None, description="Number of adults (booking 2)"),
+    children_2: Optional[int] = Query(None, description="Number of children (booking 2)"),
+    guest_firstName_2: Optional[str] = Query(None, description="Guest first name (booking 2)"),
+    guest_lastName_2: Optional[str] = Query(None, description="Guest last name (booking 2)"),
+    guest_email_2: Optional[str] = Query(None, description="Guest email (booking 2)"),
+    guest_phone_2: Optional[str] = Query(None, description="Guest phone number (booking 2)"),
+    guest_membership_id_2: Optional[int] = Query(None, description="Optional RMS guest membership id (booking 2)"),
+    category_id_3: Optional[int] = Query(None, description="Category ID (booking 3)"),
+    rate_plan_id_3: Optional[int] = Query(None, description="Rate plan ID (booking 3)"),
+    arrival_3: Optional[str] = Query(None, description="Arrival date (YYYY-MM-DD) (booking 3)"),
+    departure_3: Optional[str] = Query(None, description="Departure date (YYYY-MM-DD) (booking 3)"),
+    adults_3: Optional[int] = Query(None, description="Number of adults (booking 3)"),
+    children_3: Optional[int] = Query(None, description="Number of children (booking 3)"),
+    guest_firstName_3: Optional[str] = Query(None, description="Guest first name (booking 3)"),
+    guest_lastName_3: Optional[str] = Query(None, description="Guest last name (booking 3)"),
+    guest_email_3: Optional[str] = Query(None, description="Guest email (booking 3)"),
+    guest_phone_3: Optional[str] = Query(None, description="Guest phone number (booking 3)"),
+    guest_membership_id_3: Optional[int] = Query(None, description="Optional RMS guest membership id (booking 3)"),
+    category_id_4: Optional[int] = Query(None, description="Category ID (booking 4)"),
+    rate_plan_id_4: Optional[int] = Query(None, description="Rate plan ID (booking 4)"),
+    arrival_4: Optional[str] = Query(None, description="Arrival date (YYYY-MM-DD) (booking 4)"),
+    departure_4: Optional[str] = Query(None, description="Departure date (YYYY-MM-DD) (booking 4)"),
+    adults_4: Optional[int] = Query(None, description="Number of adults (booking 4)"),
+    children_4: Optional[int] = Query(None, description="Number of children (booking 4)"),
+    guest_firstName_4: Optional[str] = Query(None, description="Guest first name (booking 4)"),
+    guest_lastName_4: Optional[str] = Query(None, description="Guest last name (booking 4)"),
+    guest_email_4: Optional[str] = Query(None, description="Guest email (booking 4)"),
+    guest_phone_4: Optional[str] = Query(None, description="Guest phone number (booking 4)"),
+    guest_membership_id_4: Optional[int] = Query(None, description="Optional RMS guest membership id (booking 4)"),
+    category_id_5: Optional[int] = Query(None, description="Category ID (booking 5)"),
+    rate_plan_id_5: Optional[int] = Query(None, description="Rate plan ID (booking 5)"),
+    arrival_5: Optional[str] = Query(None, description="Arrival date (YYYY-MM-DD) (booking 5)"),
+    departure_5: Optional[str] = Query(None, description="Departure date (YYYY-MM-DD) (booking 5)"),
+    adults_5: Optional[int] = Query(None, description="Number of adults (booking 5)"),
+    children_5: Optional[int] = Query(None, description="Number of children (booking 5)"),
+    guest_firstName_5: Optional[str] = Query(None, description="Guest first name (booking 5)"),
+    guest_lastName_5: Optional[str] = Query(None, description="Guest last name (booking 5)"),
+    guest_email_5: Optional[str] = Query(None, description="Guest email (booking 5)"),
+    guest_phone_5: Optional[str] = Query(None, description="Guest phone number (booking 5)"),
+    guest_membership_id_5: Optional[int] = Query(None, description="Optional RMS guest membership id (booking 5)"),
+    x_ai_agent_key: str = Depends(authenticate_request),
+    rms_credentials: dict = Depends(get_rms_credentials)
+):
+    """
+    Create multiple reservations in a single group (Add Reservation Group).
+    Query fields are the same as /api/rms/reservations but with _1, _2, ... _5 for each booking (scalar integer/string, no arrays).
+    Pass booking_count=2 and fill category_id_1, rate_plan_id_1, ... for booking 1 and category_id_2, rate_plan_id_2, ... for booking 2.
+    """
+    n = booking_count
+    if n > MAX_GROUP_BOOKINGS:
+        raise HTTPException(status_code=400, detail=f"booking_count must be 1–{MAX_GROUP_BOOKINGS}")
+    keys = ["category_id", "rate_plan_id", "arrival", "departure", "adults", "children", "guest_firstName", "guest_lastName", "guest_email", "guest_phone", "guest_membership_id"]
+    loc = locals()
+    bookings = []
+    for i in range(1, n + 1):
+        b = {}
+        for k in keys:
+            key = f"{k}_{i}"
+            val = loc.get(key)
+            if k in ("children", "guest_phone", "guest_membership_id"):
+                if val is None:
+                    b[k] = None
+                elif k == "guest_phone" and isinstance(val, str) and not val.strip():
+                    b[k] = None
+                else:
+                    b[k] = val
+            else:
+                if val is None or (isinstance(val, str) and not val.strip()):
+                    raise HTTPException(status_code=400, detail=f"Missing or empty required field for booking {i}: {k}")
+                b[k] = val
+        bookings.append(b)
+
+    print(f"\n{'='*80}")
+    print(f"📥 CREATE GROUP RESERVATION REQUEST ({n} booking(s))")
+    print(f"{'='*80}")
+    print(f"Location: {rms_credentials.get('location_id')}")
+    for i, b in enumerate(bookings, 1):
+        print(f"   {i}. {b['guest_firstName']} {b['guest_lastName']} | {b['arrival']}–{b['departure']} | cat={b['category_id']} rate={b['rate_plan_id']}")
+    print(f"{'='*80}\n")
+
+    try:
+        rms_service = RMSService(rms_credentials)
+        await rms_service.initialize()
+
+        result = await rms_service.create_reservation_group(bookings)
+
+        # Log each reservation to booking log when possible
+        from utils.rms_db import log_rms_booking
+        park_name = rms_credentials.get("park_name") or None
+        reservations_list = result if isinstance(result, list) else (result.get("reservations") or result.get("reservationIds") or [])
+        if isinstance(reservations_list, list) and reservations_list and bookings:
+            for idx, res in enumerate(reservations_list):
+                if idx >= len(bookings):
+                    break
+                b = bookings[idx]
+                reservation_id = res.get("id") or res.get("reservationId") if isinstance(res, dict) else res
+                booking_id = str(reservation_id) if reservation_id else None
+                status = res.get("status") or res.get("reservationStatus") if isinstance(res, dict) else None
+                status_str = str(status) if status else None
+                arrival_dt = f"{b['arrival']} 00:00:00" if len(b['arrival']) == 10 else b['arrival']
+                departure_dt = f"{b['departure']} 00:00:00" if len(b['departure']) == 10 else b['departure']
+                try:
+                    details = await rms_service.get_booking_price_and_details(
+                        category_id=b["category_id"],
+                        rate_plan_id=b["rate_plan_id"],
+                        arrival=b["arrival"],
+                        departure=b["departure"],
+                        adults=b["adults"],
+                        children=b.get("children") or 0,
+                    )
+                    total_amount = details.get("total_price")
+                    category_name = details.get("category_name")
+                except Exception:
+                    total_amount = None
+                    category_name = None
+                log_rms_booking(
+                    location_id=rms_credentials.get("location_id"),
+                    park_name=park_name,
+                    guest_firstName=b["guest_firstName"],
+                    guest_lastName=b["guest_lastName"],
+                    guest_email=b["guest_email"],
+                    guest_phone=b.get("guest_phone") or None,
+                    arrival_date=arrival_dt,
+                    departure_date=departure_dt,
+                    adults=b["adults"],
+                    children=b.get("children") or 0,
+                    category_id=str(b["category_id"]),
+                    category_name=category_name,
+                    amount=total_amount,
+                    booking_id=booking_id,
+                    status=status_str,
+                )
+        return result
     except HTTPException:
         raise
     except Exception as e:
@@ -309,6 +488,64 @@ async def cancel_reservation(
         await rms_service.initialize()
         
         return await rms_service.cancel_reservation(reservation_id)
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get(
+    "/memberships/verify",
+    response_model=RMSMembershipVerifyResponse,
+    summary="Verify a guest membership number (e.g. G'Day / BIG4)"
+)
+async def verify_membership(
+    membership_number: str = Query(..., description="The membership number to verify"),
+    guest_email: str = Query(..., description="Guest email (used to find the guest in RMS; no guest_id needed)"),
+    program: Optional[str] = Query(None, description="Optional program filter: 'gday' or 'big4'"),
+    x_ai_agent_key: str = Depends(authenticate_request),
+    rms_credentials: dict = Depends(get_rms_credentials)
+):
+    """
+    Verify that a given membership number exists and is active for the guest identified by email.
+
+    Uses the same headers as other RMS APIs (X-Location-ID, x-ai-agent-key). Looks up the guest
+    in RMS by email, then checks their memberships."""
+    try:
+        rms_service = RMSService(rms_credentials)
+        result = await rms_service.verify_membership_by_email(
+            guest_email=guest_email,
+            membership_number=membership_number,
+            program=program,
+        )
+        # Cast raw dict into the response model so Swagger shows the exact shape
+        return RMSMembershipVerifyResponse(
+            guestId=result.get("guestId"),
+            membershipNumber=result["membershipNumber"],
+            program=result.get("program"),
+            is_valid=result["is_valid"],
+            memberships=[RMSGuestMembership(**m) for m in result["memberships"]],
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/guests/{guest_id}/memberships", response_model=List[RMSGuestMembership])
+async def get_guest_memberships(
+    guest_id: int,
+    x_ai_agent_key: str = Depends(authenticate_request),
+    rms_credentials: dict = Depends(get_rms_credentials)
+):
+    """
+    Get RMS memberships (e.g. G'Day / BIG4) for a guest by RMS guest ID.
+    Proxies the RMS endpoint GET /guests/{id}/memberships.
+    """
+    try:
+        rms_service = RMSService(rms_credentials)
+        memberships = await rms_service.get_guest_memberships(guest_id)
+        return memberships
     except HTTPException:
         raise
     except Exception as e:
