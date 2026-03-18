@@ -4,6 +4,7 @@ from utils.logger import get_logger
 from utils.scheduler import start_scheduler_in_background
 from routes.rms_routes import router as rms_router
 from routes.newbook_routes import router as newbook_router
+from routes.issues_routes import router as issues_router
 from services.rms import rms_service, rms_cache, rms_auth
 from utils.rms_db import set_current_rms_instance, get_rms_instance, create_rms_instance as create_rms_instance_db
 from utils.newbook_db import create_newbook_instance, update_newbook_instance
@@ -125,6 +126,9 @@ app.include_router(rms_router)
 
 # Include Newbook routes
 app.include_router(newbook_router)
+
+# Include Issues routes
+app.include_router(issues_router)
 
 # Initialize scheduler
 scheduler = AsyncIOScheduler()
