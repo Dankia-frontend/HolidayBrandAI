@@ -226,11 +226,12 @@ class RMSService:
             'occupancyMessage': f"Max {max_adults} adults, {max_children} children (Total: {max_occupancy})" if max_occupancy else "Occupancy limits not configured"
         }
     
-    def _validate_occupancy(self, category_id: int, adults: int, children: int) -> tuple:
+    def _validate_occupancy(self, category_id: int, adults: int, children: Optional[int]) -> tuple:
         """
         Validate if the requested adults and children fit within category limits.
         Returns (is_valid, error_message)
         """
+        children = 0 if children is None else children
         occupancy_info = self._get_category_occupancy_info(category_id)
         max_adults = occupancy_info['maxAdults']
         max_children = occupancy_info['maxChildren']
@@ -816,7 +817,7 @@ class RMSService:
         arrival: str,
         departure: str,
         adults: int,
-        children: int,
+        children: Optional[int],
         guest_firstName: str,
         guest_lastName: str,
         guest_email: str,
@@ -844,6 +845,8 @@ class RMSService:
                 status_code=400, 
                 detail="At least 1 adult is required to create a reservation"
             )
+        
+        children = 0 if children is None else children
         
         client = self._get_api_client()
         
@@ -883,10 +886,6 @@ class RMSService:
             
             available_areas_response = await client.get_available_areas(payload)
             
-            # Trust the /availableAreas API - it already filters by date availability
-            # cleanStatus is the CURRENT status (e.g., occupied right now)
-            # But the API returns areas that WILL BE available for your requested dates
-            # If API returns an area, it's available for those dates regardless of current status
             available_area_ids = [area.get('id') for area in available_areas_response if area.get('id')]
             
             if not available_area_ids:
