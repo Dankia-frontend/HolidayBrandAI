@@ -2,6 +2,10 @@ import base64
 import requests
 from typing import Dict, Optional
 from config.config import NEWBOOK_API_BASE, USERNAME, PASSWORD
+from utils.logger import get_logger
+
+
+log = get_logger("NewbookApiClient")
 
 
 class NewbookApiClient:
@@ -77,6 +81,24 @@ class NewbookApiClient:
             return response.json()
             
         except requests.exceptions.RequestException as e:
+            # Log traceback and useful request/response metadata (no auth secrets).
+            status_code = getattr(getattr(e, "response", None), "status_code", None)
+            response_text = None
+            try:
+                resp = getattr(e, "response", None)
+                if resp is not None:
+                    response_text = resp.text[:1000]
+            except Exception:
+                response_text = None
+
+            log.exception(
+                "Newbook API request failed: method=%s endpoint=%s status_code=%s err=%s response_text_first_1k=%s",
+                method,
+                endpoint,
+                status_code,
+                str(e),
+                response_text,
+            )
             raise Exception(f"Newbook API request failed: {str(e)}")
     
     def get_availability(self, payload: dict) -> Dict:

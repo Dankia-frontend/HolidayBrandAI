@@ -10,12 +10,32 @@ def get_newbook_instance(location_id):
     Retrieve Newbook API credentials for a specific location_id.
     Returns: dict with location_id, api_key, park_name or None if not found
     """
-    conn = mysql.connector.connect(**db_config)
-    cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT location_id, api_key, park_name FROM newbook_instances WHERE location_id = %s", (location_id,))
-    row = cursor.fetchone()
-    conn.close()
-    return row
+    conn = None
+    cursor = None
+    try:
+        conn = mysql.connector.connect(**db_config)
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute(
+            "SELECT location_id, api_key, park_name FROM newbook_instances WHERE location_id = %s",
+            (location_id,),
+        )
+        row = cursor.fetchone()
+        return row
+    except Exception as e:
+        # Ensure lookup errors are visible in `server.log` for debugging.
+        log.exception("Error fetching newbook instance: location_id=%s err=%s", location_id, str(e))
+        return None
+    finally:
+        try:
+            if cursor is not None:
+                cursor.close()
+        except Exception:
+            pass
+        try:
+            if conn is not None:
+                conn.close()
+        except Exception:
+            pass
 
 def get_all_newbook_instances():
     """

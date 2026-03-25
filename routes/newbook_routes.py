@@ -5,8 +5,10 @@ from auth.auth import authenticate_request
 from auth.auth import get_newbook_credentials
 from urllib.parse import unquote
 from pydantic import BaseModel
+from utils.logger import get_logger
 
 router = APIRouter(prefix="/api/newbook", tags=["Newbook"])
+log = get_logger("NewbookRoutes")
 
 
 # Pydantic models for booking log CRUD operations
@@ -162,6 +164,22 @@ def confirm_booking(
         
         return result
     except Exception as e:
+        # Log full traceback so it shows up in `server.log` (stdout/stderr capture via uvicorn).
+        # Avoid logging secrets (api_key) to logs.
+        email_domain = guest_email.split("@")[-1] if isinstance(guest_email, str) and "@" in guest_email else "unknown"
+        log.exception(
+            "confirm-booking failed: period_from=%s period_to=%s adults=%s children=%s category_id=%s daily_mode=%s guest_email_domain=%s location_id=%s park_name=%s err=%s",
+            period_from,
+            period_to,
+            adults,
+            children,
+            category_id,
+            daily_mode,
+            email_domain,
+            newbook_creds.get("location_id") if isinstance(newbook_creds, dict) else None,
+            newbook_creds.get("park_name") if isinstance(newbook_creds, dict) else None,
+            str(e),
+        )
         raise HTTPException(status_code=500, detail=str(e))
 
 

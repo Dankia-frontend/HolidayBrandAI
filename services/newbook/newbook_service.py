@@ -169,7 +169,7 @@ class NewbookService:
             return data
             
         except Exception as e:
-            log.error(f"Error getting availability: {str(e)}")
+            log.exception(f"Error getting availability: {str(e)}")
             raise
     
     def get_tariff_information(
@@ -266,7 +266,7 @@ class NewbookService:
             return None
 
         except Exception as e:
-            log.error(f"Error getting tariff information: {str(e)}")
+            log.exception(f"Error getting tariff information: {str(e)}")
             return None
     
     def _extract_max_occupancy(self, tariffs_quoted: dict) -> tuple:
@@ -396,7 +396,14 @@ class NewbookService:
             return tariffs_quoted
 
         except Exception as e:
-            log.error(f"Error creating tariffs_quoted: {str(e)}")
+            log.exception(
+                "Error creating tariffs_quoted: %s period_from=%s period_to=%s tariff_total=%s tariff_id=%s",
+                str(e),
+                period_from,
+                period_to,
+                tariff_total,
+                tariff_id,
+            )
             return {}
     
     def create_booking(
@@ -471,7 +478,7 @@ class NewbookService:
             return result
             
         except Exception as e:
-            log.error(f"Error creating booking: {str(e)}")
+            log.exception(f"Error creating booking: {str(e)}")
             raise
     
     def check_booking(
@@ -550,7 +557,7 @@ class NewbookService:
             return {"exists": booking_exists}
             
         except Exception as e:
-            log.error(f"Error checking booking: {str(e)}")
+            log.exception(f"Error checking booking: {str(e)}")
             raise
 
 
