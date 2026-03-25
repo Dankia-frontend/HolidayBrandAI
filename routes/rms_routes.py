@@ -150,6 +150,21 @@ async def search_availability(
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@router.get("/booking-sources")
+async def list_booking_sources(
+    x_ai_agent_key: str = Depends(authenticate_request),
+    rms_credentials: dict = Depends(get_rms_credentials),
+):
+    try:
+        rms_service = RMSService(rms_credentials)
+        await rms_service.initialize()
+        return await rms_service.fetch_booking_sources()
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @router.post("/reservations")
 async def create_reservation(
     category_id: int = Query(..., description="Category ID"),
@@ -163,6 +178,7 @@ async def create_reservation(
     guest_email: str = Query(..., description="Guest email"),
     guest_phone: Optional[str] = Query(None, description="Guest phone number"),
     guest_membership_id: Optional[int] = Query(None, description="Optional RMS guest membership id from /memberships/verify to apply member discount"),
+    booking_source_id: Optional[int] = Query(None, description="Optional override; otherwise ParkPA (or RMS_DEFAULT_BOOKING_SOURCE_NAME) is resolved automatically at init"),
     x_ai_agent_key: str = Depends(authenticate_request),
     rms_credentials: dict = Depends(get_rms_credentials)
 ):
@@ -206,6 +222,7 @@ async def create_reservation(
             guest_email=guest_email,
             guest_phone=guest_phone,
             guest_membership_id=guest_membership_id,
+            booking_source_id=booking_source_id,
         )
         
         # Log the booking
@@ -275,6 +292,7 @@ MAX_GROUP_BOOKINGS = 5
 @router.post("/reservations/group")
 async def create_reservation_group(
     booking_count: int = Query(..., ge=1, le=MAX_GROUP_BOOKINGS, description="Number of bookings in the group (1–5)"),
+    booking_source_id: Optional[int] = Query(None, description="Optional override; otherwise ParkPA (or RMS_DEFAULT_BOOKING_SOURCE_NAME) is resolved automatically at init"),
     category_id_1: int = Query(..., description="Category ID (booking 1)"),
     rate_plan_id_1: int = Query(..., description="Rate plan ID (booking 1)"),
     arrival_1: str = Query(..., description="Arrival date (YYYY-MM-DD) (booking 1)"),
@@ -374,7 +392,7 @@ async def create_reservation_group(
         rms_service = RMSService(rms_credentials)
         await rms_service.initialize()
 
-        result = await rms_service.create_reservation_group(bookings)
+        result = await rms_service.create_reservation_group(bookings, booking_source_id=booking_source_id)
 
         # Log each reservation to booking log when possible
         from utils.rms_db import log_rms_booking

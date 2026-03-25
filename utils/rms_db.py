@@ -90,6 +90,8 @@ def get_rms_instance(location_id: str) -> dict | None:
             select_columns.append('agent_id')
         if 'park_name' in columns:
             select_columns.append('park_name')
+        if 'booking_source_id' in columns:
+            select_columns.append('booking_source_id')
         
         query = f"SELECT {', '.join(select_columns)} FROM rms_instances WHERE location_id = %s"
         print(f"   Query: {query}")
@@ -161,6 +163,8 @@ def get_all_rms_instances() -> list[dict]:
             select_columns.append('agent_id')
         if 'park_name' in columns:
             select_columns.append('park_name')
+        if 'booking_source_id' in columns:
+            select_columns.append('booking_source_id')
         
         cursor.execute(f"SELECT {', '.join(select_columns)} FROM rms_instances")
         rows = cursor.fetchall()
@@ -284,6 +288,12 @@ def set_current_rms_instance(location_id: str) -> bool:
     os.environ['RMS_CLIENT_ID'] = str(instance['client_id'])
     os.environ['RMS_CLIENT_PASS'] = instance['client_pass']
     os.environ['RMS_AGENT_ID'] = str(instance.get('agent_id', 0))
+    bs = instance.get('booking_source_id')
+    if bs is not None and str(bs).strip() != '':
+        try:
+            os.environ['RMS_BOOKING_SOURCE_ID'] = str(int(bs))
+        except (TypeError, ValueError):
+            pass
     
     log.info(f"Set current RMS instance to location_id: {location_id}")
     print(f"✅ Set current RMS instance to location_id: {location_id}")

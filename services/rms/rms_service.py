@@ -26,6 +26,7 @@ class RMSService:
         # Format: {"1_42_2026-08-01_2026-08-02": [25, 47, 52]}
         self._working_areas_cache = {}
         self._cache_timestamp = {}
+        self._default_booking_source_id: Optional[int] = None
         
     def _get_api_client(self):
         """Get or create API client with current credentials"""
@@ -95,6 +96,56 @@ class RMSService:
         
         return available_areas
     
+    @staticmethod
+    def _coerce_booking_sources_list(raw) -> List[Dict]:
+        if isinstance(raw, list):
+            return raw
+        if isinstance(raw, dict):
+            for key in ("bookingSources", "bookingSourceList", "data", "items", "results"):
+                v = raw.get(key)
+                if isinstance(v, list):
+                    return v
+        return []
+
+    async def _load_default_booking_source_id(self, client) -> Optional[int]:
+        if self.credentials:
+            raw = self.credentials.get("booking_source_id")
+            if raw is not None and raw != "":
+                try:
+                    return int(raw)
+                except (TypeError, ValueError):
+                    pass
+        env_val = os.getenv("RMS_BOOKING_SOURCE_ID")
+        if env_val and str(env_val).strip():
+            try:
+                return int(str(env_val).strip())
+            except ValueError:
+                pass
+        name_target = (os.getenv("RMS_DEFAULT_BOOKING_SOURCE_NAME") or "ParkPA").strip()
+        if not name_target or not self._property_id:
+            return None
+        try:
+            raw = await client.get_booking_sources(int(self._property_id))
+            sources = self._coerce_booking_sources_list(raw)
+            name_lower = name_target.lower()
+            for s in sources:
+                if not isinstance(s, dict):
+                    continue
+                if s.get("inactive"):
+                    continue
+                if (s.get("name") or "").strip().lower() == name_lower:
+                    sid = s.get("id")
+                    if sid is not None:
+                        return int(sid)
+        except Exception as e:
+            print(f"⚠️ Could not resolve booking source by name '{name_target}': {e}")
+        return None
+
+    def _resolve_booking_source_id(self, override: Optional[int]) -> Optional[int]:
+        if override is not None:
+            return int(override)
+        return self._default_booking_source_id
+
     def _get_cache_key(self, category_id: int, rate_plan_id: int, arrival: str, departure: str) -> str:
         """Generate cache key for working areas"""
         return f"{category_id}_{rate_plan_id}_{arrival}_{departure}"
@@ -262,6 +313,8 @@ class RMSService:
         """Initialize RMS service with property data"""
         if self._initialized and self._property_id:
             print(f"✅ RMS already initialized: Property {self._property_id}, Query Agent {self.query_agent_id}, Client {self.client_id}")
+            if self._default_booking_source_id is not None:
+                print(f"   Default bookingSourceId: {self._default_booking_source_id}")
             return
         
         print("🔧 Initializing RMS service...")
@@ -323,6 +376,12 @@ class RMSService:
             except Exception as e:
                 print(f"⚠️ Warning: Could not cache categories: {e}")
             
+            self._default_booking_source_id = await self._load_default_booking_source_id(client)
+            if self._default_booking_source_id is not None:
+                print(f"✅ Default bookingSourceId for API reservations: {self._default_booking_source_id}")
+            else:
+                print("⚠️ No default bookingSourceId — set rms_instances.booking_source_id, RMS_BOOKING_SOURCE_ID, or ensure RMS_DEFAULT_BOOKING_SOURCE_NAME matches a source")
+            
             self._initialized = True
             
         except Exception as e:
@@ -330,6 +389,15 @@ class RMSService:
             import traceback
             traceback.print_exc()
             raise
+    
+    async def fetch_booking_sources(self) -> List[Dict]:
+        if not self._initialized:
+            raise Exception("RMS service not initialized")
+        if not self._property_id:
+            raise Exception("RMS property not loaded")
+        client = self._get_api_client()
+        raw = await client.get_booking_sources(int(self._property_id))
+        return self._coerce_booking_sources_list(raw)
     
     async def _get_all_categories(self) -> List[Dict]:
         """Fetch all categories from RMS (uses cache if available)"""
@@ -823,6 +891,7 @@ class RMSService:
         guest_email: str,
         guest_phone: Optional[str] = None,
         guest_membership_id: Optional[int] = None,
+        booking_source_id: Optional[int] = None,
     ) -> Dict:
         """
         Create reservation by checking availability FIRST before attempting to book.
@@ -966,6 +1035,8 @@ class RMSService:
         
         print(f"📍 Will try {len(areas_to_try)} area(s): {areas_to_try}")
         
+        resolved_booking_source_id = self._resolve_booking_source_id(booking_source_id)
+        
         # Step 5: Try to book (should succeed on first or second try)
         last_error = None
         
@@ -993,6 +1064,8 @@ class RMSService:
             }
             if guest_membership_id is not None:
                 payload["guestMembershipId"] = guest_membership_id
+            if resolved_booking_source_id is not None:
+                payload["bookingSourceId"] = resolved_booking_source_id
             
             try:
                 reservation = await client.create_reservation(payload)
@@ -1059,6 +1132,7 @@ class RMSService:
     async def create_reservation_group(
         self,
         bookings: List[Dict],
+        booking_source_id: Optional[int] = None,
     ) -> Dict:
         """
         Create multiple reservations in a single group (Add Reservation Group).
@@ -1076,6 +1150,7 @@ class RMSService:
 
         client = self._get_api_client()
         reservation_payloads = []
+        resolved_booking_source_id = self._resolve_booking_source_id(booking_source_id)
 
         print(f"\n{'='*80}")
         print(f"CREATING GROUP RESERVATION ({len(bookings)} booking(s))")
@@ -1167,6 +1242,8 @@ class RMSService:
             }
             if guest_membership_id is not None and isinstance(guest_membership_id, int):
                 one["guestMembershipId"] = guest_membership_id
+            if resolved_booking_source_id is not None:
+                one["bookingSourceId"] = resolved_booking_source_id
             reservation_payloads.append(one)
             print(f"Booking {idx}: guest {guest_id}, area {area_id}, {arrival}–{departure}")
 
@@ -1214,6 +1291,7 @@ class RMSService:
                         guest_email=b["guest_email"],
                         guest_phone=b.get("guest_phone"),
                         guest_membership_id=b.get("guest_membership_id"),
+                        booking_source_id=booking_source_id,
                     )
                     fallback_results.append(res)
                     print(f"Fallback booking {idx} created via single reservation API")

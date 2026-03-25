@@ -1,5 +1,5 @@
 import httpx
-from typing import Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 import os
 from datetime import datetime, timedelta
 
@@ -126,7 +126,7 @@ class RMSApiClient:
         self._token_expiry = None
         print("🗑️ Token cache cleared")
     
-    async def _make_request(self, method: str, endpoint: str, **kwargs) -> Dict:
+    async def _make_request(self, method: str, endpoint: str, **kwargs) -> Any:
         token = await self._get_token()
         
         headers = {
@@ -198,6 +198,9 @@ class RMSApiClient:
             print(f"❌ Request failed: {e}")
             raise
     
+    async def get_booking_sources(self, property_id: int) -> Any:
+        return await self._make_request("GET", f"/bookingSources?propertyId={property_id}")
+
     async def get_properties(self) -> List[Dict]:
         return await self._make_request("GET", "/properties")
     
