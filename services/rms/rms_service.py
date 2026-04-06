@@ -6,6 +6,8 @@ import random
 
 
 class RMSService:
+    _LOCATION_IDS_REQUIRING_GUEST_ADDRESS = {"viDdECooTxIgSenINtXj"}
+
     def __init__(self, credentials: dict = None):
         """
         Initialize RMSService with optional credentials.
@@ -40,6 +42,43 @@ class RMSService:
         if self.credentials:
             return self.credentials.get('location_id')
         return None
+
+    @staticmethod
+    def _normalize_post_code(value: Optional[str]) -> str:
+        if value is None:
+            return ""
+        return str(value).strip()
+
+    def _should_include_mandatory_guest_address(self) -> bool:
+        """Only enforce guest address defaults for configured location IDs."""
+        return (self.location_id or "") in self._LOCATION_IDS_REQUIRING_GUEST_ADDRESS
+
+    def _guest_address_payload(self, guest: Dict) -> Dict:
+        """
+        Build optional address fields for RMS guest creation.
+        For special parks, defaults are applied if caller doesn't provide values.
+        """
+        town = (guest.get("town") or "").strip()
+        state = (guest.get("state") or "").strip()
+        post_code = self._normalize_post_code(guest.get("postCode"))
+
+        if self._should_include_mandatory_guest_address():
+            # Park-specific fallback values; can be overridden by request values.
+            if not town:
+                town = os.getenv("RMS_GUEST_DEFAULT_TOWN", "Unknown")
+            if not state:
+                state = os.getenv("RMS_GUEST_DEFAULT_STATE", "QLD")
+            if not post_code:
+                post_code = self._normalize_post_code(os.getenv("RMS_GUEST_DEFAULT_POST_CODE", "0000"))
+
+        address_payload = {}
+        if town:
+            address_payload["town"] = town
+        if state:
+            address_payload["state"] = state
+        if post_code:
+            address_payload["postCode"] = post_code
+        return address_payload
     
     @property
     def client_id(self) -> Optional[int]:
@@ -890,6 +929,9 @@ class RMSService:
         guest_lastName: str,
         guest_email: str,
         guest_phone: Optional[str] = None,
+        guest_town: Optional[str] = None,
+        guest_state: Optional[str] = None,
+        guest_postCode: Optional[str] = None,
         guest_membership_id: Optional[int] = None,
         booking_source_id: Optional[int] = None,
     ) -> Dict:
@@ -982,7 +1024,10 @@ class RMSService:
             'firstName': guest_firstName,
             'lastName': guest_lastName,
             'email': guest_email,
-            'phone': guest_phone
+            'phone': guest_phone,
+            'town': guest_town,
+            'state': guest_state,
+            'postCode': guest_postCode,
         }
         
         guest_id = await self._find_or_create_guest(guest)
@@ -1332,6 +1377,7 @@ class RMSService:
             "email": email,
             "mobile": guest.get('phone', '')
         }
+        create_payload.update(self._guest_address_payload(guest))
         
         try:
             result = await client.create_guest(create_payload)

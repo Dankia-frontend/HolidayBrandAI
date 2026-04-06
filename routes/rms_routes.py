@@ -177,6 +177,9 @@ async def create_reservation(
     guest_lastName: str = Query(..., description="Guest last name"),
     guest_email: str = Query(..., description="Guest email"),
     guest_phone: Optional[str] = Query(None, description="Guest phone number"),
+    guest_town: Optional[str] = Query(None, description="Optional guest town/suburb"),
+    guest_state: Optional[str] = Query(None, description="Optional guest state/region"),
+    guest_postCode: Optional[str] = Query(None, description="Optional guest post code"),
     guest_membership_id: Optional[int] = Query(None, description="Optional RMS guest membership id from /memberships/verify to apply member discount"),
     booking_source_id: Optional[int] = Query(None, description="Optional override; otherwise ParkPA (or RMS_DEFAULT_BOOKING_SOURCE_NAME) is resolved automatically at init"),
     x_ai_agent_key: str = Depends(authenticate_request),
@@ -201,6 +204,7 @@ async def create_reservation(
     print(f"   Name: {guest_firstName} {guest_lastName}")
     print(f"   Email: {guest_email}")
     print(f"   Phone: {guest_phone}")
+    print(f"   Town/State/PostCode: {guest_town or '-'} / {guest_state or '-'} / {guest_postCode or '-'}")
     print(f"{'='*80}\n")
     
     try:
@@ -221,6 +225,9 @@ async def create_reservation(
             guest_lastName=guest_lastName,
             guest_email=guest_email,
             guest_phone=guest_phone,
+            guest_town=guest_town,
+            guest_state=guest_state,
+            guest_postCode=guest_postCode,
             guest_membership_id=guest_membership_id,
             booking_source_id=booking_source_id,
         )
@@ -293,73 +300,54 @@ MAX_GROUP_BOOKINGS = 5
 async def create_reservation_group(
     booking_count: int = Query(..., ge=1, le=MAX_GROUP_BOOKINGS, description="Number of bookings in the group (1–5)"),
     booking_source_id: Optional[int] = Query(None, description="Optional override; otherwise ParkPA (or RMS_DEFAULT_BOOKING_SOURCE_NAME) is resolved automatically at init"),
+    guest_firstName: str = Query(..., description="Guest first name (shared for all bookings)"),
+    guest_lastName: str = Query(..., description="Guest last name (shared for all bookings)"),
+    guest_email: str = Query(..., description="Guest email (shared for all bookings)"),
+    guest_phone: Optional[str] = Query(None, description="Guest phone number (shared for all bookings)"),
+    guest_membership_id: Optional[int] = Query(None, description="Optional RMS guest membership id from /memberships/verify (shared for all bookings)"),
     category_id_1: int = Query(..., description="Category ID (booking 1)"),
     rate_plan_id_1: int = Query(..., description="Rate plan ID (booking 1)"),
     arrival_1: str = Query(..., description="Arrival date (YYYY-MM-DD) (booking 1)"),
     departure_1: str = Query(..., description="Departure date (YYYY-MM-DD) (booking 1)"),
     adults_1: int = Query(..., description="Number of adults (booking 1)"),
     children_1: Optional[int] = Query(None, description="Number of children (booking 1)"),
-    guest_firstName_1: str = Query(..., description="Guest first name (booking 1)"),
-    guest_lastName_1: str = Query(..., description="Guest last name (booking 1)"),
-    guest_email_1: str = Query(..., description="Guest email (booking 1)"),
-    guest_phone_1: Optional[str] = Query(None, description="Guest phone number (booking 1)"),
-    guest_membership_id_1: Optional[int] = Query(None, description="Optional RMS guest membership id from /memberships/verify (booking 1)"),
     category_id_2: Optional[int] = Query(None, description="Category ID (booking 2)"),
     rate_plan_id_2: Optional[int] = Query(None, description="Rate plan ID (booking 2)"),
     arrival_2: Optional[str] = Query(None, description="Arrival date (YYYY-MM-DD) (booking 2)"),
     departure_2: Optional[str] = Query(None, description="Departure date (YYYY-MM-DD) (booking 2)"),
     adults_2: Optional[int] = Query(None, description="Number of adults (booking 2)"),
     children_2: Optional[int] = Query(None, description="Number of children (booking 2)"),
-    guest_firstName_2: Optional[str] = Query(None, description="Guest first name (booking 2)"),
-    guest_lastName_2: Optional[str] = Query(None, description="Guest last name (booking 2)"),
-    guest_email_2: Optional[str] = Query(None, description="Guest email (booking 2)"),
-    guest_phone_2: Optional[str] = Query(None, description="Guest phone number (booking 2)"),
-    guest_membership_id_2: Optional[int] = Query(None, description="Optional RMS guest membership id (booking 2)"),
     category_id_3: Optional[int] = Query(None, description="Category ID (booking 3)"),
     rate_plan_id_3: Optional[int] = Query(None, description="Rate plan ID (booking 3)"),
     arrival_3: Optional[str] = Query(None, description="Arrival date (YYYY-MM-DD) (booking 3)"),
     departure_3: Optional[str] = Query(None, description="Departure date (YYYY-MM-DD) (booking 3)"),
     adults_3: Optional[int] = Query(None, description="Number of adults (booking 3)"),
     children_3: Optional[int] = Query(None, description="Number of children (booking 3)"),
-    guest_firstName_3: Optional[str] = Query(None, description="Guest first name (booking 3)"),
-    guest_lastName_3: Optional[str] = Query(None, description="Guest last name (booking 3)"),
-    guest_email_3: Optional[str] = Query(None, description="Guest email (booking 3)"),
-    guest_phone_3: Optional[str] = Query(None, description="Guest phone number (booking 3)"),
-    guest_membership_id_3: Optional[int] = Query(None, description="Optional RMS guest membership id (booking 3)"),
     category_id_4: Optional[int] = Query(None, description="Category ID (booking 4)"),
     rate_plan_id_4: Optional[int] = Query(None, description="Rate plan ID (booking 4)"),
     arrival_4: Optional[str] = Query(None, description="Arrival date (YYYY-MM-DD) (booking 4)"),
     departure_4: Optional[str] = Query(None, description="Departure date (YYYY-MM-DD) (booking 4)"),
     adults_4: Optional[int] = Query(None, description="Number of adults (booking 4)"),
     children_4: Optional[int] = Query(None, description="Number of children (booking 4)"),
-    guest_firstName_4: Optional[str] = Query(None, description="Guest first name (booking 4)"),
-    guest_lastName_4: Optional[str] = Query(None, description="Guest last name (booking 4)"),
-    guest_email_4: Optional[str] = Query(None, description="Guest email (booking 4)"),
-    guest_phone_4: Optional[str] = Query(None, description="Guest phone number (booking 4)"),
-    guest_membership_id_4: Optional[int] = Query(None, description="Optional RMS guest membership id (booking 4)"),
     category_id_5: Optional[int] = Query(None, description="Category ID (booking 5)"),
     rate_plan_id_5: Optional[int] = Query(None, description="Rate plan ID (booking 5)"),
     arrival_5: Optional[str] = Query(None, description="Arrival date (YYYY-MM-DD) (booking 5)"),
     departure_5: Optional[str] = Query(None, description="Departure date (YYYY-MM-DD) (booking 5)"),
     adults_5: Optional[int] = Query(None, description="Number of adults (booking 5)"),
     children_5: Optional[int] = Query(None, description="Number of children (booking 5)"),
-    guest_firstName_5: Optional[str] = Query(None, description="Guest first name (booking 5)"),
-    guest_lastName_5: Optional[str] = Query(None, description="Guest last name (booking 5)"),
-    guest_email_5: Optional[str] = Query(None, description="Guest email (booking 5)"),
-    guest_phone_5: Optional[str] = Query(None, description="Guest phone number (booking 5)"),
-    guest_membership_id_5: Optional[int] = Query(None, description="Optional RMS guest membership id (booking 5)"),
     x_ai_agent_key: str = Depends(authenticate_request),
     rms_credentials: dict = Depends(get_rms_credentials)
 ):
     """
     Create multiple reservations in a single group (Add Reservation Group).
-    Query fields are the same as /api/rms/reservations but with _1, _2, ... _5 for each booking (scalar integer/string, no arrays).
-    Pass booking_count=2 and fill category_id_1, rate_plan_id_1, ... for booking 1 and category_id_2, rate_plan_id_2, ... for booking 2.
+    Booking-specific fields use _1.._5 suffixes (category/rate/date/pax).
+    Guest fields are shared once for all bookings: guest_firstName, guest_lastName,
+    guest_email, guest_phone, guest_membership_id.
     """
     n = booking_count
     if n > MAX_GROUP_BOOKINGS:
         raise HTTPException(status_code=400, detail=f"booking_count must be 1–{MAX_GROUP_BOOKINGS}")
-    keys = ["category_id", "rate_plan_id", "arrival", "departure", "adults", "children", "guest_firstName", "guest_lastName", "guest_email", "guest_phone", "guest_membership_id"]
+    keys = ["category_id", "rate_plan_id", "arrival", "departure", "adults", "children"]
     loc = locals()
     bookings = []
     for i in range(1, n + 1):
@@ -367,10 +355,8 @@ async def create_reservation_group(
         for k in keys:
             key = f"{k}_{i}"
             val = loc.get(key)
-            if k in ("children", "guest_phone", "guest_membership_id"):
+            if k == "children":
                 if val is None:
-                    b[k] = None
-                elif k == "guest_phone" and isinstance(val, str) and not val.strip():
                     b[k] = None
                 else:
                     b[k] = val
@@ -378,6 +364,12 @@ async def create_reservation_group(
                 if val is None or (isinstance(val, str) and not val.strip()):
                     raise HTTPException(status_code=400, detail=f"Missing or empty required field for booking {i}: {k}")
                 b[k] = val
+        # Apply shared guest details to each booking
+        b["guest_firstName"] = guest_firstName
+        b["guest_lastName"] = guest_lastName
+        b["guest_email"] = guest_email
+        b["guest_phone"] = guest_phone if guest_phone and guest_phone.strip() else None
+        b["guest_membership_id"] = guest_membership_id
         bookings.append(b)
 
     print(f"\n{'='*80}")
