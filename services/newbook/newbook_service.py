@@ -368,7 +368,14 @@ class NewbookService:
         # No tariff could accommodate the occupancy
         return False
     
-    def create_tariffs_quoted(self, period_from: str, period_to: str, tariff_total: float, tariff_id: int) -> dict:
+    def create_tariffs_quoted(
+        self,
+        period_from: str,
+        period_to: str,
+        tariff_total: float,
+        tariff_id: int,
+        source_tariffs_quoted: Optional[dict] = None,
+    ) -> dict:
         """
         Create tariffs_quoted in the expected format for NewBook.
         """
@@ -382,13 +389,49 @@ class NewbookService:
 
             price_per_night = tariff_total // nights
 
+            normalized_source = source_tariffs_quoted if isinstance(source_tariffs_quoted, dict) else {}
+
+            fallback_tariff_id = None
+            if tariff_id is not None:
+                try:
+                    fallback_tariff_id = int(tariff_id)
+                except (TypeError, ValueError):
+                    fallback_tariff_id = None
+
+            if fallback_tariff_id is None:
+                for quote_data in normalized_source.values():
+                    if isinstance(quote_data, dict):
+                        maybe_id = quote_data.get("tariff_applied_id")
+                        try:
+                            fallback_tariff_id = int(maybe_id)
+                            break
+                        except (TypeError, ValueError):
+                            continue
+
+            if fallback_tariff_id is None:
+                raise ValueError("No valid tariff_applied_id found for booking payload")
+
             tariffs_quoted = {}
             current_date = start_date
             while current_date < end_date:
                 date_str = current_date.strftime("%Y-%m-%d")
+                source_quote = normalized_source.get(date_str, {}) if normalized_source else {}
+
+                nightly_tariff_id = fallback_tariff_id
+                if isinstance(source_quote, dict):
+                    maybe_nightly_id = source_quote.get("tariff_applied_id")
+                    try:
+                        nightly_tariff_id = int(maybe_nightly_id)
+                    except (TypeError, ValueError):
+                        nightly_tariff_id = fallback_tariff_id
+
+                nightly_price = price_per_night
+                if isinstance(source_quote, dict):
+                    nightly_price = source_quote.get("amount", source_quote.get("price", price_per_night))
+
                 tariffs_quoted[date_str] = {
-                    "tariff_applied_id": tariff_id,
-                    "price": price_per_night
+                    "tariff_applied_id": nightly_tariff_id,
+                    "price": nightly_price
                 }
                 current_date += timedelta(days=1)
 
@@ -439,11 +482,14 @@ class NewbookService:
             raise Exception("No tariff information found for the specified category and dates")
         
         # Create tariffs_quoted using the actual tariff ID from availability
+        selected_tariff = (tariff_info.get("tariffs_available") or [{}])[0]
+        source_tariffs_quoted = selected_tariff.get("tariffs_quoted", {}) if isinstance(selected_tariff, dict) else {}
         tariffs_quoted = self.create_tariffs_quoted(
             period_from=period_from,
             period_to=period_to,
             tariff_total=tariff_info["tariff_total"],
-            tariff_id=tariff_info["tariff_id"]
+            tariff_id=tariff_info["tariff_id"],
+            source_tariffs_quoted=source_tariffs_quoted,
         )
         
         # Build payload with tariff information
