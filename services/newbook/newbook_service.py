@@ -146,10 +146,16 @@ class NewbookService:
 
                     # Derive price: prefer average_nightly_tariff from first tariff; fallback to first quoted amount
                     price = None
+                    original_average_nightly_tariff = None
+                    tariff_total = None
                     tariffs_available = category_data.get("tariffs_available", [])
                     if tariffs_available:
                         first_tariff = tariffs_available[0]
                         price = first_tariff.get("average_nightly_tariff")
+                        original_average_nightly_tariff = first_tariff.get(
+                            "original_average_nightly_tariff"
+                        )
+                        tariff_total = first_tariff.get("tariff_total")
                         if price is None:
                             tariffs_quoted = first_tariff.get("tariffs_quoted", {})
                             if isinstance(tariffs_quoted, dict) and tariffs_quoted:
@@ -160,7 +166,9 @@ class NewbookService:
                     filtered["data"][category_id] = {
                         "category_name": category_name,
                         "category_type_id": category_data.get("category_type_id"),
-                        "price": price,
+                        # "price": price,
+                        "nightly_rate": original_average_nightly_tariff,
+                        "total_price": tariff_total,
                         "sites_message": sites_message,
                     }
 
